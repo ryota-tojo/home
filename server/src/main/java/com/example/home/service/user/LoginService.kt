@@ -38,7 +38,7 @@ class LoginService(
         if (groupInfo.isEmpty()) {
             return UserLoginResult("GROUP_AFFILIATION_ERROR", false)
         }
-
+        // login成功
         return UserLoginResult("SUCCESS", true)
 
     }
