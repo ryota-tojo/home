@@ -6,7 +6,6 @@ import org.jetbrains.exposed.sql.javatime.datetime
 object TbTsGroupInfo : Table("ts_groupinfo") {
     val groupId = integer("group_id").autoIncrement()
     val groupsId = varchar("groups_id", 64).uniqueIndex()
-    val groupsName = varchar("groups_name", 64)
     val userId = integer("user_id").references(TbTsUserInfo.userId)
     val leaderFlg = integer("leader_flg")
     val createDate = datetime("create_date")

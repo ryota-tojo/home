@@ -1,20 +1,24 @@
 package com.example.home.infrastructure.persistence.repository.user
 
-import com.example.home.domain.group.GroupList
-import com.example.home.domain.value_object.group.GroupName
-import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.value_object.user.*
-import java.time.LocalDateTime
+import com.example.home.domain.user.UserSetting
+import com.example.home.domain.value_object.user.UserId
+import com.example.home.domain.value_object.user.UserSettingKey
+import com.example.home.domain.value_object.user.UserSettingValue
 
 interface UserSettingRepository {
-    fun refer(userId: UserId): GroupList
+    fun refer(userId: UserId): List<UserSetting>
+    fun referAll(): List<UserSetting>
     fun save(
-        SettingKey: UserSettingKey,
-        Settingvalue: UserSettingValue
-    ): Int
+        userId: UserId,
+        settingKey: UserSettingKey,
+        settingValue: UserSettingValue
+    ): UserSetting
+
     fun update(
-        SettingKey: UserSettingKey,
-        Settingvalue: UserSettingValue
+        userId: UserId,
+        settingKey: UserSettingKey,
+        settingValue: UserSettingValue
     ): Int
-    fun delete(userId: UserId) :Boolean
+
+    fun delete(userId: UserId): Int
 }

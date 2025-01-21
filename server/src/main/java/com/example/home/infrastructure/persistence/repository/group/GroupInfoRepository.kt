@@ -1,27 +1,23 @@
 package com.example.home.infrastructure.persistence.repository.group
 
-import com.example.home.domain.group.GroupList
-import com.example.home.domain.value_object.group.GroupName
+import com.example.home.domain.group.GroupInfo
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.value_object.user.*
-import java.time.LocalDateTime
+import com.example.home.domain.value_object.user.UserId
+import com.example.home.domain.value_object.user.UserLeaderFlg
 
 interface GroupInfoRepository {
-    fun find(groupsId: GroupsId): Boolean
-    fun refer(groupsId: GroupsId): GroupList
+    fun refer(groupsId: GroupsId, userId: UserId?): List<GroupInfo>
+    fun referAll(): List<GroupInfo>
     fun save(
         groupsId: GroupsId,
         userId: UserId,
-        userLeaderFlg: UserLeaderFlg,
-        createDate: LocalDateTime,
-        updateDate: LocalDateTime
-    ): Int
+        userLeaderFlg: UserLeaderFlg
+    ): GroupInfo
     fun update(
         groupsId: GroupsId,
         userId: UserId,
-        userLeaderFlg: UserLeaderFlg,
-        createDate: LocalDateTime,
-        updateDate: LocalDateTime
+        userLeaderFlg: UserLeaderFlg
     ): Int
-    fun delete(userId: UserId) :Boolean
+
+    fun delete(userId: UserId): Int
 }

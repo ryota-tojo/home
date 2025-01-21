@@ -5,7 +5,7 @@ import com.example.home.util.StringUtil
 
 data class UserName(val value: String) {
     companion object{
-        val MAX_BYTE_LENGTH = 64;
+        val MAX_BYTE_LENGTH = 64
     }
     init{
         requireNotNull(value) { "UserName must not be empty" }
@@ -14,9 +14,6 @@ data class UserName(val value: String) {
         }
         require(Constants.INVALID_SYMBOL.none {  it in value }) {
             "UserName must not contain forbidden characters: ${Constants.INVALID_SYMBOL.joinToString(", ")}"
-        }
-        require(Constants.INVALID_WORD.none {  it in value }) {
-            "UserName must not contain forbidden characters: ${Constants.INVALID_WORD.joinToString(", ")}"
         }
     }
 }
