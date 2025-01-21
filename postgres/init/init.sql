@@ -60,7 +60,6 @@ create table ts_grouplist(
 create table ts_groupinfo(
     group_id SERIAL NOT NULL,
     groups_id varchar(64) UNIQUE, 
-    groups_name varchar(64), 
     user_id integer, 
     leader_flg integer,
     create_date timestamp,
@@ -187,7 +186,7 @@ create table ts_comment(
     groups_id varchar(64), 
     yyyy integer,
     mm integer,
-    contents varchar(65535),
+    content varchar(65535),
     PRIMARY KEY (id)
 );
 
