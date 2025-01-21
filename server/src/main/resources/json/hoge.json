@@ -1,40 +1,8 @@
 {
   "status": "success",
   "response_code": "SUCCESS",
-  "message": "所属グループ情報を取得しました",
+  "message": "所属グループ一覧(home_123)を更新しました",
   "data": {
-    "group_list": [
-      {
-        "id": 2,
-        "groups_id": "home_123",
-        "group_name": "home"
-      }
-    ],
-    "group_setting": [
-      {
-        "id": 1,
-        "groups_id": "home_123",
-        "group_setting_key": "display_yyyy",
-        "group_setting_value": "2025"
-      },
-      {
-        "id": 2,
-        "groups_id": "home_123",
-        "group_setting_key": "graph_type",
-        "group_setting_value": "1"
-      },
-      {
-        "id": 3,
-        "groups_id": "home_123",
-        "group_setting_key": "slack_basic_webhook_url",
-        "group_setting_value": ""
-      },
-      {
-        "id": 4,
-        "groups_id": "home_123",
-        "group_setting_key": "slack_basic_send_flg",
-        "group_setting_value": ""
-      }
-    ]
+    "update_rows": 1
   }
 }
