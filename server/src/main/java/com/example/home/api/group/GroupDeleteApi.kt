@@ -61,11 +61,15 @@ class GroupDeleteApi(
                 .body(response)
         }
         val groupDeleteResponseData: GroupDeleteResponse.GroupEntryResponseData =
-            GroupDeleteResponse.GroupEntryResponseData(groupsId.value,result.groupListDeletedResult,result.groupSettingDeletedResult)
+            GroupDeleteResponse.GroupEntryResponseData(
+                groupsId.value,
+                result.groupListDeletedResult,
+                result.groupSettingDeletedResult
+            )
         val response = GroupDeleteResponse(
             "success",
             result.result,
-            "所属グループ(${groupsId.value})を削除しました",
+            "所属グループを削除しました",
             groupDeleteResponseData
         )
         return ResponseEntity.ok()

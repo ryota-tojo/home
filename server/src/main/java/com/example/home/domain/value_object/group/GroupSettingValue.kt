@@ -7,12 +7,12 @@ class GroupSettingValue(val value: String) {
     companion object {
         val MAX_BYTE_LENGTH = 256;
     }
+
     init {
-        requireNotNull(value) { "GroupSettingValue must not be null." }
         require(StringUtil.byteSize(value) <= MAX_BYTE_LENGTH) {
             "GroupSettingValue must not exceed $MAX_BYTE_LENGTH bytes, actual size: ${StringUtil.byteSize(value)} bytes"
         }
-        require(Constants.INVALID_SYMBOL.none {  it in value }) {
+        require(Constants.INVALID_SYMBOL.none { it in value }) {
             "GroupSettingValue must not contain forbidden characters: ${Constants.INVALID_SYMBOL.joinToString(", ")}"
         }
     }
