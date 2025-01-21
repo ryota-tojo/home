@@ -1,0 +1,28 @@
+.control {
+    margin: 50px 0 0 0;
+    display: flex;
+    justify-content: center; /* 横方向に中央寄せ */
+    align-items: center;     /* 縦方向に中央寄せ */
+}
+.control-item {
+    display: flex;
+    align-items: center;     /* 縦方向に中央寄せ */
+    width: 60%;
+}
+
+.control-btn button {
+    width: 60px;             /* 幅を60pxに設定 */
+}
+
+@media (max-width: 1024px) {
+    .control-item {
+        justify-content: center; /* 横方向に中央寄せ */
+    }
+}
+
+@media (min-width: 1024px) {
+    .control-item {
+        justify-content: left; /* 横方向に中央寄せ */
+    }
+}
+

@@ -1,0 +1,39 @@
+/* フッター全体 */
+.footer {
+    margin-top: 50px;
+    color: #fff; /* 文字色を白に */
+    text-align: center; /* 中央揃え */
+    padding: 20px 10px; /* 上下に余白 */
+    font-family: 'Arial', sans-serif; /* 読みやすいフォント */
+}
+
+/* トップリンク部分 */
+.footer-top {
+    margin-bottom: 10px; /* 上下の余白 */
+}
+
+.back-to-top {
+    text-decoration: none; /* 下線を消す */
+    color: #2cacfc; /* アクセントカラー（例: 緑） */
+    font-weight: bold; /* 太字 */
+    font-size: 1.2rem; /* 大きめの文字サイズ */
+    transition: color 0.3s ease; /* ホバー時の滑らかな変化 */
+}
+
+.back-to-top:hover {
+    color: #81c784; /* ホバー時の明るい緑 */
+}
+
+/* 区切り線 */
+.footer-divider {
+    border: 0;
+    height: 1px;
+    background-color: #323131; /* 落ち着いた色 */
+    margin: 10px 0; /* 上下の余白 */
+}
+
+/* バージョン表示部分 */
+.footer-bottom {
+    font-size: 0.9rem; /* 少し小さめの文字 */
+    color: #636363; /* サブテキスト色 */
+}

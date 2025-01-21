@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'anzuiro';/*フォント名日本語OK*/
+    src: url('fontPJapanesefont.ttf');/*フォントファイルパス*/
+}
+.main-font{
+    font-family: anzuiro;
+}
+.title-font{
+    font-size: 1.6rem;
+}
+.title-font:hover{
+    color: #a786ff;
+}
+.menu-font{
+    font-size: 1.4rem;
+}
+.menu-font:hover{
+    color: #f6a4ff;
+}
+.drop-font{
+    font-size: 1.2rem;
+}
+.drop-font:hover{
+    color: #f6a4ff;
+}
+.dropdown-item{
+    margin-top:0.1rem
+}
+.navbar{
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+}

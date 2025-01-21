@@ -1,0 +1,35 @@
+.settings-form {
+    display: flex;
+    width: 100%;
+    margin-top: 20px;
+}
+.settings-label-container{
+    display: flex;
+    justify-content: left;
+    width: 60%;
+}
+.settings-input-container{
+    display: flex;
+    justify-content: right;
+    width: 40%;
+}
+.settings-btn-container{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 50px;
+}
+.settings-label{
+    font-size: 1.5rem;
+    display: flex; /* フレックスボックスで配置 */
+    align-items: center; /* 縦方向で中央揃え */
+    height: 100%; /* 必要に応じて高さを指定 */
+}
+
+
+@media (max-width: 1024px){
+
+}
+@media (min-width: 1024px) {
+
+}

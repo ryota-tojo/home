@@ -1,0 +1,168 @@
+/*html, body {*/
+/*    position: relative;*/
+/*    height: 100%;*/
+/*}*/
+
+/*body::before {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    background-image: url('../image/test.png');*/
+/*    background-position: center;*/
+/*    background-repeat: no-repeat;*/
+/*    background-size: cover;*/
+/*    opacity: 0.5; !* 画像の透明度を設定 *!*/
+/*    z-index: -1; !* 画像がコンテンツの下に来るように設定 *!*/
+/*}*/
+
+body {
+    background-color: #f4f4f4 !important;
+    height: 100%;
+}
+
+.title-area {
+    display: flex;
+    justify-content: center;
+}
+
+.contents {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .title {
+        font-size: 2rem;
+    }
+    .title-area {
+        margin: 40px 0 20px 0;
+    }
+
+    .content-row {
+        width: 94%;
+        display: grid;
+    }
+
+    .left, .center, .right {
+        width: 100%;
+    }
+
+    .form-area {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    .form-menu-bl2 {
+        padding: 15px 40px;
+        width: 100%;
+        background: #e8e8e8;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .login-form-title {
+        font-size: 1.8rem;
+    }
+
+    .login-form-summary {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .title {
+        font-size: 3rem;
+    }
+    .title-area {
+        margin: 90px 0 20px 0;
+    }
+
+    .content-row {
+        width: 98%;
+        display: flex;
+    }
+
+    .left {
+        width: 40%;
+    }
+
+    .center {
+        width: 100%;
+        height: auto;
+    }
+
+    .right {
+        width: 40%;
+    }
+
+    .form-menu-bl1 {
+        display: flex;
+        align-items: stretch;
+        /*height: 100%;*/
+        width: 100%;
+    }
+
+    .form-area {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    .form-menu-bl2 {
+        width: 100%;
+        background: #e8e8e8;
+        padding: 20px 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+.login-form-btn {
+    display: flex;
+    justify-content: center;
+}
+
+.login-form-title {
+    font-size: 2rem;
+}
+
+.login-form-summary {
+    font-size: 1rem;
+}
+.login-form-label{
+    display: flex;
+}
+.support-bl1{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.support-bl2{
+    width: 100%;
+    padding: 10px 10px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.login-msg{
+    display: flex;
+    justify-content: center;
+}
+.msg{
+    text-align: center;
+}
+.sub-label{
+    margin-left: 10px;
+    display: flex;
+    align-items: flex-end;
+}
+.sub-label-text{
+    font-size: 0.7rem;
+    color: #6a6a6a;
+}

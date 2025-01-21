@@ -1,0 +1,21 @@
+/* あんずいろ */
+@font-face {
+  font-family: 'anzuiro';/*フォント名日本語OK*/
+  src: url('fontPJapanesefont.ttf');/*フォントファイルパス*/
+}
+
+/* こはるいろサンレイ */
+@font-face {
+  font-family: 'koharuiro';/*フォント名日本語OK*/
+  src: url('fontN-Koharuiro_Sunray.ttf');/*フォントファイルパス*/
+}
+
+.err_msg{
+  color: #fc2f2d;
+}
+.suc_msg{
+  color: #2cacfc;
+}
+.info_msg{
+  color: #74fc74;
+}

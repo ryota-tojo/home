@@ -1,0 +1,61 @@
+.admin-body{
+    background-color: #e1fad7 !important;
+}
+.body{
+    background-color: antiquewhite !important;
+}
+
+.title-area{
+    margin: 20px 0 20px 0;
+    display: flex;
+    justify-content: center;
+}
+.title{
+    font-size: 3rem;
+}
+
+.summary-area{
+    margin: 10px 0 50px 0;
+    display: flex;
+    justify-content: center;
+}
+.summary{
+    font-size: 1rem;
+}
+
+/*  */
+.contents{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+@media (max-width: 1024px){
+    .content-row{
+        width: 94%;
+        display: grid;
+    }
+    .left{
+        width: 100%;
+    }
+    .center{
+        width: 100%;
+    }
+    .right{
+        width: 100%;
+    }
+}
+@media (min-width: 1024px) {
+    .content-row{
+        width: 98%;
+        display: flex;
+    }
+    .left{
+        width: 20%;
+    }
+    .center{
+        width: 60%;
+    }
+    .right{
+        width: 20%;
+    }
+}
