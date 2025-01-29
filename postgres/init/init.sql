@@ -53,13 +53,14 @@ create table ts_user_setting(
 create table ts_grouplist(
     group_id SERIAL NOT NULL,
     groups_id varchar(64) UNIQUE, 
-    groups_name varchar(64)
+    group_name varchar(64),
+    group_password varchar(64)
 );
 
 -- 所属グループ情報
 create table ts_groupinfo(
     group_id SERIAL NOT NULL,
-    groups_id varchar(64) UNIQUE, 
+    groups_id varchar(64), 
     user_id integer, 
     leader_flg integer,
     create_date timestamp,
@@ -263,21 +264,21 @@ VALUES
 
 INSERT INTO ts_grouplist (
     groups_id, 
-    groups_name
+    group_name,
+    group_password
 )
 VALUES
-    ('maintenance', '管理者');
+    ('maintenance', '管理者','adminadmin');
 
 INSERT INTO ts_groupinfo (
     groups_id, 
-    groups_name, 
     user_id, 
     leader_flg, 
     create_date, 
     update_date
 )
 VALUES
-    ('maintenance', '管理者', 
+    ('maintenance',  
      (SELECT user_id FROM ts_userinfo WHERE user_name = 'admin' and password = 'adminadmin'), 
      1, 
      CURRENT_TIMESTAMP, 

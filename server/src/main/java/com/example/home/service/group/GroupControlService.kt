@@ -1,61 +1,85 @@
 package com.example.home.service.group
 
+import com.example.home.datasource.category.CategoryRepositoryImpl
+import com.example.home.datasource.comment.CommentRepositoryImpl
+import com.example.home.datasource.group.GroupInfoRepositoryImpl
 import com.example.home.datasource.group.GroupListRepositoryImpl
 import com.example.home.datasource.group.GroupSettingRepositoryImpl
-import com.example.home.domain.group.GroupListAndSetting
-import com.example.home.domain.group.result.*
+import com.example.home.datasource.member.MemberRepositoryImpl
+import com.example.home.domain.entity.group.GroupListAndSetting
+import com.example.home.domain.entity.group.GroupListAndSettingList
+import com.example.home.domain.entity.group.result.*
+import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.repository.category.CategoryRepository
+import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.group.GroupInfoRepository
+import com.example.home.domain.repository.group.GroupListRepository
+import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.value_object.Constants
-import com.example.home.domain.value_object.group.GroupName
-import com.example.home.domain.value_object.group.GroupSettingKey
-import com.example.home.domain.value_object.group.GroupSettingValue
-import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
-import com.example.home.infrastructure.persistence.repository.group.GroupSettingRepository
+import com.example.home.domain.value_object.TsDefaultData
+import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
+import com.example.home.domain.value_object.comment.Content
+import com.example.home.domain.value_object.etc.MM
+import com.example.home.domain.value_object.etc.YYYY
+import com.example.home.domain.value_object.group.*
+import com.example.home.domain.value_object.member.MemberName
+import com.example.home.domain.value_object.member.MemberNo
+import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 
 @Service
 class GroupControlService(
     private val groupListRepository: GroupListRepository = GroupListRepositoryImpl(),
-    private val groupSettingRepository: GroupSettingRepository = GroupSettingRepositoryImpl()
+    private val groupSettingRepository: GroupSettingRepository = GroupSettingRepositoryImpl(),
+    private val groupInfoRepository: GroupInfoRepository = GroupInfoRepositoryImpl(),
+    private val categoryRepository: CategoryRepository = CategoryRepositoryImpl(),
+    private val memberRepository: MemberRepository = MemberRepositoryImpl(),
+    private val commentRepository: CommentRepository = CommentRepositoryImpl(),
 ) {
     fun refer(groupsId: GroupsId): GroupReferResult {
         val groupList = groupListRepository.refer(groupsId)
         val groupSetting = groupSettingRepository.refer(groupsId)
         return GroupReferResult(
-            "SUCCESS",
+            ResponseCode.成功.code,
             GroupListAndSetting(groupList, groupSetting)
         )
     }
 
-    fun referAll(): GroupReferResult {
+    fun referAll(): GroupReferAllResult {
         val groupList = groupListRepository.referAll()
-        val groupSetting = groupSettingRepository.referAll()
-        return GroupReferResult(
-            "SUCCESS",
-            GroupListAndSetting(groupList, groupSetting)
+
+        val groupListAndSettingListList = mutableListOf<GroupListAndSettingList>()
+        for (group in groupList) {
+            val settings = groupSettingRepository.refer(group.groupsId)
+            val groupWithSettings = GroupListAndSettingList(
+                groupList = group,
+                groupSetting = settings
+            )
+            groupListAndSettingListList.add(groupWithSettings)
+        }
+        return GroupReferAllResult(
+            ResponseCode.成功.code,
+            groupListAndSettingListList
         )
     }
 
-    fun save(groupsId: GroupsId, groupName: GroupName): GroupSaveResult {
-        if (Constants.INVALID_SYMBOL.any() { it in groupsId.toString() } ||
-            Constants.INVALID_WORD.any() { it in groupsId.toString() }) {
-            return GroupSaveResult("VALIDATION_ERROR")
-        }
-        if (Constants.INVALID_SYMBOL.any() { it in groupName.toString() } ||
-            Constants.INVALID_WORD.any() { it in groupName.toString() }) {
-            return GroupSaveResult("VALIDATION_ERROR")
+    fun save(groupsId: GroupsId, groupName: GroupName, groupPassword: GroupPassword): GroupSaveResult {
+        if (!ValidationCheck.symbol(groupsId.toString()).result ||
+            !ValidationCheck.symbol(groupName.toString()).result
+        ) {
+            return GroupSaveResult(ResponseCode.バリデーションエラー.code)
         }
         if (groupListRepository.refer(groupsId).isNotEmpty()) {
-            return GroupSaveResult("DUPLICATION_ERROR")
+            return GroupSaveResult(ResponseCode.重複エラー.code)
         }
-        val groupList = groupListRepository.save(groupsId, groupName)
-        val settings = listOf(
-            Pair("display_yyyy", LocalDate.now().year.toString()),
-            Pair("graph_type", "1"),
-            Pair("slack_basic_webhook_url", ""),
-            Pair("slack_basic_send_flg", "")
-        )
+        val groupList = groupListRepository.save(groupsId, groupName, groupPassword)
+
+        val settings = mutableListOf<Pair<String, String>>()
+        for ((key, value) in TsDefaultData.GROUP_SETTING) {
+            settings.add(Pair(key, value))
+        }
         val groupSetting = settings.mapNotNull { (key, value) ->
             try {
                 groupSettingRepository.save(groupsId, GroupSettingKey(key), GroupSettingValue(value))
@@ -63,61 +87,118 @@ class GroupControlService(
                 null
             }
         }
-        return GroupSaveResult("SUCCESS", groupList, groupSetting)
+
+        val categoryDefaultSettings = mutableListOf<Pair<String, String>>()
+        for ((key, value) in TsDefaultData.CATEGORYS) {
+            categoryDefaultSettings.add(Pair(key, value))
+        }
+        categoryDefaultSettings.mapNotNull { (no, value) ->
+            try {
+                categoryRepository.save(
+                    groupsId,
+                    CategoryNo(no.toInt()),
+                    CategoryName(value),
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        val memberDefaultSettings = mutableListOf<Pair<String, String>>()
+        for ((key, value) in TsDefaultData.MEMBERS) {
+            memberDefaultSettings.add(Pair(key, value))
+        }
+        memberDefaultSettings.mapNotNull { (no, value) ->
+            try {
+                memberRepository.save(
+                    groupsId,
+                    MemberNo(no.toInt()),
+                    MemberName(value),
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        val commentDefaultSettings = mutableListOf<Pair<String, String>>()
+        for ((yyyymm, content) in TsDefaultData.COMMENTS) {
+            commentDefaultSettings.add(Pair(yyyymm, content))
+        }
+        commentDefaultSettings.mapNotNull { (yyyymm, content) ->
+            try {
+                commentRepository.save(
+                    groupsId,
+                    YYYY(yyyymm.take(4).toInt()),
+                    MM(yyyymm.takeLast(2).toInt()),
+                    Content(content)
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+        return GroupSaveResult(
+            ResponseCode.成功.code,
+            groupList,
+            groupSetting
+        )
     }
 
-    fun listUpdate(groupsId: GroupsId, groupName: GroupName): GroupListUpdateResult {
-        if (Constants.INVALID_SYMBOL.any() { it in groupsId.value } ||
-            Constants.INVALID_WORD.any() { it in groupsId.value }) {
-            return GroupListUpdateResult("VALIDATION_ERROR")
-        }
-        if (Constants.INVALID_SYMBOL.any() { it in groupName.value } ||
-            Constants.INVALID_WORD.any() { it in groupName.value }) {
-            return GroupListUpdateResult("VALIDATION_ERROR")
+    fun listUpdate(
+        groupsId: GroupsId,
+        groupName: GroupName?,
+        groupPassword: GroupPassword?,
+    ): GroupListUpdateResult {
+        if (!ValidationCheck.symbol(groupsId.toString()).result ||
+            !ValidationCheck.symbol(groupName.toString()).result
+        ) {
+            return GroupListUpdateResult(ResponseCode.バリデーションエラー.code)
         }
         if (groupListRepository.refer(groupsId).isEmpty()) {
-            return GroupListUpdateResult("DATA_NOT_FOUND_ERROR")
+            return GroupListUpdateResult(ResponseCode.データ不在エラー.code)
         }
-        val res = groupListRepository.update(groupsId, groupName)
-        return GroupListUpdateResult("SUCCESS", res)
+        val res = groupListRepository.update(groupsId, groupName, groupPassword)
+        return GroupListUpdateResult(ResponseCode.成功.code, res)
     }
 
-    fun SettingUpdate(
+    fun settingUpdate(
         groupsId: GroupsId,
         settingKey: GroupSettingKey,
         settingValue: GroupSettingValue
     ): GroupSettingUpdateResult {
-        if (Constants.INVALID_SYMBOL.any() { it in groupsId.value } ||
-            Constants.INVALID_WORD.any() { it in groupsId.value }) {
-            return GroupSettingUpdateResult("VALIDATION_ERROR")
-        }
-        if (Constants.INVALID_SYMBOL.any() { it in settingKey.value }) {
-            return GroupSettingUpdateResult("VALIDATION_ERROR")
-        }
-        if (Constants.INVALID_SYMBOL.any() { it in settingValue.value }) {
-            return GroupSettingUpdateResult("VALIDATION_ERROR")
+        if (!ValidationCheck.symbol(groupsId.toString()).result ||
+            !ValidationCheck.symbol(settingKey.toString()).result ||
+            !ValidationCheck.symbol(settingValue.toString()).result
+        ) {
+            return GroupSettingUpdateResult(ResponseCode.バリデーションエラー.code)
         }
         if (groupSettingRepository.refer(groupsId).isEmpty()) {
-            return GroupSettingUpdateResult("DATA_NOT_FOUND_ERROR")
+            return GroupSettingUpdateResult(ResponseCode.データ不在エラー.code)
         }
         val res = groupSettingRepository.update(groupsId, settingKey, settingValue)
-        return GroupSettingUpdateResult("SUCCESS", res)
+        return GroupSettingUpdateResult(ResponseCode.成功.code, res)
     }
 
     fun delete(groupsId: GroupsId): GroupDeleteResult {
-        if (Constants.INVALID_SYMBOL.any() { it in groupsId.value } ||
-            Constants.INVALID_WORD.any() { it in groupsId.value }) {
-            return GroupDeleteResult("VALIDATION_ERROR")
+        if (!ValidationCheck.symbol(groupsId.toString()).result) {
+            return GroupDeleteResult(ResponseCode.バリデーションエラー.code)
         }
         if (groupListRepository.refer(groupsId).isEmpty()) {
-            return GroupDeleteResult("DATA_NOT_FOUND_ERROR")
+            return GroupDeleteResult(ResponseCode.データ不在エラー.code)
         }
         if (groupSettingRepository.refer(groupsId).isEmpty()) {
-            return GroupDeleteResult("DATA_NOT_FOUND_ERROR")
+            return GroupDeleteResult(ResponseCode.データ不在エラー.code)
         }
         val groupListDeletedResult = groupListRepository.delete(groupsId)
         val groupSettingDeletedResult = groupSettingRepository.delete(groupsId)
+        groupInfoRepository.delete(groupsId)
+        categoryRepository.delete(groupsId)
+        memberRepository.delete(groupsId)
+        commentRepository.delete(groupsId)
 
-        return GroupDeleteResult("SUCCESS", groupListDeletedResult,groupSettingDeletedResult)
+        return GroupDeleteResult(
+            ResponseCode.成功.code,
+            groupListDeletedResult,
+            groupSettingDeletedResult
+        )
     }
 }

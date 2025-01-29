@@ -1,12 +1,11 @@
 package com.example.home.datasource.comment
 
-import com.example.home.domain.comment.Comment
 import com.example.home.domain.value_object.comment.Content
-import com.example.home.domain.value_object.etc.Month
-import com.example.home.domain.value_object.etc.Year
+import com.example.home.domain.value_object.etc.MM
+import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsComment
-import com.example.home.infrastructure.persistence.repository.comment.CommentRepository
+import com.example.home.domain.repository.comment.CommentRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -16,9 +15,9 @@ import org.springframework.stereotype.Repository
 class CommentRepositoryImpl : CommentRepository {
     override fun refer(
         groupsId: GroupsId,
-        yyyy: Year?,
-        mm: Month?
-    ): List<Comment> {
+        yyyy: YYYY?,
+        mm: MM?
+    ): List<com.example.home.domain.entity.comment.Comment> {
         return transaction {
             val condition = TbTsComment.groupsId eq groupsId.value
 
@@ -36,26 +35,26 @@ class CommentRepositoryImpl : CommentRepository {
             }
             TbTsComment.select(fullCondition)
                 .map {
-                    Comment(
+                    com.example.home.domain.entity.comment.Comment(
                         it[TbTsComment.id],
                         GroupsId(it[TbTsComment.groupsId]),
-                        Year(it[TbTsComment.yyyy]),
-                        Month(it[TbTsComment.mm]),
+                        YYYY(it[TbTsComment.yyyy]),
+                        MM(it[TbTsComment.mm]),
                         Content(it[TbTsComment.content])
                     )
                 }
         }
     }
 
-    override fun referAll(): List<Comment> {
+    override fun referAll(): List<com.example.home.domain.entity.comment.Comment> {
         return transaction {
             TbTsComment.selectAll()
                 .map {
-                    Comment(
+                    com.example.home.domain.entity.comment.Comment(
                         it[TbTsComment.id],
                         GroupsId(it[TbTsComment.groupsId]),
-                        Year(it[TbTsComment.yyyy]),
-                        Month(it[TbTsComment.mm]),
+                        YYYY(it[TbTsComment.yyyy]),
+                        MM(it[TbTsComment.mm]),
                         Content(it[TbTsComment.content])
                     )
                 }
@@ -64,10 +63,10 @@ class CommentRepositoryImpl : CommentRepository {
 
     override fun save(
         groupsId: GroupsId,
-        yyyy: Year,
-        mm: Month,
+        yyyy: YYYY,
+        mm: MM,
         content: Content
-    ): Comment {
+    ): com.example.home.domain.entity.comment.Comment {
         return transaction {
             TbTsComment.insert {
                 it[TbTsComment.groupsId] = groupsId.value
@@ -83,11 +82,11 @@ class CommentRepositoryImpl : CommentRepository {
             }.singleOrNull()
 
             return@transaction comment?.let {
-                Comment(
+                com.example.home.domain.entity.comment.Comment(
                     it[TbTsComment.id],
                     GroupsId(it[TbTsComment.groupsId]),
-                    Year(it[TbTsComment.yyyy]),
-                    Month(it[TbTsComment.mm]),
+                    YYYY(it[TbTsComment.yyyy]),
+                    MM(it[TbTsComment.mm]),
                     Content(it[TbTsComment.content])
                 )
             } ?: throw IllegalStateException("Failed to save the Comment")
@@ -96,8 +95,8 @@ class CommentRepositoryImpl : CommentRepository {
 
     override fun update(
         groupsId: GroupsId,
-        yyyy: Year,
-        mm: Month,
+        yyyy: YYYY,
+        mm: MM,
         content: Content
     ): Int {
         return transaction {
@@ -119,8 +118,8 @@ class CommentRepositoryImpl : CommentRepository {
 
     override fun delete(
         groupsId: GroupsId,
-        yyyy: Year?,
-        mm: Month?,
+        yyyy: YYYY?,
+        mm: MM?,
     ): Int {
         return transaction {
             val condition = TbTsComment.groupsId eq groupsId.value

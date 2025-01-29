@@ -1,11 +1,11 @@
 package com.example.home.datasource.group
 
-import com.example.home.domain.group.GroupInfo
+import com.example.home.domain.entity.group.GroupInfo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupInfo
-import com.example.home.infrastructure.persistence.repository.group.GroupInfoRepository
+import com.example.home.domain.repository.group.GroupInfoRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -48,6 +48,16 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
                         it[TbTsGroupInfo.createDate],
                         it[TbTsGroupInfo.updateDate],
                     )
+                }
+        }
+    }
+    override fun getGroupsId(userId: UserId): GroupsId? {
+        return transaction {
+            TbTsGroupInfo
+                .select { TbTsGroupInfo.userId eq userId.value }
+                .firstOrNull() // データがない場合は null を返す
+                ?.let { row ->
+                    GroupsId(row[TbTsGroupInfo.groupsId]) // groupsId を直接取得
                 }
         }
     }
@@ -103,16 +113,23 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
         }
     }
 
-    override fun delete(userId: UserId): Int {
+    override fun delete(groupsId: GroupsId?, userId: UserId?): Int {
         return transaction {
-            val deleteRows = TbTsGroupInfo.deleteWhere { TbTsGroupInfo.userId eq userId.value }
+            when {
+                groupsId == null && userId == null -> {
+                    throw IllegalStateException(
+                        "Deletion failed: Please provide either a valid groupsId or userId. Both are null."
+                    )
+                }
 
-            if (deleteRows == 0) {
-                throw IllegalStateException(
-                    "No rows deleted for userId: ${userId.value}}"
-                )
+                userId != null -> {
+                    TbTsGroupInfo.deleteWhere { TbTsGroupInfo.userId eq userId.value }
+                }
+
+                else -> {
+                    TbTsGroupInfo.deleteWhere { TbTsGroupInfo.groupsId eq groupsId!!.value }
+                }
             }
-            deleteRows
         }
     }
 }

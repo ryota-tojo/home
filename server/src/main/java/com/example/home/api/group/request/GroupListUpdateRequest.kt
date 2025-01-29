@@ -13,9 +13,10 @@ data class GroupListUpdateRequest(
     val groupsId: String,
 
     @JsonProperty("group_name")
-    @field:NotNull(message = "GroupsID is Null")
-    @field:NotBlank(message = "Group name cannot be blank")
     @field:Size(max = 64, message = "Group name must be 64 characters")
     val groupName: String,
 
+    @JsonProperty("group_password")
+    @field:Size(max = 64, message = "Group password must be 64 characters")
+    val groupPassword: String,
 )
