@@ -1,12 +1,12 @@
 package com.example.home.datasource.category
 
-import com.example.home.domain.category.Category
+import com.example.home.domain.entity.category.Category
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
-import com.example.home.infrastructure.persistence.repository.category.CategoryRepository
+import com.example.home.domain.repository.category.CategoryRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction

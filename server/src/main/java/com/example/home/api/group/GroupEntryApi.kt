@@ -4,10 +4,12 @@ import com.example.home.api.group.request.GroupEntryRequest
 import com.example.home.api.group.response.GroupEntryResponse
 import com.example.home.api.group.response.GroupListResponse
 import com.example.home.api.group.response.GroupSettingResponse
+import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.group.GroupName
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
-import com.example.home.infrastructure.persistence.repository.group.GroupSettingRepository
+import com.example.home.domain.repository.group.GroupListRepository
+import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.domain.value_object.group.GroupPassword
 import com.example.home.service.group.GroupControlService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -34,9 +36,10 @@ class GroupEntryApi(
     ): ResponseEntity<GroupEntryResponse> {
         val groupsId = GroupsId(request.groupsId)
         val groupName = GroupName(request.groupName)
+        val groupPassword = GroupPassword(request.groupPassword)
 
         val groupControlService: GroupControlService = GroupControlService(groupListRepository, groupSettingRepository)
-        val result = groupControlService.save(groupsId, groupName)
+        val result = groupControlService.save(groupsId, groupName, groupPassword)
 
         val groupListResponse =
             GroupListResponse(
@@ -55,22 +58,22 @@ class GroupEntryApi(
         val groupEntryResponseData: GroupEntryResponse.GroupEntryResponseData =
             GroupEntryResponse.GroupEntryResponseData(groupListResponse, groupSettingResponse)
 
-        if (result.result == "VALIDATION_ERROR") {
+        if (result.result == ResponseCode.バリデーションエラー.code) {
             val response = GroupEntryResponse(
-                "error",
-                result.result,
-                "使用できない文字列が含まれています",
+                ResponseCode.バリデーションエラー.status,
+                ResponseCode.バリデーションエラー.code,
+                ResponseCode.バリデーションエラー.message,
                 groupEntryResponseData
             )
             return ResponseEntity.badRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response)
         }
-        if (result.result == "DUPLICATION_ERROR") {
+        if (result.result == ResponseCode.重複エラー.code) {
             val response = GroupEntryResponse(
-                "error",
-                result.result,
-                "既に登録済みの所属グループです",
+                ResponseCode.重複エラー.status,
+                ResponseCode.重複エラー.code,
+                ResponseCode.重複エラー.message,
                 groupEntryResponseData
             )
             return ResponseEntity.badRequest()
@@ -78,9 +81,9 @@ class GroupEntryApi(
                 .body(response)
         }
         val response = GroupEntryResponse(
-            "success",
-            result.result,
-            "所属グループ(${groupsId.value})を登録しました",
+            ResponseCode.成功.status,
+            ResponseCode.成功.code,
+            ResponseCode.成功.message,
             groupEntryResponseData
         )
         return ResponseEntity.ok()

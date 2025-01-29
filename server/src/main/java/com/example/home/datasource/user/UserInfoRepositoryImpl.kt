@@ -1,9 +1,9 @@
 package com.example.home.datasource.user
 
-import com.example.home.domain.user.UserInfo
+import com.example.home.domain.entity.user.UserInfo
 import com.example.home.domain.value_object.user.*
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserInfo
-import com.example.home.infrastructure.persistence.repository.user.UserInfoRepository
+import com.example.home.domain.repository.user.UserInfoRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,9 +12,23 @@ import java.time.LocalDateTime
 
 @Repository
 class UserInfoRepositoryImpl : UserInfoRepository {
-    override fun refer(userId: UserId): List<UserInfo> {
+    override fun refer(userId: UserId?, userName: UserName?): List<UserInfo> {
         return transaction {
-            TbTsUserInfo.select(TbTsUserInfo.userId eq userId.value)
+            val condition = when {
+                userId != null && userName != null ->
+                    (TbTsUserInfo.userId eq userId.value) and (TbTsUserInfo.userName eq userName.value)
+
+                userId != null ->
+                    TbTsUserInfo.userId eq userId.value
+
+                userName != null ->
+                    TbTsUserInfo.userName eq userName.value
+
+                else ->
+                    throw IllegalArgumentException("At least one of userName or userId must be provided")
+            }
+
+            TbTsUserInfo.select(condition)
                 .map {
                     UserInfo(
                         it[TbTsUserInfo.userId],
@@ -102,12 +116,15 @@ class UserInfoRepositoryImpl : UserInfoRepository {
     ): Int {
         return transaction {
 
-            val userRefer = refer(userId)
+            val userRefer = refer(userId, userName)
+            if (userRefer.isEmpty()) {
+                return@transaction 0
+            }
             val beforeApprovalFlg = userRefer.first().approvalFlg
             val beforeDeleteFlg = userRefer.first().deleteFlg
 
             val affectedRows = TbTsUserInfo.update({
-                TbTsUserInfo.userId eq userId.value
+                TbTsUserInfo.userName eq userName.value
             }) {
                 it[TbTsUserInfo.userName] = userName.value
                 it[TbTsUserInfo.password] = password.value
@@ -122,10 +139,8 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                     it[deleteDate] = LocalDateTime.now()
                 }
             }
-            if (affectedRows == 0) {
-                throw IllegalStateException("No rows updated for UserId: ${userId.value}")
-            }
             return@transaction affectedRows
+
         }
     }
 

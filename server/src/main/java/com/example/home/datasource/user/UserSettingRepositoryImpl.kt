@@ -1,11 +1,11 @@
 package com.example.home.datasource.user
 
-import com.example.home.domain.user.UserSetting
+import com.example.home.domain.entity.user.UserSetting
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserSettingKey
 import com.example.home.domain.value_object.user.UserSettingValue
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserSetting
-import com.example.home.infrastructure.persistence.repository.user.UserSettingRepository
+import com.example.home.domain.repository.user.UserSettingRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,10 +13,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserSettingRepositoryImpl : UserSettingRepository {
-    override fun refer(userId: UserId): List<UserSetting> {
+    override fun refer(userId: UserId, settingKey: UserSettingKey): List<UserSetting> {
         return transaction {
-            TbTsUserSetting.select(TbTsUserSetting.userId eq userId.value)
-                .map {
+            TbTsUserSetting.select {
+                (TbTsUserSetting.userId eq userId.value) and
+                        (TbTsUserSetting.settingKey eq settingKey.value)
+            }.map {
                     UserSetting(
                         it[TbTsUserSetting.id],
                         UserId(it[TbTsUserSetting.userId]),
@@ -27,9 +29,9 @@ class UserSettingRepositoryImpl : UserSettingRepository {
         }
     }
 
-    override fun referAll(): List<UserSetting> {
+    override fun referAll(userId: UserId): List<UserSetting> {
         return transaction {
-            TbTsUserSetting.selectAll()
+            TbTsUserSetting.select(TbTsUserSetting.userId eq userId.value)
                 .map {
                     UserSetting(
                         it[TbTsUserSetting.id],

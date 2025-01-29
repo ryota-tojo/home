@@ -33,6 +33,9 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine' // JUnit 4 を無効化
 	}
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
+    testImplementation "io.mockk:mockk:1.13.5"
 
 	// Spock
 	testImplementation "org.spockframework:spock-core:2.3-groovy-3.0"
@@ -51,8 +54,11 @@ dependencies {
 }
 
 test {
-	useJUnitPlatform {
-		includeEngines 'spock'
-	}
+    useJUnitPlatform()
 }
 
+sourceSets {
+    test {
+        kotlin.srcDirs += 'src/test/java'
+	}
+}

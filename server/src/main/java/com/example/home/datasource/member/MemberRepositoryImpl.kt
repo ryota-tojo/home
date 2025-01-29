@@ -1,12 +1,12 @@
 package com.example.home.datasource.member
 
-import com.example.home.domain.member.Member
+import com.example.home.domain.entity.member.Member
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
 import com.example.home.domain.value_object.member.MemberNo
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
-import com.example.home.infrastructure.persistence.repository.member.MemberRepository
+import com.example.home.domain.repository.member.MemberRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MemberRepositoryImpl : MemberRepository {
-    override fun refer(groupsId: GroupsId): List<Member> {
+    override fun refer(groupsId: GroupsId): List<com.example.home.domain.entity.member.Member> {
         return transaction {
             TbTsMembers.select(TbTsMembers.groupsId eq groupsId.value)
                 .map {
-                    Member(
+                    com.example.home.domain.entity.member.Member(
                         MemberId(it[TbTsMembers.id]),
                         GroupsId(it[TbTsMembers.groupsId]),
                         MemberNo(it[TbTsMembers.memberNo]),
@@ -28,11 +28,11 @@ class MemberRepositoryImpl : MemberRepository {
         }
     }
 
-    override fun referAll(): List<Member> {
+    override fun referAll(): List<com.example.home.domain.entity.member.Member> {
         return transaction {
             TbTsMembers.selectAll()
                 .map {
-                    Member(
+                    com.example.home.domain.entity.member.Member(
                         MemberId(it[TbTsMembers.id]),
                         GroupsId(it[TbTsMembers.groupsId]),
                         MemberNo(it[TbTsMembers.memberNo]),
@@ -46,7 +46,7 @@ class MemberRepositoryImpl : MemberRepository {
         groupsId: GroupsId,
         memberNo: MemberNo,
         memberName: MemberName
-    ): Member {
+    ): com.example.home.domain.entity.member.Member {
         return transaction {
             TbTsMembers.insert {
                 it[TbTsMembers.groupsId] = groupsId.value
@@ -61,7 +61,7 @@ class MemberRepositoryImpl : MemberRepository {
             }.singleOrNull()
 
             return@transaction member?.let {
-                Member(
+                com.example.home.domain.entity.member.Member(
                     MemberId(it[TbTsMembers.id]),
                     GroupsId(it[TbTsMembers.groupsId]),
                     MemberNo(it[TbTsMembers.memberNo]),

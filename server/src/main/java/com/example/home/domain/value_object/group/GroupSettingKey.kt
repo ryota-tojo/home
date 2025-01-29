@@ -12,8 +12,5 @@ data class GroupSettingKey(val value: String) {
         require(StringUtil.byteSize(value) <= MAX_BYTE_LENGTH) {
             "GroupSettingKey must not exceed $MAX_BYTE_LENGTH bytes, actual size: ${StringUtil.byteSize(value)} bytes"
         }
-        require(Constants.INVALID_SYMBOL.none {  it in value }) {
-            "GroupSettingKey must not contain forbidden characters: ${Constants.INVALID_SYMBOL.joinToString(", ")}"
-        }
     }
 }
