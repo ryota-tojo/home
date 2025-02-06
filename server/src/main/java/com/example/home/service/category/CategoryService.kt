@@ -21,7 +21,7 @@ class CategoryService(
         val CategoryList = categoryRepository.refer(groupsId)
         if (CategoryList == null) {
             return CategoryReferResult(
-                ResponseCode.成功_条件付き.code,
+                String.format(ResponseCode.成功_条件付き.code, "CATEGORY_NOT_FOUND"),
                 null
             )
         }

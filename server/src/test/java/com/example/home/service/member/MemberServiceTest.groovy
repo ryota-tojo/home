@@ -10,7 +10,9 @@ import com.example.home.domain.entity.member.result.MemberUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.member.MemberRepository
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 class MemberServiceTest extends Specification {
 
     private MemberRepository memberRepository = Mock()
