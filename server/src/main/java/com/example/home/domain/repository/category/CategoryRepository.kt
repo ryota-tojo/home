@@ -6,13 +6,13 @@ import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 
 interface CategoryRepository {
-    fun refer(groupsId: GroupsId): List<com.example.home.domain.entity.category.Category>
-    fun referAll(): List<com.example.home.domain.entity.category.Category>
+    fun refer(groupsId: GroupsId): List<Category>
+    fun referAll(): List<Category>
     fun save(
         groupsId: GroupsId,
         categoryNo: CategoryNo,
         categoryName: CategoryName
-    ): com.example.home.domain.entity.category.Category
+    ): Category
 
     fun update(
         groupsId: GroupsId,

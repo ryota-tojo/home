@@ -1,7 +1,5 @@
 package confirmation.user
 
-import com.example.home.domain.value_object.user.UserId
-
 fun main() {
     val execFlg = 1
 
@@ -10,11 +8,11 @@ fun main() {
         val userSaveResult = userSaveConfirmation()
         if (userSaveResult != null) {
             loginConfirmation(userSaveResult)
-            userUserInfoUpdateConfirmation(UserId(userSaveResult.userInfo?.userId!!))
-            userSettingUpdateConfirmation(UserId(userSaveResult.userInfo.userId))
-            userReferConfirmation(UserId(userSaveResult.userInfo.userId))
+            userUserInfoUpdateConfirmation(userSaveResult.userInfo?.userId!!)
+            userSettingUpdateConfirmation(userSaveResult.userInfo.userId)
+            userReferConfirmation(userSaveResult.userInfo.userId)
             userReferAllConfirmation()
-            userDeleteConfirmation(UserId(userSaveResult.userInfo.userId))
+            userDeleteConfirmation(userSaveResult.userInfo.userId)
         }
     }
 }

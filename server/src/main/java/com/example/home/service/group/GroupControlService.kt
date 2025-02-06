@@ -16,7 +16,6 @@ import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
 import com.example.home.domain.repository.member.MemberRepository
-import com.example.home.domain.value_object.Constants
 import com.example.home.domain.value_object.TsDefaultData
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo

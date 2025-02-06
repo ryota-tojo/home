@@ -7,7 +7,6 @@ import com.example.home.domain.entity.user.result.UserLoginResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.user.LoginRepository
-import com.example.home.domain.value_object.user.UserId
 import org.springframework.stereotype.Service
 
 @Service
@@ -35,7 +34,7 @@ class LoginService(
         }
 
         // グループの所属を確認する
-        val groupInfo = groupInfoRepository.refer(loginInfo.groupsId, UserId(userInfo.userId))
+        val groupInfo = groupInfoRepository.refer(loginInfo.groupsId, userInfo.userId)
         if (groupInfo.isEmpty()) {
             return UserLoginResult(ResponseCode.ログインエラー_所属グループ不正.code, false)
         }
