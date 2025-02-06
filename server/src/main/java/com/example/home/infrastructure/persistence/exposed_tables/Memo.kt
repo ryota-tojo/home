@@ -1,6 +1,6 @@
 import com.example.home.datasource.group.GroupListRepositoryImpl
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsNotice
-import com.example.home.domain.repository.group.GroupListRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction

@@ -2,12 +2,11 @@ package com.example.home.api.group
 
 import com.example.home.api.group.request.GroupSettingUpdateRequest
 import com.example.home.api.group.response.GroupSettingUpdateResponse
-import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.group.GroupSettingKey
 import com.example.home.domain.value_object.group.GroupSettingValue
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.repository.group.GroupListRepository
-import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupSettingRepository
 import com.example.home.service.group.GroupControlService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -36,39 +35,46 @@ class GroupSettingUpdateApi(
         val settingValue = GroupSettingValue(request.groupSettingValue)
 
         val groupControlService: GroupControlService = GroupControlService(groupListRepository, groupSettingRepository)
-        val result = groupControlService.settingUpdate(groupsId, settingKey, settingValue)
+        val result = groupControlService.SettingUpdate(groupsId, settingKey, settingValue)
 
+        if (result.result == "VALIDATION_ERROR") {
+            val groupSettingUpdateResponseData: GroupSettingUpdateResponse.GroupSettingUpdateResponseData =
+                GroupSettingUpdateResponse.GroupSettingUpdateResponseData(
+                    result.updateRows
+                )
+            val response = GroupSettingUpdateResponse(
+                "error",
+                result.result,
+                "使用できない文字列が含まれていますvalue",
+                groupSettingUpdateResponseData
+            )
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response)
+        }
+        if (result.result == "DATA_NOT_FOUND_ERROR") {
+            val groupSettingUpdateResponseData: GroupSettingUpdateResponse.GroupSettingUpdateResponseData =
+                GroupSettingUpdateResponse.GroupSettingUpdateResponseData(
+                    result.updateRows
+                )
+            val response = GroupSettingUpdateResponse(
+                "error",
+                result.result,
+                "存在しない所属グループです",
+                groupSettingUpdateResponseData
+            )
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response)
+        }
         val groupSettingUpdateResponseData: GroupSettingUpdateResponse.GroupSettingUpdateResponseData =
             GroupSettingUpdateResponse.GroupSettingUpdateResponseData(
                 result.updateRows
             )
-
-        if (result.result == ResponseCode.バリデーションエラー.code) {
-            val response = GroupSettingUpdateResponse(
-                ResponseCode.バリデーションエラー.status,
-                ResponseCode.バリデーションエラー.code,
-                ResponseCode.バリデーションエラー.message,
-                groupSettingUpdateResponseData
-            )
-            return ResponseEntity.badRequest()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response)
-        }
-        if (result.result == ResponseCode.データ不在エラー.code) {
-            val response = GroupSettingUpdateResponse(
-                ResponseCode.データ不在エラー.status,
-                ResponseCode.データ不在エラー.code,
-                ResponseCode.データ不在エラー.message,
-                groupSettingUpdateResponseData
-            )
-            return ResponseEntity.badRequest()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response)
-        }
         val response = GroupSettingUpdateResponse(
-            ResponseCode.成功.status,
-            ResponseCode.成功.code,
-            ResponseCode.成功.message,
+            "success",
+            result.result,
+            "所属グループ設定(${groupsId.value})を更新しました",
             groupSettingUpdateResponseData
         )
         return ResponseEntity.ok()

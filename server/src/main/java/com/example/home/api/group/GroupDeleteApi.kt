@@ -2,10 +2,9 @@ package com.example.home.api.group
 
 import com.example.home.api.group.request.GroupDeleteRequest
 import com.example.home.api.group.response.GroupDeleteResponse
-import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.repository.group.GroupListRepository
-import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupSettingRepository
 import com.example.home.service.group.GroupControlService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -35,26 +34,26 @@ class GroupDeleteApi(
         val groupControlService: GroupControlService = GroupControlService(groupListRepository, groupSettingRepository)
         val result = groupControlService.delete(groupsId)
 
-        if (result.result == ResponseCode.バリデーションエラー.code) {
+        if (result.result == "VALIDATION_ERROR") {
             val groupDeleteResponseData: GroupDeleteResponse.GroupEntryResponseData =
                 GroupDeleteResponse.GroupEntryResponseData(groupsId.value)
             val response = GroupDeleteResponse(
-                ResponseCode.バリデーションエラー.status,
-                ResponseCode.バリデーションエラー.code,
-                ResponseCode.バリデーションエラー.message,
+                "error",
+                result.result,
+                "使用できない文字列が含まれています",
                 groupDeleteResponseData
             )
             return ResponseEntity.badRequest()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response)
         }
-        if (result.result == ResponseCode.データ不在エラー.code) {
+        if (result.result == "DATA_NOT_FOUND_ERROR") {
             val groupDeleteResponseData: GroupDeleteResponse.GroupEntryResponseData =
                 GroupDeleteResponse.GroupEntryResponseData(groupsId.value)
             val response = GroupDeleteResponse(
-                ResponseCode.データ不在エラー.status,
-                ResponseCode.データ不在エラー.code,
-                ResponseCode.データ不在エラー.message,
+                "error",
+                result.result,
+                "存在しない所属グループです",
                 groupDeleteResponseData
             )
             return ResponseEntity.badRequest()
@@ -62,15 +61,11 @@ class GroupDeleteApi(
                 .body(response)
         }
         val groupDeleteResponseData: GroupDeleteResponse.GroupEntryResponseData =
-            GroupDeleteResponse.GroupEntryResponseData(
-                groupsId.value,
-                result.groupListDeletedResult,
-                result.groupSettingDeletedResult
-            )
+            GroupDeleteResponse.GroupEntryResponseData(groupsId.value,result.groupListDeletedResult,result.groupSettingDeletedResult)
         val response = GroupDeleteResponse(
-            ResponseCode.成功.status,
-            ResponseCode.成功.code,
-            ResponseCode.成功.message,
+            "success",
+            result.result,
+            "所属グループ(${groupsId.value})を削除しました",
             groupDeleteResponseData
         )
         return ResponseEntity.ok()

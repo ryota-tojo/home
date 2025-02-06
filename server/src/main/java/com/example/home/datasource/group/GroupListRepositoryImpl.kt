@@ -1,11 +1,10 @@
 package com.example.home.datasource.group
 
-import com.example.home.domain.entity.group.GroupList
+import com.example.home.domain.group.GroupList
 import com.example.home.domain.value_object.group.GroupName
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupList
-import com.example.home.domain.repository.group.GroupListRepository
-import com.example.home.domain.value_object.group.GroupPassword
+import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -20,8 +19,7 @@ class GroupListRepositoryImpl() : GroupListRepository {
                     GroupList(
                         it[TbTsGroupList.groupId],
                         GroupsId(it[TbTsGroupList.groupsId]),
-                        GroupName(it[TbTsGroupList.groupName]),
-                        GroupPassword(it[TbTsGroupList.groupPassword])
+                        GroupName(it[TbTsGroupList.groupsName])
                     )
                 }
         }
@@ -34,66 +32,38 @@ class GroupListRepositoryImpl() : GroupListRepository {
                     GroupList(
                         it[TbTsGroupList.groupId],
                         GroupsId(it[TbTsGroupList.groupsId]),
-                        GroupName(it[TbTsGroupList.groupName]),
-                        GroupPassword(it[TbTsGroupList.groupPassword])
+                        GroupName(it[TbTsGroupList.groupsName])
                     )
                 }
         }
     }
 
-    override fun certification(groupsId: GroupsId, groupPassword: GroupPassword): Boolean {
-        return transaction {
-            TbTsGroupList.select {
-                (TbTsGroupList.groupsId eq groupsId.value) and
-                        (TbTsGroupList.groupPassword eq groupPassword.value)
-            }.any()
-        }
-
-        return true
-    }
-
-    override fun save(
-        groupsId: GroupsId,
-        groupName: GroupName,
-        groupPassword: GroupPassword
-    ): GroupList {
+    override fun save(groupsId: GroupsId, groupName: GroupName): GroupList {
         return transaction {
             TbTsGroupList.insert {
                 it[TbTsGroupList.groupsId] = groupsId.value
-                it[TbTsGroupList.groupName] = groupName.value
-                it[TbTsGroupList.groupPassword] = groupPassword.value
+                it[TbTsGroupList.groupsName] = groupName.value
             }
 
             val group = TbTsGroupList.select {
                 (TbTsGroupList.groupsId eq groupsId.value) and
-                        (TbTsGroupList.groupName eq groupName.value) and
-                        (TbTsGroupList.groupPassword eq groupPassword.value)
+                        (TbTsGroupList.groupsName eq groupName.value)
             }.singleOrNull()
 
             return@transaction group?.let {
                 GroupList(
                     it[TbTsGroupList.groupId],
                     GroupsId(it[TbTsGroupList.groupsId]),
-                    GroupName(it[TbTsGroupList.groupName]),
-                    GroupPassword(it[TbTsGroupList.groupPassword])
+                    GroupName(it[TbTsGroupList.groupsName])
                 )
             } ?: throw IllegalStateException("Failed to save the GroupList")
         }
     }
 
-    override fun update(
-        groupsId: GroupsId,
-        groupName: GroupName?,
-        groupPassword: GroupPassword?
-    ): Int {
+    override fun update(groupsId: GroupsId, groupName: GroupName): Int {
         return transaction {
             val affectedRows = TbTsGroupList.update({ TbTsGroupList.groupsId eq groupsId.value }) {
-                if (groupName != null) {
-                    it[TbTsGroupList.groupName] = groupName.value
-                }
-                if (groupPassword != null) {
-                    it[TbTsGroupList.groupPassword] = groupPassword.value
-                }
+                it[TbTsGroupList.groupsName] = groupName.value
             }
             if (affectedRows == 0) {
                 throw IllegalStateException("No rows updated for groupsId: ${groupsId.value}")

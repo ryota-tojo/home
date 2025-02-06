@@ -1,5 +1,6 @@
 package com.example.home.api.group.request
 
+import com.example.home.domain.value_object.group.GroupSettingValue
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -19,6 +20,8 @@ data class GroupSettingUpdateRequest(
     val groupSettingKey: String,
 
     @JsonProperty("group_setting_value")
+    @field:NotNull(message = "GroupSettingValue is Null")
+    @field:NotBlank(message = "GroupSettingValue name cannot be blank")
     @field:Size(max = 256, message = "GroupSettingValue name must be 256 characters")
     val groupSettingValue: String
 )
