@@ -1,9 +1,9 @@
 package com.example.home.service.user
 
-import com.example.home.data.FixtureGroupInfo
-import com.example.home.data.FixtureGroupList
-import com.example.home.data.FixtureUserInfo
-import com.example.home.data.FixtureUserSetting
+import com.example.home.data.group.FixtureGroupInfo
+import com.example.home.data.group.FixtureGroupList
+import com.example.home.data.user.FixtureUserInfo
+import com.example.home.data.user.FixtureUserSetting
 import com.example.home.domain.entity.user.result.UserReferAllResult
 import com.example.home.domain.entity.user.result.UserReferResult
 import com.example.home.domain.model.ResponseCode
@@ -23,7 +23,7 @@ class UserControlServiceTest extends Specification {
 
     private UserControlService sut = new UserControlService(userInfoRepository, userSettingRepository, groupListRepository, groupInfoRepository)
 
-    def "refer_#useCase"() {
+    def "userInfo_refer_#useCase"() {
         setup:
 
         when:
@@ -46,7 +46,7 @@ class UserControlServiceTest extends Specification {
         "異常_バリデーションエラー"     | new UserReferResult(ResponseCode.バリデーションエラー.code, null, null, null)                                                                                              | FixtureUserInfo.ユーザーID_正常() | FixtureUserInfo.ユーザー名_バリデーションエラー() | 0                | 0                      | 0              | 0                 | null                                  | null                                   | null
     }
 
-    def "referAll_#useCase"() {
+    def "userInfo_referAll_#useCase"() {
         setup:
 
         when:

@@ -1,4 +1,4 @@
-package com.example.home.data
+package com.example.home.data.group
 
 import com.example.home.domain.entity.group.GroupInfo
 import com.example.home.domain.value_object.group.GroupsId

@@ -1,4 +1,4 @@
-package com.example.home.data
+package com.example.home.data.master
 
 
 import com.example.home.domain.entity.master.MasterSetting

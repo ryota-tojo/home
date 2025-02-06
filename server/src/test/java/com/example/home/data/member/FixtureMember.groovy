@@ -1,6 +1,6 @@
-package com.example.home.data
+package com.example.home.data.member
 
-
+import com.example.home.data.group.FixtureGroupList
 import com.example.home.domain.entity.member.Member
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName

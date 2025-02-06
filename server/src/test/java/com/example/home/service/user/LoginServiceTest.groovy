@@ -1,8 +1,8 @@
 package com.example.home.service.user
 
-import com.example.home.data.FixtureGroupInfo
-import com.example.home.data.FixtureLoginInfo
-import com.example.home.data.FixtureUserInfo
+import com.example.home.data.group.FixtureGroupInfo
+import com.example.home.data.user.FixtureLoginInfo
+import com.example.home.data.user.FixtureUserInfo
 import com.example.home.domain.entity.user.result.UserLoginResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
