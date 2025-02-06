@@ -1,5 +1,6 @@
-package com.example.home.data
+package com.example.home.data.category
 
+import com.example.home.data.group.FixtureGroupList
 import com.example.home.domain.entity.category.Category
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName

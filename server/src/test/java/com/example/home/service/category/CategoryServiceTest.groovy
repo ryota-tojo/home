@@ -1,7 +1,7 @@
 package com.example.home.service.category
 
-import com.example.home.data.FixtureCategory
-import com.example.home.data.FixtureGroupList
+import com.example.home.data.category.FixtureCategory
+import com.example.home.data.group.FixtureGroupList
 import com.example.home.domain.entity.category.result.CategoryDeleteResult
 import com.example.home.domain.entity.category.result.CategoryReferResult
 import com.example.home.domain.entity.category.result.CategorySaveResult
@@ -17,7 +17,7 @@ class CategoryServiceTest extends Specification {
     private CategoryRepository categoryRepository = Mock()
     private CategoryService sut = new CategoryService(categoryRepository)
 
-    def "refer_#useCase"() {
+    def "category_refer_#useCase"() {
 
         setup:
 
@@ -31,10 +31,10 @@ class CategoryServiceTest extends Specification {
         where:
         useCase               | expected                                                                               | categoryList
         "正常"                | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()]
-        "正常_カテゴリーなし" | new CategoryReferResult(ResponseCode.成功_条件付き.code, null)                         | null
+        "正常_カテゴリーなし" | new CategoryReferResult(sprintf(ResponseCode.成功_条件付き.code, ["CATEGORY_NOT_FOUND"]), null) | null
     }
 
-    def "save_#useCase"() {
+    def "category_save_#useCase"() {
 
         setup:
 
@@ -51,7 +51,7 @@ class CategoryServiceTest extends Specification {
         "異常_バリデーションエラー" | new CategorySaveResult(ResponseCode.バリデーションエラー.code, null)                | 0       | FixtureCategory.カテゴリー名_バリデーションエラー()
     }
 
-    def "update_#useCase"() {
+    def "category_update_#useCase"() {
 
         setup:
 
@@ -69,7 +69,7 @@ class CategoryServiceTest extends Specification {
         "異常_データ不在エラー"     | new CategoryUpdateResult(ResponseCode.データ不在エラー.code, 0)     | 1         | FixtureCategory.カテゴリー名_正常()                 | 0
     }
 
-    def "delete_#useCase"() {
+    def "category_delete_#useCase"() {
 
         setup:
 

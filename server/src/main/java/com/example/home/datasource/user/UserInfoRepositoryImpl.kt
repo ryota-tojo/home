@@ -74,7 +74,7 @@ class UserInfoRepositoryImpl : UserInfoRepository {
         deleteFlg: UserDeleteFlg
     ): UserInfo {
         return transaction {
-            TbTsUserInfo.insert {
+            val id = TbTsUserInfo.insert {
                 it[TbTsUserInfo.userName] = userName.value
                 it[TbTsUserInfo.password] = password.value
                 it[TbTsUserInfo.permission] = permission.value
@@ -82,27 +82,15 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                 it[TbTsUserInfo.deleteFlg] = deleteFlg.value
                 it[createDate] = LocalDateTime.now()
                 it[updateDate] = LocalDateTime.now()
+            }.resultedValues?.firstOrNull()?.get(TbTsUserInfo.userId)
+
+            if (id == null || id == 0) {
+                throw IllegalStateException("データの挿入に失敗しました")
             }
 
-            val userInfo = TbTsUserInfo.select {
-                (TbTsUserInfo.userName eq userName.value) and
-                        (TbTsUserInfo.password eq password.value)
-            }.singleOrNull()
+            val userInfoList = refer(UserId(id))
+            userInfoList.single()
 
-            return@transaction userInfo?.let {
-                UserInfo(
-                    UserId(it[TbTsUserInfo.userId]),
-                    UserName(it[TbTsUserInfo.userName]),
-                    UserPassword(it[TbTsUserInfo.password]),
-                    UserPermission(it[TbTsUserInfo.permission]),
-                    UserApprovalFlg(it[TbTsUserInfo.approvalFlg]),
-                    UserDeleteFlg(it[TbTsUserInfo.deleteFlg]),
-                    it[TbTsUserInfo.createDate],
-                    it[TbTsUserInfo.updateDate],
-                    it[TbTsUserInfo.approvalDate],
-                    it[TbTsUserInfo.deleteDate]
-                )
-            } ?: throw IllegalStateException("Failed to save the UserInfo")
         }
     }
 

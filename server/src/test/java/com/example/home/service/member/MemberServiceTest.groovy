@@ -1,8 +1,8 @@
 package com.example.home.service.member
 
 
-import com.example.home.data.FixtureGroupList
-import com.example.home.data.FixtureMember
+import com.example.home.data.group.FixtureGroupList
+import com.example.home.data.member.FixtureMember
 import com.example.home.domain.entity.member.result.MemberDeleteResult
 import com.example.home.domain.entity.member.result.MemberReferResult
 import com.example.home.domain.entity.member.result.MemberSaveResult
@@ -18,7 +18,7 @@ class MemberServiceTest extends Specification {
     private MemberRepository memberRepository = Mock()
     private MemberService sut = new MemberService(memberRepository)
 
-    def "refer_#useCase"() {
+    def "member_refer_#useCase"() {
 
         setup:
 
@@ -32,10 +32,10 @@ class MemberServiceTest extends Specification {
         where:
         useCase             | expected                                                                         | categoryList
         "正常"              | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()]
-        "正常_メンバーなし" | new MemberReferResult(ResponseCode.成功_条件付き.code, null)                     | null
+        "正常_メンバーなし" | new MemberReferResult(sprintf(ResponseCode.成功_条件付き.code, ["MEMBER_NOT_FOUND"]), null) | null
     }
 
-    def "save_#useCase"() {
+    def "member_save_#useCase"() {
 
         setup:
 
@@ -52,7 +52,7 @@ class MemberServiceTest extends Specification {
         "異常_バリデーションエラー" | new MemberSaveResult(ResponseCode.バリデーションエラー.code, null)            | 0       | FixtureMember.メンバー名_バリデーションエラー()
     }
 
-    def "update_#useCase"() {
+    def "member_update_#useCase"() {
 
         setup:
 
@@ -70,7 +70,7 @@ class MemberServiceTest extends Specification {
         "異常_データ不在エラー"     | new MemberUpdateResult(ResponseCode.データ不在エラー.code, 0)     | 1         | FixtureMember.メンバー名_正常()                 | 0
     }
 
-    def "delete_#useCase"() {
+    def "member_delete_#useCase"() {
 
         setup:
 

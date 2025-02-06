@@ -1,4 +1,4 @@
-package com.example.home.data
+package com.example.home.data.user
 
 
 import com.example.home.domain.entity.user.UserInfo

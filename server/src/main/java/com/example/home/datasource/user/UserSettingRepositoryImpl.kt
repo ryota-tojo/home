@@ -1,11 +1,11 @@
 package com.example.home.datasource.user
 
 import com.example.home.domain.entity.user.UserSetting
+import com.example.home.domain.repository.user.UserSettingRepository
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserSettingKey
 import com.example.home.domain.value_object.user.UserSettingValue
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserSetting
-import com.example.home.domain.repository.user.UserSettingRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -55,22 +55,11 @@ class UserSettingRepositoryImpl : UserSettingRepository {
                 it[TbTsUserSetting.settingValue] = settingValue.value
             }
 
-            val userSetting = TbTsUserSetting
-                .select {
-                    (TbTsUserSetting.userId eq userId.value) and
-                            (TbTsUserSetting.settingKey eq settingKey.value) and
-                            (TbTsUserSetting.settingValue eq settingValue.value)
-                }
-                .singleOrNull()
-
-            return@transaction userSetting?.let {
-                UserSetting(
-                    it[TbTsUserSetting.id],
-                    UserId(it[TbTsUserSetting.userId]),
-                    UserSettingKey(it[TbTsUserSetting.settingKey]),
-                    UserSettingValue(it[TbTsUserSetting.settingValue])
-                )
-            } ?: throw IllegalStateException("Failed to save the UserSetting")
+            val userSettingList = refer(userId, settingKey)
+            if (userSettingList == null) {
+                throw IllegalStateException("データの挿入に失敗しました")
+            }
+            userSettingList.single()
         }
     }
 
@@ -85,9 +74,6 @@ class UserSettingRepositoryImpl : UserSettingRepository {
                         (TbTsUserSetting.settingKey eq settingKey.value)
             }) {
                 it[TbTsUserSetting.settingValue] = settingValue.value
-            }
-            if (affectedRows == 0) {
-                throw IllegalStateException("No rows updated for UserId: ${userId.value}, settingKey: ${settingKey.value}")
             }
             return@transaction affectedRows
         }

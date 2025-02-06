@@ -1,7 +1,7 @@
 package com.example.home.service.master
 
 
-import com.example.home.data.FixtureMasterSetting
+import com.example.home.data.master.FixtureMasterSetting
 import com.example.home.domain.entity.master.result.MasterSettingDeleteResult
 import com.example.home.domain.entity.master.result.MasterSettingReferResult
 import com.example.home.domain.entity.master.result.MasterSettingSaveResult
@@ -16,7 +16,7 @@ class MasterSettingServiceTest extends Specification {
     private MasterSettingRepository masterSettingRepository = Mock()
     private MasterSettingService sut = new MasterSettingService(masterSettingRepository)
 
-    def "refer_#useCase"() {
+    def "master_refer_#useCase"() {
 
         setup:
 
@@ -33,7 +33,7 @@ class MasterSettingServiceTest extends Specification {
         "正常_データなし" | new MasterSettingReferResult(sprintf(ResponseCode.成功_条件付き.code, ["SETTING_KEY_NOT_FOUND"]), null) | null
     }
 
-    def "referAll_#useCase"() {
+    def "master_referAll_#useCase"() {
 
         setup:
 
@@ -50,7 +50,7 @@ class MasterSettingServiceTest extends Specification {
         "正常_データなし" | new MasterSettingReferResult(sprintf(ResponseCode.成功_条件付き.code, ["SETTING_NOT_FOUND"]), null) | null
     }
 
-    def "save_#useCase"() {
+    def "master_save_#useCase"() {
 
         setup:
 
@@ -70,7 +70,7 @@ class MasterSettingServiceTest extends Specification {
         "異常_重複エラー"                | new MasterSettingSaveResult(ResponseCode.重複エラー.code, null)                               | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | [FixtureMasterSetting.マスター設定_正常()] | _                                        | 1        | 0
     }
 
-    def "update_#useCase"() {
+    def "master_update_#useCase"() {
 
         setup:
 
@@ -89,7 +89,7 @@ class MasterSettingServiceTest extends Specification {
         "異常_データ不在エラー"          | new MasterSettingUpdateResult(ResponseCode.データ不在エラー.code, 0)     | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | 0          | 1
     }
 
-    def "delete_#useCase"() {
+    def "master_delete_#useCase"() {
 
         setup:
 
