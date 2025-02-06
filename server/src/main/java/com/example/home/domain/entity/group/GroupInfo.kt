@@ -5,7 +5,7 @@ import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
 import java.time.LocalDateTime
 
-data class GroupInfo(
+open class GroupInfo(
     val groupsId: GroupsId,
     val userId: UserId,
     val userLeaderFlg: UserLeaderFlg,

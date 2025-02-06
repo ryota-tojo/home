@@ -1,9 +1,9 @@
 package com.example.home.datasource.user
 
 import com.example.home.domain.entity.user.UserInfo
+import com.example.home.domain.repository.user.UserInfoRepository
 import com.example.home.domain.value_object.user.*
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserInfo
-import com.example.home.domain.repository.user.UserInfoRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -31,7 +31,7 @@ class UserInfoRepositoryImpl : UserInfoRepository {
             TbTsUserInfo.select(condition)
                 .map {
                     UserInfo(
-                        it[TbTsUserInfo.userId],
+                        UserId(it[TbTsUserInfo.userId]),
                         UserName(it[TbTsUserInfo.userName]),
                         UserPassword(it[TbTsUserInfo.password]),
                         UserPermission(it[TbTsUserInfo.permission]),
@@ -51,7 +51,7 @@ class UserInfoRepositoryImpl : UserInfoRepository {
             TbTsUserInfo.selectAll()
                 .map {
                     UserInfo(
-                        it[TbTsUserInfo.userId],
+                        UserId(it[TbTsUserInfo.userId]),
                         UserName(it[TbTsUserInfo.userName]),
                         UserPassword(it[TbTsUserInfo.password]),
                         UserPermission(it[TbTsUserInfo.permission]),
@@ -91,7 +91,7 @@ class UserInfoRepositoryImpl : UserInfoRepository {
 
             return@transaction userInfo?.let {
                 UserInfo(
-                    it[TbTsUserInfo.userId],
+                    UserId(it[TbTsUserInfo.userId]),
                     UserName(it[TbTsUserInfo.userName]),
                     UserPassword(it[TbTsUserInfo.password]),
                     UserPermission(it[TbTsUserInfo.permission]),

@@ -1,12 +1,12 @@
 package com.example.home.datasource.category
 
 import com.example.home.domain.entity.category.Category
+import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
-import com.example.home.domain.repository.category.CategoryRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -85,9 +85,6 @@ class CategoryRepositoryImpl : CategoryRepository {
                 it[TbTsCategorys.categoryNo] = categoryNo.value
                 it[TbTsCategorys.categoryName] = categoryName.value
             }
-            if (affectedRows == 0) {
-                throw IllegalStateException("No rows updated for groupsId: ${groupsId.value}")
-            }
             return@transaction affectedRows
         }
     }
@@ -111,12 +108,7 @@ class CategoryRepositoryImpl : CategoryRepository {
 
             val deleteRows = TbTsCategorys.deleteWhere { fullCondition }
 
-            if (deleteRows == 0) {
-                throw IllegalStateException(
-                    "No rows deleted for groupsId: ${groupsId.value}, categoryNo: ${categoryNo?.value}, categoryName: ${categoryName?.value}"
-                )
-            }
-            deleteRows
+            return@transaction deleteRows
 
         }
     }

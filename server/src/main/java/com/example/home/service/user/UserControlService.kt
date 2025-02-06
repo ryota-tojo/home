@@ -9,7 +9,7 @@ import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.user.UserInfoRepository
-import com.example.home.domain.value_object.Constants
+import com.example.home.domain.repository.user.UserSettingRepository
 import com.example.home.domain.value_object.TsDefaultData
 import com.example.home.domain.value_object.group.GroupPassword
 import com.example.home.domain.value_object.group.GroupsId
@@ -18,7 +18,7 @@ import com.example.home.util.ValidationCheck
 
 class UserControlService(
     val userInfoRepository: UserInfoRepository = UserInfoRepositoryImpl(),
-    val userSettingRepository: UserSettingRepositoryImpl = UserSettingRepositoryImpl(),
+    val userSettingRepository: UserSettingRepository = UserSettingRepositoryImpl(),
     val groupListRepository: GroupListRepository = GroupListRepositoryImpl(),
     val groupInfoRepository: GroupInfoRepository = GroupInfoRepositoryImpl(),
 ) {
@@ -31,7 +31,7 @@ class UserControlService(
                 null
             )
         }
-        if (userName == null) {
+        if (userName != null) {
             if (!ValidationCheck.symbol(userName.toString()).result) {
                 return UserReferResult(
                     ResponseCode.バリデーションエラー.code,
@@ -41,8 +41,8 @@ class UserControlService(
                 )
             }
         }
-        val userInfo = userInfoRepository.refer(userId = userId, userName = userName).firstOrNull()
-        if (userInfo == null) {
+        val userInfoList = userInfoRepository.refer(userId = userId, userName = userName)
+        if (userInfoList.isNullOrEmpty()) {
             return UserReferResult(
                 String.format(ResponseCode.成功_条件付き.code, "USER_NOT_FOUND"),
                 null,
@@ -50,8 +50,9 @@ class UserControlService(
                 null
             )
         }
-        val userSetting = userSettingRepository.referAll(UserId(userInfo.userId))
-        val groupsId = groupInfoRepository.getGroupsId(UserId(userInfo.userId))
+        val userInfo = userInfoList.first()
+        val userSetting = userSettingRepository.referAll(userInfo.userId)
+        val groupsId = groupInfoRepository.getGroupsId(userInfo.userId)
         if (groupsId == null) {
             return UserReferResult(
                 return UserReferResult(
@@ -62,12 +63,12 @@ class UserControlService(
                 )
             )
         }
-        val groupSetting = groupInfoRepository.refer(groupsId, UserId(userInfo.userId))
+        val groupInfo = groupInfoRepository.refer(groupsId, userInfo.userId)
         return UserReferResult(
             ResponseCode.成功.code,
             userInfo,
             userSetting,
-            groupSetting,
+            groupInfo,
         )
     }
 
@@ -142,9 +143,7 @@ class UserControlService(
         val userSetting = userDefaultSettings.mapNotNull { (key, value) ->
             try {
                 userSettingRepository.save(
-                    UserId(
-                        createUser.userId
-                    ),
+                    createUser.userId,
                     UserSettingKey(key),
                     UserSettingValue(value)
                 )
@@ -162,7 +161,7 @@ class UserControlService(
         }
         val groupInfo = groupInfoRepository.save(
             groupsId,
-            UserId(createUser.userId),
+            createUser.userId,
             UserLeaderFlg(leaderFlg)
         )
 

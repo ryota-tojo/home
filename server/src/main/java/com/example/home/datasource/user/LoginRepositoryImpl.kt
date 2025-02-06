@@ -1,9 +1,9 @@
 package com.example.home.datasource.user
 
 import com.example.home.domain.entity.user.UserInfo
+import com.example.home.domain.repository.user.LoginRepository
 import com.example.home.domain.value_object.user.*
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserInfo
-import com.example.home.domain.repository.user.LoginRepository
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -20,7 +20,7 @@ class LoginRepositoryImpl : LoginRepository {
 
             userInfo?.let {
                 UserInfo(
-                    it[TbTsUserInfo.userId],
+                    UserId(it[TbTsUserInfo.userId]),
                     UserName(it[TbTsUserInfo.userName]),
                     UserPassword(it[TbTsUserInfo.password]),
                     UserPermission(it[TbTsUserInfo.permission]),
