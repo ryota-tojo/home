@@ -9,7 +9,9 @@ import com.example.home.domain.entity.category.result.CategoryUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.category.CategoryRepository
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 class CategoryServiceTest extends Specification {
 
     private CategoryRepository categoryRepository = Mock()

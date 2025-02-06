@@ -1,24 +1,23 @@
 package com.example.home.datasource.group
 
+import com.example.home.domain.entity.group.GroupSetting
+import com.example.home.domain.repository.group.GroupSettingRepository
 import com.example.home.domain.value_object.group.GroupSettingKey
 import com.example.home.domain.value_object.group.GroupSettingValue
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupSetting
-import com.example.home.domain.repository.group.GroupSettingRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 
 @Repository
-class GroupSettingRepositoryImpl(
-
-) : GroupSettingRepository {
-    override fun refer(groupsId: GroupsId): List<com.example.home.domain.entity.group.GroupSetting> {
+class GroupSettingRepositoryImpl : GroupSettingRepository {
+    override fun refer(groupsId: GroupsId): List<GroupSetting> {
         return transaction {
             TbTsGroupSetting.select(TbTsGroupSetting.groupsId eq groupsId.value)
                 .map {
-                    com.example.home.domain.entity.group.GroupSetting(
+                    GroupSetting(
                         it[TbTsGroupSetting.id],
                         GroupsId(it[TbTsGroupSetting.groupsId]),
                         GroupSettingKey(it[TbTsGroupSetting.settingKey]),
@@ -28,11 +27,11 @@ class GroupSettingRepositoryImpl(
         }
     }
 
-    override fun referAll(): List<com.example.home.domain.entity.group.GroupSetting> {
+    override fun referAll(): List<GroupSetting> {
         return transaction {
             TbTsGroupSetting.selectAll()
                 .map {
-                    com.example.home.domain.entity.group.GroupSetting(
+                    GroupSetting(
                         it[TbTsGroupSetting.id],
                         GroupsId(it[TbTsGroupSetting.groupsId]),
                         GroupSettingKey(it[TbTsGroupSetting.settingKey]),
@@ -46,7 +45,7 @@ class GroupSettingRepositoryImpl(
         groupsId: GroupsId,
         settingKey: GroupSettingKey,
         settingValue: GroupSettingValue
-    ): com.example.home.domain.entity.group.GroupSetting {
+    ): GroupSetting {
         return transaction {
             TbTsGroupSetting.insert {
                 it[TbTsGroupSetting.groupsId] = groupsId.value
@@ -61,7 +60,7 @@ class GroupSettingRepositoryImpl(
                 .singleOrNull()
 
             return@transaction group?.let {
-                com.example.home.domain.entity.group.GroupSetting(
+                GroupSetting(
                     it[TbTsGroupSetting.id],
                     GroupsId(it[TbTsGroupSetting.groupsId]),
                     GroupSettingKey(it[TbTsGroupSetting.settingKey]),
