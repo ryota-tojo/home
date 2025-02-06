@@ -1,6 +1,6 @@
 package com.example.home.api.group.response
 
-import com.example.home.domain.entity.group.GroupSetting
+import com.example.home.domain.group.GroupSetting
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class GroupSettingUpdateResponse(

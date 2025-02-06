@@ -4,10 +4,9 @@ import com.example.home.api.group.request.GroupReferRequest
 import com.example.home.api.group.response.GroupListResponse
 import com.example.home.api.group.response.GroupReferResponse
 import com.example.home.api.group.response.GroupSettingResponse
-import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.repository.group.GroupListRepository
-import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupListRepository
+import com.example.home.infrastructure.persistence.repository.group.GroupSettingRepository
 import com.example.home.service.group.GroupControlService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -35,7 +34,11 @@ class GroupReferApi(
         val groupsId = GroupsId(request.groupsId ?: "")
 
         val groupControlService: GroupControlService = GroupControlService(groupListRepository, groupSettingRepository)
-        val result = groupControlService.refer(groupsId)
+        val result = if (groupsId.toString() != "") {
+            groupControlService.refer(groupsId)
+        } else {
+            groupControlService.referAll()
+        }
 
         val groupListResponse = result.groupListAndSetting.groupList.map{ groupList ->
             GroupListResponse(
@@ -60,9 +63,9 @@ class GroupReferApi(
             )
 
         val response = GroupReferResponse(
-            ResponseCode.成功.status,
-            ResponseCode.成功.code,
-            ResponseCode.成功.message,
+            "success",
+            "SUCCESS",
+            "所属グループ情報を取得しました",
             groupReferResponseData
         )
         return ResponseEntity.ok()
