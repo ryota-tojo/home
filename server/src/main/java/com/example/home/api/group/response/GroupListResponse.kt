@@ -10,5 +10,9 @@ data class GroupListResponse(
     val groupsId: String? = null,
 
     @JsonProperty("group_name")
-    val groupName: String? = null
+    val groupName: String? = null,
+
+    @JsonProperty("group_password")
+    val groupPassword: String? = null
+
 )

@@ -12,8 +12,5 @@ data class GroupsId(val value :String) {
         require(StringUtil.byteSize(value) <= MAX_BYTE_LENGTH) {
             "GroupsID must not exceed $MAX_BYTE_LENGTH bytes. Actual size: ${StringUtil.byteSize(value)} bytes."
         }
-        require(Constants.INVALID_SYMBOL.none {  it in value }) {
-            "GroupsID must not contain forbidden characters: ${Constants.INVALID_SYMBOL.joinToString(", ")}"
-        }
     }
 }

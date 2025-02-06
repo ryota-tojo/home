@@ -7,6 +7,6 @@ object TbTsComment : Table("ts_comment") {
     val groupsId = varchar("groups_id", 64)
     val yyyy = integer("yyyy")
     val mm = integer("mm")
-    val contents = varchar("contents", 65535)
+    val content = varchar("content", 65535)
     override val primaryKey = PrimaryKey(id)
 }
