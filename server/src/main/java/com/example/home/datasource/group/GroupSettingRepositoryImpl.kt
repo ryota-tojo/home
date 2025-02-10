@@ -13,31 +13,22 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class GroupSettingRepositoryImpl : GroupSettingRepository {
-    override fun refer(groupsId: GroupsId): List<GroupSetting> {
+    override fun refer(groupsId: GroupsId?): List<GroupSetting> {
         return transaction {
-            TbTsGroupSetting.select(TbTsGroupSetting.groupsId eq groupsId.value)
-                .map {
-                    GroupSetting(
-                        it[TbTsGroupSetting.id],
-                        GroupsId(it[TbTsGroupSetting.groupsId]),
-                        GroupSettingKey(it[TbTsGroupSetting.settingKey]),
-                        GroupSettingValue(it[TbTsGroupSetting.settingValue])
-                    )
+            TbTsGroupSetting.select {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    groupsId?.let { condition = TbTsGroupSetting.groupsId eq it.value }
+                    condition
                 }
-        }
-    }
-
-    override fun referAll(): List<GroupSetting> {
-        return transaction {
-            TbTsGroupSetting.selectAll()
-                .map {
-                    GroupSetting(
-                        it[TbTsGroupSetting.id],
-                        GroupsId(it[TbTsGroupSetting.groupsId]),
-                        GroupSettingKey(it[TbTsGroupSetting.settingKey]),
-                        GroupSettingValue(it[TbTsGroupSetting.settingValue])
-                    )
-                }
+            }.map {
+                GroupSetting(
+                    it[TbTsGroupSetting.id],
+                    GroupsId(it[TbTsGroupSetting.groupsId]),
+                    GroupSettingKey(it[TbTsGroupSetting.settingKey]),
+                    GroupSettingValue(it[TbTsGroupSetting.settingValue])
+                )
+            }
         }
     }
 

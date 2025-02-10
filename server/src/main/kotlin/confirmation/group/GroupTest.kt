@@ -8,7 +8,6 @@ fun main() {
         groupListUpdateConfirmation()
         groupSettingUpdateConfirmation()
         groupReferConfirmation()
-        groupReferAllConfirmation()
         groupDeleteConfirmation()
     }
 }

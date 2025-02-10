@@ -1,6 +1,6 @@
 package com.example.home.domain.value_object.etc
 
-class MM(val value: Int) {
+data class MM(val value: Int) {
     companion object {
         val MIN = 1
         val MAX = 12

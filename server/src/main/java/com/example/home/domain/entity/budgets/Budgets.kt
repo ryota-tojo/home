@@ -1,6 +1,6 @@
 package com.example.home.domain.entity.budgets
 
-import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.etc.Amount
 import com.example.home.domain.value_object.etc.FixedFlg
 import com.example.home.domain.value_object.etc.MM
@@ -12,7 +12,7 @@ data class Budgets(
     val groupsId: GroupsId,
     val YYYY: YYYY,
     val MM: MM,
-    val categoryName: CategoryName,
+    val categoryNo: CategoryNo,
     val amount  : Amount,
     val fixedFlg: FixedFlg
 )

@@ -1,11 +1,12 @@
 package com.example.home.domain.repository.group
 
 import com.example.home.domain.entity.group.GroupSetting
-import com.example.home.domain.value_object.group.*
+import com.example.home.domain.value_object.group.GroupSettingKey
+import com.example.home.domain.value_object.group.GroupSettingValue
+import com.example.home.domain.value_object.group.GroupsId
 
 interface GroupSettingRepository {
-    fun refer(groupsId: GroupsId): List<GroupSetting>
-    fun referAll(): List<GroupSetting>
+    fun refer(groupsId: GroupsId? = null): List<GroupSetting>
     fun save(
         groupsId: GroupsId,
         settingKey: GroupSettingKey,

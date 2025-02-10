@@ -7,7 +7,6 @@ import com.example.home.datasource.group.GroupListRepositoryImpl
 import com.example.home.datasource.group.GroupSettingRepositoryImpl
 import com.example.home.datasource.member.MemberRepositoryImpl
 import com.example.home.domain.entity.group.GroupListAndSetting
-import com.example.home.domain.entity.group.GroupListAndSettingList
 import com.example.home.domain.entity.group.result.*
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.category.CategoryRepository
@@ -43,24 +42,6 @@ class GroupControlService(
         return GroupReferResult(
             ResponseCode.成功.code,
             GroupListAndSetting(groupList, groupSetting)
-        )
-    }
-
-    fun referAll(): GroupReferAllResult {
-        val groupList = groupListRepository.referAll()
-
-        val groupListAndSettingListList = mutableListOf<GroupListAndSettingList>()
-        for (group in groupList) {
-            val settings = groupSettingRepository.refer(group.groupsId)
-            val groupWithSettings = GroupListAndSettingList(
-                groupList = group,
-                groupSetting = settings
-            )
-            groupListAndSettingListList.add(groupWithSettings)
-        }
-        return GroupReferAllResult(
-            ResponseCode.成功.code,
-            groupListAndSettingListList
         )
     }
 

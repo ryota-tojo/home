@@ -13,33 +13,23 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserSettingRepositoryImpl : UserSettingRepository {
-    override fun refer(userId: UserId, settingKey: UserSettingKey): List<UserSetting> {
+    override fun refer(userId: UserId, settingKey: UserSettingKey?): List<UserSetting> {
         return transaction {
             TbTsUserSetting.select {
-                (TbTsUserSetting.userId eq userId.value) and
-                        (TbTsUserSetting.settingKey eq settingKey.value)
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    userId.let { condition = TbTsUserSetting.id eq it.value }
+                    settingKey?.let { condition = condition and (TbTsUserSetting.settingKey eq it.value) }
+                    condition
+                }
             }.map {
-                    UserSetting(
-                        it[TbTsUserSetting.id],
-                        UserId(it[TbTsUserSetting.userId]),
-                        UserSettingKey(it[TbTsUserSetting.settingKey]),
-                        UserSettingValue(it[TbTsUserSetting.settingValue])
-                    )
-                }
-        }
-    }
-
-    override fun referAll(userId: UserId): List<UserSetting> {
-        return transaction {
-            TbTsUserSetting.select(TbTsUserSetting.userId eq userId.value)
-                .map {
-                    UserSetting(
-                        it[TbTsUserSetting.id],
-                        UserId(it[TbTsUserSetting.userId]),
-                        UserSettingKey(it[TbTsUserSetting.settingKey]),
-                        UserSettingValue(it[TbTsUserSetting.settingValue])
-                    )
-                }
+                UserSetting(
+                    it[TbTsUserSetting.id],
+                    UserId(it[TbTsUserSetting.userId]),
+                    UserSettingKey(it[TbTsUserSetting.settingKey]),
+                    UserSettingValue(it[TbTsUserSetting.settingValue])
+                )
+            }
         }
     }
 

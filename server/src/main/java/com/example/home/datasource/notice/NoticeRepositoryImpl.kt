@@ -13,33 +13,23 @@ import java.time.LocalDateTime
 
 class NoticeRepositoryImpl : NoticeRepository {
 
-    override fun refer(noticeId: NoticeId): List<Notice> {
+    override fun refer(noticeId: NoticeId?): List<Notice> {
         return transaction {
-            TbTsNotice.select(TbTsNotice.id eq noticeId.value)
-                .map {
-                    Notice(
-                        NoticeId(it[TbTsNotice.id]),
-                        NoticeTitle(it[TbTsNotice.title]),
-                        NoticeContent(it[TbTsNotice.content]),
-                        it[TbTsNotice.createDate],
-                        it[TbTsNotice.updateDate]
-                    )
+            TbTsNotice.select {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    noticeId?.let { condition = TbTsNotice.id eq it.value }
+                    condition
                 }
-        }
-    }
-
-    override fun referAll(): List<Notice> {
-        return transaction {
-            TbTsNotice.selectAll()
-                .map {
-                    Notice(
-                        NoticeId(it[TbTsNotice.id]),
-                        NoticeTitle(it[TbTsNotice.title]),
-                        NoticeContent(it[TbTsNotice.content]),
-                        it[TbTsNotice.createDate],
-                        it[TbTsNotice.updateDate]
-                    )
-                }
+            }.map {
+                Notice(
+                    NoticeId(it[TbTsNotice.id]),
+                    NoticeTitle(it[TbTsNotice.title]),
+                    NoticeContent(it[TbTsNotice.content]),
+                    it[TbTsNotice.createDate],
+                    it[TbTsNotice.updateDate]
+                )
+            }
         }
     }
 

@@ -51,7 +51,7 @@ class UserControlService(
             )
         }
         val userInfo = userInfoList.first()
-        val userSetting = userSettingRepository.referAll(userInfo.userId)
+        val userSetting = userSettingRepository.refer(userInfo.userId)
         val groupsId = groupInfoRepository.getGroupsId(userInfo.userId)
         if (groupsId == null) {
             return UserReferResult(
@@ -73,7 +73,7 @@ class UserControlService(
     }
 
     fun referAll(): UserReferAllResult {
-        val userInfo = userInfoRepository.referAll()
+        val userInfo = userInfoRepository.refer()
         if (userInfo == null) {
             return UserReferAllResult(
                 String.format(ResponseCode.成功_条件付き.code, "USER_NOT_FOUND"),

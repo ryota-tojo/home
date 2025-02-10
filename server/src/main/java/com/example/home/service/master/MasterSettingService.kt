@@ -16,28 +16,8 @@ import org.springframework.stereotype.Service
 class MasterSettingService(
     private val masterSettingRepository: MasterSettingRepository = MasterSettingRepositoryImpl()
 ) {
-    fun refer(masterSettingKey: MasterSettingKey): MasterSettingReferResult {
+    fun refer(masterSettingKey: MasterSettingKey? = null): MasterSettingReferResult {
         val masterSettingList = masterSettingRepository.refer(masterSettingKey)
-        if (masterSettingList == null) {
-            return MasterSettingReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "SETTING_KEY_NOT_FOUND"),
-                null
-            )
-        }
-        return MasterSettingReferResult(
-            ResponseCode.成功.code,
-            masterSettingList
-        )
-    }
-
-    fun referAll(): MasterSettingReferResult {
-        val masterSettingList = masterSettingRepository.referAll()
-        if (masterSettingList == null) {
-            return MasterSettingReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "SETTING_NOT_FOUND"),
-                null
-            )
-        }
         return MasterSettingReferResult(
             ResponseCode.成功.code,
             masterSettingList

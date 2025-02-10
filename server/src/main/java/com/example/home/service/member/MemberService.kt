@@ -19,12 +19,6 @@ class MemberService(
 ) {
     fun refer(groupsId: GroupsId): MemberReferResult {
         val MemberList = memberRepository.refer(groupsId)
-        if (MemberList == null) {
-            return MemberReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "MEMBER_NOT_FOUND"),
-                null
-            )
-        }
         return MemberReferResult(
             ResponseCode.成功.code,
             MemberList

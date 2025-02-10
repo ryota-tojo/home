@@ -1,12 +1,11 @@
 package com.example.home.datasource.member
 
-import com.example.home.domain.entity.member.Member
+import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
 import com.example.home.domain.value_object.member.MemberNo
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
-import com.example.home.domain.repository.member.MemberRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,31 +13,29 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MemberRepositoryImpl : MemberRepository {
-    override fun refer(groupsId: GroupsId): List<com.example.home.domain.entity.member.Member> {
+    override fun refer(groupsId: GroupsId?): List<com.example.home.domain.entity.member.Member> {
         return transaction {
-            TbTsMembers.select(TbTsMembers.groupsId eq groupsId.value)
-                .map {
-                    com.example.home.domain.entity.member.Member(
-                        MemberId(it[TbTsMembers.id]),
-                        GroupsId(it[TbTsMembers.groupsId]),
-                        MemberNo(it[TbTsMembers.memberNo]),
-                        MemberName(it[TbTsMembers.memberName])
-                    )
-                }
-        }
-    }
-
-    override fun referAll(): List<com.example.home.domain.entity.member.Member> {
-        return transaction {
-            TbTsMembers.selectAll()
-                .map {
-                    com.example.home.domain.entity.member.Member(
-                        MemberId(it[TbTsMembers.id]),
-                        GroupsId(it[TbTsMembers.groupsId]),
-                        MemberNo(it[TbTsMembers.memberNo]),
-                        MemberName(it[TbTsMembers.memberName])
-                    )
-                }
+            if (groupsId == null) {
+                TbTsMembers.selectAll()
+                    .map {
+                        com.example.home.domain.entity.member.Member(
+                            MemberId(it[TbTsMembers.id]),
+                            GroupsId(it[TbTsMembers.groupsId]),
+                            MemberNo(it[TbTsMembers.memberNo]),
+                            MemberName(it[TbTsMembers.memberName])
+                        )
+                    }
+            } else {
+                TbTsMembers.select(TbTsMembers.groupsId eq groupsId.value)
+                    .map {
+                        com.example.home.domain.entity.member.Member(
+                            MemberId(it[TbTsMembers.id]),
+                            GroupsId(it[TbTsMembers.groupsId]),
+                            MemberNo(it[TbTsMembers.memberNo]),
+                            MemberName(it[TbTsMembers.memberName])
+                        )
+                    }
+            }
         }
     }
 

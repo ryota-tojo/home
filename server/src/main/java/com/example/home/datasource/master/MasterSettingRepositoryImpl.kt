@@ -11,27 +11,20 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class MasterSettingRepositoryImpl : MasterSettingRepository {
 
-    override fun refer(masterSettingKey: MasterSettingKey): List<MasterSetting> {
+    override fun refer(masterSettingKey: MasterSettingKey?): List<MasterSetting> {
         return transaction {
-            TbMsSetting.select(TbMsSetting.settingKey eq masterSettingKey.value)
-                .map {
-                    MasterSetting(
-                        MasterSettingKey(it[TbMsSetting.settingKey]),
-                        MasterSettingValue(it[TbMsSetting.settingValue])
-                    )
+            TbMsSetting.select {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    masterSettingKey?.let { condition = TbMsSetting.settingKey eq it.value }
+                    condition
                 }
-        }
-    }
-
-    override fun referAll(): List<MasterSetting> {
-        return transaction {
-            TbMsSetting.selectAll()
-                .map {
-                    MasterSetting(
-                        MasterSettingKey(it[TbMsSetting.settingKey]),
-                        MasterSettingValue(it[TbMsSetting.settingValue])
-                    )
-                }
+            }.map {
+                MasterSetting(
+                    MasterSettingKey(it[TbMsSetting.settingKey]),
+                    MasterSettingValue(it[TbMsSetting.settingValue])
+                )
+            }
         }
     }
 

@@ -1,43 +1,34 @@
 package com.example.home.datasource.group
 
 import com.example.home.domain.entity.group.GroupList
+import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.value_object.group.GroupName
+import com.example.home.domain.value_object.group.GroupPassword
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupList
-import com.example.home.domain.repository.group.GroupListRepository
-import com.example.home.domain.value_object.group.GroupPassword
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 
 @Repository
-class GroupListRepositoryImpl() : GroupListRepository {
-    override fun refer(groupsId: GroupsId): List<GroupList> {
+class GroupListRepositoryImpl : GroupListRepository {
+    override fun refer(groupsId: GroupsId?): List<GroupList> {
         return transaction {
-            TbTsGroupList.select(TbTsGroupList.groupsId eq groupsId.value)
-                .map {
-                    GroupList(
-                        it[TbTsGroupList.groupId],
-                        GroupsId(it[TbTsGroupList.groupsId]),
-                        GroupName(it[TbTsGroupList.groupName]),
-                        GroupPassword(it[TbTsGroupList.groupPassword])
-                    )
+            TbTsGroupList.select {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    groupsId?.let { condition = TbTsGroupList.groupsId eq it.value }
+                    condition
                 }
-        }
-    }
-
-    override fun referAll(): List<GroupList> {
-        return transaction {
-            TbTsGroupList.selectAll()
-                .map {
-                    GroupList(
-                        it[TbTsGroupList.groupId],
-                        GroupsId(it[TbTsGroupList.groupsId]),
-                        GroupName(it[TbTsGroupList.groupName]),
-                        GroupPassword(it[TbTsGroupList.groupPassword])
-                    )
-                }
+            }.map {
+                GroupList(
+                    it[TbTsGroupList.groupId],
+                    GroupsId(it[TbTsGroupList.groupsId]),
+                    GroupName(it[TbTsGroupList.groupName]),
+                    GroupPassword(it[TbTsGroupList.groupPassword])
+                )
+            }
         }
     }
 
