@@ -5,7 +5,6 @@ import com.example.home.domain.value_object.user.*
 
 interface UserInfoRepository {
     fun refer(userId: UserId? = null, userName: UserName? = null): List<UserInfo>
-    fun referAll(): List<UserInfo>
     fun save(
         userName: UserName,
         password: UserPassword,

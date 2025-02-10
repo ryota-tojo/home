@@ -19,12 +19,6 @@ class CategoryService(
 ) {
     fun refer(groupsId: GroupsId): CategoryReferResult {
         val CategoryList = categoryRepository.refer(groupsId)
-        if (CategoryList == null) {
-            return CategoryReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "CATEGORY_NOT_FOUND"),
-                null
-            )
-        }
         return CategoryReferResult(
             ResponseCode.成功.code,
             CategoryList

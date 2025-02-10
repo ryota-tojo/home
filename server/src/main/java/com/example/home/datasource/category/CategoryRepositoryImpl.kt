@@ -14,31 +14,29 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class CategoryRepositoryImpl : CategoryRepository {
-    override fun refer(groupsId: GroupsId): List<Category> {
+    override fun refer(groupsId: GroupsId?): List<Category> {
         return transaction {
-            TbTsCategorys.select(TbTsCategorys.groupsId eq groupsId.value)
-                .map {
-                    Category(
-                        CategoryId(it[TbTsCategorys.id]),
-                        GroupsId(it[TbTsCategorys.groupsId]),
-                        CategoryNo(it[TbTsCategorys.categoryNo]),
-                        CategoryName(it[TbTsCategorys.categoryName])
-                    )
-                }
-        }
-    }
-
-    override fun referAll(): List<Category> {
-        return transaction {
-            TbTsCategorys.selectAll()
-                .map {
-                    Category(
-                        CategoryId(it[TbTsCategorys.id]),
-                        GroupsId(it[TbTsCategorys.groupsId]),
-                        CategoryNo(it[TbTsCategorys.categoryNo]),
-                        CategoryName(it[TbTsCategorys.categoryName])
-                    )
-                }
+            if (groupsId == null) {
+                TbTsCategorys.selectAll()
+                    .map {
+                        Category(
+                            CategoryId(it[TbTsCategorys.id]),
+                            GroupsId(it[TbTsCategorys.groupsId]),
+                            CategoryNo(it[TbTsCategorys.categoryNo]),
+                            CategoryName(it[TbTsCategorys.categoryName])
+                        )
+                    }
+            } else {
+                TbTsCategorys.select(TbTsCategorys.groupsId eq groupsId.value)
+                    .map {
+                        Category(
+                            CategoryId(it[TbTsCategorys.id]),
+                            GroupsId(it[TbTsCategorys.groupsId]),
+                            CategoryNo(it[TbTsCategorys.categoryNo]),
+                            CategoryName(it[TbTsCategorys.categoryName])
+                        )
+                    }
+            }
         }
     }
 
@@ -77,7 +75,7 @@ class CategoryRepositoryImpl : CategoryRepository {
         categoryName: CategoryName
     ): Int {
         return transaction {
-            val affectedRows = TbTsCategorys.update({
+            val updateRows = TbTsCategorys.update({
                 (TbTsCategorys.groupsId eq groupsId.value) and
                         (TbTsCategorys.categoryNo eq categoryNo.value)
             }) {
@@ -85,7 +83,7 @@ class CategoryRepositoryImpl : CategoryRepository {
                 it[TbTsCategorys.categoryNo] = categoryNo.value
                 it[TbTsCategorys.categoryName] = categoryName.value
             }
-            return@transaction affectedRows
+            return@transaction updateRows
         }
     }
 

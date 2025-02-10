@@ -150,7 +150,7 @@ create table ts_budgets(
     groups_id varchar(64), 
     bg_yyyy integer,
     bg_mm integer,
-    bg_category_name varchar(64), 
+    bg_category_no integer, 
     bg_amount integer,
     fixed_flg integer,
     PRIMARY KEY (id)

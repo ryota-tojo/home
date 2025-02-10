@@ -26,13 +26,13 @@ class MemberServiceTest extends Specification {
         def result = sut.refer(FixtureGroupList.所属グループID_正常())
 
         then:
-        1 * memberRepository.refer(FixtureGroupList.所属グループID_正常()) >> categoryList
+        1 * memberRepository.refer(FixtureGroupList.所属グループID_正常()) >> memberList
         result == expected
 
         where:
-        useCase             | expected                                                                         | categoryList
-        "正常"              | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()]
-        "正常_メンバーなし" | new MemberReferResult(sprintf(ResponseCode.成功_条件付き.code, ["MEMBER_NOT_FOUND"]), null) | null
+        useCase           | expected                                                                         | memberList
+        "正常"            | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()]
+        "正常_データなし" | new MemberReferResult(ResponseCode.成功.code, null)                              | null
     }
 
     def "member_save_#useCase"() {

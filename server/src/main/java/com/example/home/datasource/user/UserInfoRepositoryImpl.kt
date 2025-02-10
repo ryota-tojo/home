@@ -14,55 +14,27 @@ import java.time.LocalDateTime
 class UserInfoRepositoryImpl : UserInfoRepository {
     override fun refer(userId: UserId?, userName: UserName?): List<UserInfo> {
         return transaction {
-            val condition = when {
-                userId != null && userName != null ->
-                    (TbTsUserInfo.userId eq userId.value) and (TbTsUserInfo.userName eq userName.value)
-
-                userId != null ->
-                    TbTsUserInfo.userId eq userId.value
-
-                userName != null ->
-                    TbTsUserInfo.userName eq userName.value
-
-                else ->
-                    throw IllegalArgumentException("At least one of userName or userId must be provided")
+            TbTsUserInfo.select {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    userId?.let { condition = TbTsUserInfo.userId eq it.value }
+                    userName?.let { condition = condition and (TbTsUserInfo.userName eq it.value) }
+                    condition
+                }
+            }.map {
+                UserInfo(
+                    UserId(it[TbTsUserInfo.userId]),
+                    UserName(it[TbTsUserInfo.userName]),
+                    UserPassword(it[TbTsUserInfo.password]),
+                    UserPermission(it[TbTsUserInfo.permission]),
+                    UserApprovalFlg(it[TbTsUserInfo.approvalFlg]),
+                    UserDeleteFlg(it[TbTsUserInfo.deleteFlg]),
+                    it[TbTsUserInfo.createDate],
+                    it[TbTsUserInfo.updateDate],
+                    it[TbTsUserInfo.approvalDate],
+                    it[TbTsUserInfo.deleteDate]
+                )
             }
-
-            TbTsUserInfo.select(condition)
-                .map {
-                    UserInfo(
-                        UserId(it[TbTsUserInfo.userId]),
-                        UserName(it[TbTsUserInfo.userName]),
-                        UserPassword(it[TbTsUserInfo.password]),
-                        UserPermission(it[TbTsUserInfo.permission]),
-                        UserApprovalFlg(it[TbTsUserInfo.approvalFlg]),
-                        UserDeleteFlg(it[TbTsUserInfo.deleteFlg]),
-                        it[TbTsUserInfo.createDate],
-                        it[TbTsUserInfo.updateDate],
-                        it[TbTsUserInfo.approvalDate],
-                        it[TbTsUserInfo.deleteDate]
-                    )
-                }
-        }
-    }
-
-    override fun referAll(): List<UserInfo> {
-        return transaction {
-            TbTsUserInfo.selectAll()
-                .map {
-                    UserInfo(
-                        UserId(it[TbTsUserInfo.userId]),
-                        UserName(it[TbTsUserInfo.userName]),
-                        UserPassword(it[TbTsUserInfo.password]),
-                        UserPermission(it[TbTsUserInfo.permission]),
-                        UserApprovalFlg(it[TbTsUserInfo.approvalFlg]),
-                        UserDeleteFlg(it[TbTsUserInfo.deleteFlg]),
-                        it[TbTsUserInfo.createDate],
-                        it[TbTsUserInfo.updateDate],
-                        it[TbTsUserInfo.approvalDate],
-                        it[TbTsUserInfo.deleteDate]
-                    )
-                }
         }
     }
 

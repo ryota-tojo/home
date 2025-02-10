@@ -29,9 +29,9 @@ class CategoryServiceTest extends Specification {
         result == expected
 
         where:
-        useCase               | expected                                                                               | categoryList
-        "正常"                | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()]
-        "正常_カテゴリーなし" | new CategoryReferResult(sprintf(ResponseCode.成功_条件付き.code, ["CATEGORY_NOT_FOUND"]), null) | null
+        useCase           | expected                                                                               | categoryList
+        "正常"            | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()]
+        "正常_データなし" | new CategoryReferResult(ResponseCode.成功.code, null)                                  | null
     }
 
     def "category_save_#useCase"() {

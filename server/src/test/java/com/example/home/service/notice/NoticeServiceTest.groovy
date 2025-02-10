@@ -19,33 +19,17 @@ class NoticeServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(FixtureNotice.お知らせID_正常())
+        def result = sut.refer(key)
 
         then:
-        1 * noticeRepository.refer(FixtureNotice.お知らせID_正常()) >> noticeList
+        1 * noticeRepository.refer(key) >> noticeList
         result == expected
 
         where:
-        useCase             | expected                                                                                         | noticeList
-        "正常"              | new NoticeReferResult(ResponseCode.成功.code, [FixtureNotice.お知らせ_正常値()])                 | [FixtureNotice.お知らせ_正常値()]
-        "正常_お知らせなし" | new NoticeReferResult(sprintf(ResponseCode.成功_条件付き.code, ["NOTICE_DATA_NOT_FOUND"]), null) | null
-    }
-
-    def "notice_referAll_#useCase"() {
-
-        setup:
-
-        when:
-        def result = sut.referAll()
-
-        then:
-        1 * noticeRepository.referAll() >> noticeList
-        result == expected
-
-        where:
-        useCase             | expected                                                                                         | noticeList
-        "正常"              | new NoticeReferResult(ResponseCode.成功.code, [FixtureNotice.お知らせ_正常値()])                 | [FixtureNotice.お知らせ_正常値()]
-        "正常_お知らせなし" | new NoticeReferResult(sprintf(ResponseCode.成功_条件付き.code, ["NOTICE_DATA_NOT_FOUND"]), null) | null
+        useCase             | expected                                                                         | key                             | noticeList
+        "正常"              | new NoticeReferResult(ResponseCode.成功.code, [FixtureNotice.お知らせ_正常値()]) | FixtureNotice.お知らせID_正常() | [FixtureNotice.お知らせ_正常値()]
+        "正常_お知らせなし" | new NoticeReferResult(ResponseCode.成功.code, null)                              | FixtureNotice.お知らせID_正常() | null
+        "正常_キーなし"     | new NoticeReferResult(ResponseCode.成功.code, [FixtureNotice.お知らせ_正常値()]) | null                            | [FixtureNotice.お知らせ_正常値()]
     }
 
     def "notice_save_#useCase"() {

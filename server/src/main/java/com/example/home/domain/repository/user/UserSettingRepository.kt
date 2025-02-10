@@ -7,9 +7,7 @@ import com.example.home.domain.value_object.user.UserSettingValue
 
 interface UserSettingRepository {
 
-    fun refer(userId: UserId, settingKey: UserSettingKey): List<UserSetting>
-
-    fun referAll(userId: UserId): List<UserSetting>
+    fun refer(userId: UserId, settingKey: UserSettingKey? = null): List<UserSetting>
 
     fun save(
         userId: UserId,

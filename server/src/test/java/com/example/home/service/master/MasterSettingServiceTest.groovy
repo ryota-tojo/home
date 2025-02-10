@@ -21,33 +21,17 @@ class MasterSettingServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(FixtureMasterSetting.マスター設定キー_正常())
+        def result = sut.refer(key)
 
         then:
-        1 * masterSettingRepository.refer(FixtureMasterSetting.マスター設定キー_正常()) >> masterSettingList
+        1 * masterSettingRepository.refer(key) >> masterSettingList
         result == expected
 
         where:
-        useCase           | expected                                                                                                | masterSettingList
-        "正常_データあり" | new MasterSettingReferResult(ResponseCode.成功.code, [FixtureMasterSetting.マスター設定_正常()])        | [FixtureMasterSetting.マスター設定_正常()]
-        "正常_データなし" | new MasterSettingReferResult(sprintf(ResponseCode.成功_条件付き.code, ["SETTING_KEY_NOT_FOUND"]), null) | null
-    }
-
-    def "master_referAll_#useCase"() {
-
-        setup:
-
-        when:
-        def result = sut.referAll()
-
-        then:
-        1 * masterSettingRepository.referAll() >> masterSettingList
-        result == expected
-
-        where:
-        useCase           | expected                                                                                            | masterSettingList
-        "正常_データあり" | new MasterSettingReferResult(ResponseCode.成功.code, [FixtureMasterSetting.マスター設定_正常()])    | [FixtureMasterSetting.マスター設定_正常()]
-        "正常_データなし" | new MasterSettingReferResult(sprintf(ResponseCode.成功_条件付き.code, ["SETTING_NOT_FOUND"]), null) | null
+        useCase           | expected                                                                                         | key                                          | masterSettingList
+        "正常_データあり" | new MasterSettingReferResult(ResponseCode.成功.code, [FixtureMasterSetting.マスター設定_正常()]) | FixtureMasterSetting.マスター設定キー_正常() | [FixtureMasterSetting.マスター設定_正常()]
+        "正常_データなし" | new MasterSettingReferResult(ResponseCode.成功.code, null)                                       | FixtureMasterSetting.マスター設定キー_正常() | null
+        "正常_キーなし"   | new MasterSettingReferResult(ResponseCode.成功.code, [FixtureMasterSetting.マスター設定_正常()]) | null                                         | [FixtureMasterSetting.マスター設定_正常()]
     }
 
     def "master_save_#useCase"() {

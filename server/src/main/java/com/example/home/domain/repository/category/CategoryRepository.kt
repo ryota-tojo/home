@@ -6,8 +6,7 @@ import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 
 interface CategoryRepository {
-    fun refer(groupsId: GroupsId): List<Category>
-    fun referAll(): List<Category>
+    fun refer(groupsId: GroupsId? = null): List<Category>
     fun save(
         groupsId: GroupsId,
         categoryNo: CategoryNo,

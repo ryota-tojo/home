@@ -1,6 +1,6 @@
 package com.example.home.domain.value_object.etc
 
-class YYYY(val value: Int) {
+data class YYYY(val value: Int) {
     companion object {
         val MIN = 1901
         val MAX = 2100

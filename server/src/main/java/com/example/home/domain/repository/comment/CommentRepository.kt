@@ -7,8 +7,7 @@ import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 
 interface CommentRepository {
-    fun refer(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null): List<Comment>
-    fun referAll(): List<Comment>
+    fun refer(groupsId: GroupsId? = null, yyyy: YYYY? = null, mm: MM? = null): List<Comment>
     fun save(
         groupsId: GroupsId,
         yyyy: YYYY,

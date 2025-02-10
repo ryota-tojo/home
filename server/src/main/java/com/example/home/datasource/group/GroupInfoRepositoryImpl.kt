@@ -1,56 +1,38 @@
 package com.example.home.datasource.group
 
 import com.example.home.domain.entity.group.GroupInfo
+import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupInfo
-import com.example.home.domain.repository.group.GroupInfoRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
 class GroupInfoRepositoryImpl : GroupInfoRepository {
-    override fun refer(groupsId: GroupsId, userId: UserId?): List<GroupInfo> {
-        val condition = TbTsGroupInfo.groupsId eq groupsId.value
-
-        val fullCondition = when {
-            userId != null ->
-                condition and (TbTsGroupInfo.userId eq userId.value)
-
-            else ->
-                condition
-        }
-
+    override fun refer(groupsId: GroupsId?, userId: UserId?): List<GroupInfo> {
         return transaction {
-            TbTsGroupInfo.select(fullCondition)
-                .map {
-                    GroupInfo(
-                        GroupsId(it[TbTsGroupInfo.groupsId]),
-                        UserId(it[TbTsGroupInfo.userId]),
-                        UserLeaderFlg(it[TbTsGroupInfo.leaderFlg]),
-                        it[TbTsGroupInfo.createDate],
-                        it[TbTsGroupInfo.updateDate],
-                    )
+            TbTsGroupInfo.select {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    groupsId?.let { condition = TbTsGroupInfo.groupsId eq it.value }
+                    userId?.let { condition = TbTsGroupInfo.userId eq it.value }
+                    condition
                 }
+            }.map {
+                GroupInfo(
+                    GroupsId(it[TbTsGroupInfo.groupsId]),
+                    UserId(it[TbTsGroupInfo.userId]),
+                    UserLeaderFlg(it[TbTsGroupInfo.leaderFlg]),
+                    it[TbTsGroupInfo.createDate],
+                    it[TbTsGroupInfo.updateDate],
+                )
+            }
         }
     }
 
-    override fun referAll(): List<GroupInfo> {
-        return transaction {
-            TbTsGroupInfo.selectAll()
-                .map {
-                    GroupInfo(
-                        GroupsId(it[TbTsGroupInfo.groupsId]),
-                        UserId(it[TbTsGroupInfo.userId]),
-                        UserLeaderFlg(it[TbTsGroupInfo.leaderFlg]),
-                        it[TbTsGroupInfo.createDate],
-                        it[TbTsGroupInfo.updateDate],
-                    )
-                }
-        }
-    }
     override fun getGroupsId(userId: UserId): GroupsId? {
         return transaction {
             TbTsGroupInfo

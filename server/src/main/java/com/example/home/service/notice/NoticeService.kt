@@ -16,28 +16,8 @@ import org.springframework.stereotype.Service
 class NoticeService(
     private val noticeRepository: NoticeRepository = NoticeRepositoryImpl()
 ) {
-    fun refer(noticeId: NoticeId): NoticeReferResult {
+    fun refer(noticeId: NoticeId? = null): NoticeReferResult {
         val noticeList = noticeRepository.refer(noticeId)
-        if (noticeList == null) {
-            return NoticeReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "NOTICE_DATA_NOT_FOUND"),
-                null
-            )
-        }
-        return NoticeReferResult(
-            ResponseCode.成功.code,
-            noticeList
-        )
-    }
-
-    fun referAll(): NoticeReferResult {
-        val noticeList = noticeRepository.referAll()
-        if (noticeList == null) {
-            return NoticeReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "NOTICE_DATA_NOT_FOUND"),
-                null
-            )
-        }
         return NoticeReferResult(
             ResponseCode.成功.code,
             noticeList
