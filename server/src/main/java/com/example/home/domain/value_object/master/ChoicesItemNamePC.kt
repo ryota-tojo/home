@@ -3,18 +3,18 @@ package com.example.home.domain.value_object.master
 import com.example.home.domain.value_object.Constants
 import com.example.home.util.StringUtil
 
-data class ChoicesItemType(val value: String) {
+class ChoicesItemNamePC(val value: String) {
     companion object {
         val MAX_BYTE_LENGTH = 256
     }
 
     init {
-        requireNotNull(value) { "ChoicesItemType must not be null." }
+        requireNotNull(value) { "ChoicesItemName must not be null." }
         require(StringUtil.byteSize(value) <= MAX_BYTE_LENGTH) {
-            "ChoicesItemType must not exceed ${MAX_BYTE_LENGTH} bytes. Actual size: ${StringUtil.byteSize(value)} bytes."
+            "ChoicesItemName must not exceed ${MAX_BYTE_LENGTH} bytes. Actual size: ${StringUtil.byteSize(value)} bytes."
         }
         require(Constants.INVALID_SYMBOL.none { it in value }) {
-            "ChoicesItemType must not contain forbidden characters: ${Constants.INVALID_SYMBOL.joinToString(", ")}"
+            "ChoicesItemName must not contain forbidden characters: ${Constants.INVALID_SYMBOL.joinToString(", ")}"
         }
     }
 }

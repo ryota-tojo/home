@@ -3,9 +3,9 @@ package com.example.home.domain.value_object.master
 import com.example.home.domain.value_object.Constants
 import com.example.home.util.StringUtil
 
-class ChoicesItemName(val value: String) {
+class ChoicesItemNameSP(val value: String) {
     companion object {
-        val MAX_BYTE_LENGTH = 256;
+        val MAX_BYTE_LENGTH = 256
     }
 
     init {

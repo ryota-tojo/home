@@ -8,6 +8,6 @@ import com.example.home.domain.value_object.member.MemberNo
 data class Member(
     val id: MemberId,
     val groupsId: GroupsId,
-    val memberyNo: MemberNo,
-    val memberyName: MemberName
+    val memberNo: MemberNo,
+    val memberName: MemberName
 )

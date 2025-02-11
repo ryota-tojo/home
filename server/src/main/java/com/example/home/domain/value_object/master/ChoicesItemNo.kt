@@ -1,3 +1,3 @@
 package com.example.home.domain.value_object.master
 
-class ChoicesItemNo(val value: Int)
+data class ChoicesItemNo(val value: Int)

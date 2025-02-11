@@ -1,0 +1,56 @@
+name: バグ報告
+description: バグの詳細を報告してください
+title: "[Bug] "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐛 バグの概要
+        バグの詳細を記入してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 問題の詳細
+      description: 何が起こったのか詳細を記述してください。
+      placeholder: 例) ログインボタンを押しても反応しません。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 期待する動作
+      description: 本来どう動作するべきかを記述してください。
+      placeholder: 例) ログインボタンを押したらダッシュボードに遷移するべき。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 再現手順
+      description: バグを再現する手順を記述してください。
+      placeholder: |
+        1. ホームページにアクセス
+        2. "ログイン" ボタンをクリック
+        3. ページがリロードされるがログイン状態にならない
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 環境情報
+      description: OSやブラウザ、使用バージョンなどを記述してください。
+      placeholder: 例) Windows 11 / Chrome 120.0.6099.216
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: エラーログ
+      description: 関連するログやエラーメッセージがあれば記述してください（あれば）。
+      render: shell
