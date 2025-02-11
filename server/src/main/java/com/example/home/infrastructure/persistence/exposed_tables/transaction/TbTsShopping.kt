@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.javatime.date
 object TbTsShopping : Table("ts_shopping") {
     val id = integer("id").autoIncrement()
     val groupsId = varchar("groups_id", 64)
+    val userId = integer("user_id")
     val shoppingDate = date("shopping_date")
     val memberNo = integer("member_no")
     val categoryNo = integer("category_no")

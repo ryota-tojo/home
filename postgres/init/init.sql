@@ -11,7 +11,8 @@ create table ms_choices(
     id SERIAL NOT NULL,
     item_type varchar(256), 
     item_no integer, 
-    item_name varchar(256), 
+    item_name_pc varchar(256), 
+    item_name_sp varchar(256), 
     PRIMARY KEY (id)
 );
 
@@ -59,7 +60,7 @@ create table ts_grouplist(
 
 -- 所属グループ情報
 create table ts_groupinfo(
-    group_id SERIAL NOT NULL,
+    id SERIAL NOT NULL,
     groups_id varchar(64), 
     user_id integer, 
     leader_flg integer,
@@ -101,8 +102,8 @@ create table ts_tmp_shopping_input(
     id SERIAL NOT NULL,
     groups_id varchar(64), 
     tmpi_name varchar(64), 
-    tmpi_member_name varchar(64),
-    tmpi_category_name varchar(64), 
+    tmpi_member_no integer,
+    tmpi_category_no integer, 
     tmpi_type integer,
     tmpi_payment integer,
     tmpi_settlement integer,
@@ -117,8 +118,8 @@ create table ts_tmp_shopping_search(
     id SERIAL NOT NULL,
     groups_id varchar(64), 
     tmps_name varchar(64), 
-    tmps_member_name varchar(64),
-    tmps_category_name varchar(64), 
+    tmps_member_no integer,
+    tmps_category_no integer, 
     tmps_type integer,
     tmps_payment integer,
     tmps_settlement integer,
@@ -133,8 +134,8 @@ create table ts_tmp_shopping_entry(
     id SERIAL NOT NULL,
     groups_id varchar(64), 
     tmpe_name varchar(64), 
-    tmpe_member_name varchar(64),
-    tmpe_category_name varchar(64), 
+    tmpe_member_no integer,
+    tmpe_category_no integer, 
     tmpe_type integer,
     tmpe_payment integer,
     tmpe_settlement integer,
@@ -160,6 +161,7 @@ create table ts_budgets(
 create table ts_shopping(
     id SERIAL NOT NULL,
     groups_id varchar(64), 
+    user_id integer,
     shopping_date date,
     member_no integer,
     category_no integer, 
@@ -188,6 +190,7 @@ create table ts_comment(
     yyyy integer,
     mm integer,
     content varchar(65535),
+    fixed_flg integer,
     PRIMARY KEY (id)
 );
 
@@ -235,18 +238,16 @@ VALUES
     ('user_communication_list_view', '20'),
     ('user_communication_view_conditions', '0');
 
-INSERT INTO ms_choices (item_type, item_no, item_name)
+INSERT INTO ms_choices (item_type, item_no, item_name_pc,item_name_sp)
 VALUES
-    ('type', 0, '収入'),
-    ('type', 1, '支出'),
-    ('payment', 0, '現金'),
-    ('payment', 1, 'カード'),
-    ('payment', 2, '引落し'),
-    ('payment', 3, '振込み'),
-    ('settlement_pc', 0, '未精算'),
-    ('settlement_pc', 1, '精算済'),
-    ('settlement_sp', 0, '未'),
-    ('settlement_sp', 1, '済');
+    ('type', 0, '収入', '収入'),
+    ('type', 1, '支出', '支出'),
+    ('payment', 0, '現金', '現金'),
+    ('payment', 1, 'カード', 'カード'),
+    ('payment', 2, '引落し', '引落し'),
+    ('payment', 3, '振込み', '振込み'),
+    ('settlement', 0, '未精算','未'),
+    ('settlement', 1, '精算済','済'),
 
 INSERT INTO ts_userinfo (
     user_name, 

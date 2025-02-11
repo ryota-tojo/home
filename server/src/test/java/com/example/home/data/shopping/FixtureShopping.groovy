@@ -5,6 +5,7 @@ import com.example.home.data.etc.FixtureEtc
 import com.example.home.data.fixed.FixtureFixed
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.member.FixtureMember
+import com.example.home.data.user.FixtureUserInfo
 import com.example.home.domain.entity.shopping.Shopping
 import com.example.home.domain.value_object.shopping.*
 
@@ -71,6 +72,7 @@ class FixtureShopping {
         return new Shopping(
                 買い物ID_正常(),
                 FixtureGroupList.所属グループID_正常(),
+                FixtureUserInfo.ユーザーID_正常(),
                 購入日_正常(),
                 FixtureMember.メンバー番号_正常(),
                 FixtureCategory.カテゴリー番号_正常(),
