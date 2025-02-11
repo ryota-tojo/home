@@ -1,6 +1,6 @@
 package com.example.home.data.etc
 
-
+import com.example.home.domain.value_object.etc.Amount
 import com.example.home.domain.value_object.etc.MM
 import com.example.home.domain.value_object.etc.YYYY
 
@@ -13,4 +13,7 @@ class FixtureEtc {
         new MM(1)
     }
 
+    static 金額_正常() {
+        new Amount(10000)
+    }
 }

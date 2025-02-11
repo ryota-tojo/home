@@ -15,6 +15,12 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
     ログインエラー_データ照合("error", "LOGIN_ERROR_COLLATION", "ユーザーの照合に失敗しました"),
     ログインエラー_削除済ユーザー("error", "LOGIN_ERROR_DELETED_USER", "ログイン不可能なユーザーです"),
     ログインエラー_未承認ユーザー("error", "LOGIN_ERROR_UNAPPROVED_USER", "未承認ユーザーです"),
-    ログインエラー_所属グループ不正("error", "LOGIN_ERROR_GROUP_FRAUD", "所属グループが間違っています");
+    ログインエラー_所属グループ不正("error", "LOGIN_ERROR_GROUP_FRAUD", "所属グループが間違っています"),
+
+    存在しないメンバー("error", "MEMBER_NOT_FOUND_ERROR", "存在しないメンバーが指定されています"),
+    存在しないカテゴリー("error", "CATEGORY_NOT_FOUND_ERROR", "存在しないカテゴリーが指定されています"),
+    存在しない購入種別("error", "SHOPPING_TYPE_NOT_FOUND_ERROR", "存在しない購入種別が指定されています"),
+    存在しない支払い方法("error", "SHOPPING_PAYMENT_NOT_FOUND_ERROR", "存在しない支払い方法が指定されています"),
+    存在しない精算状況("error", "SHOPPING_SETTLEMENT_NOT_FOUND_ERROR", "存在しない精算状況が指定されています");
 
 }
