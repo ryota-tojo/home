@@ -9,11 +9,13 @@ import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberNo
 import com.example.home.domain.value_object.shopping.*
+import com.example.home.domain.value_object.user.UserId
 import java.time.LocalDate
 
 interface ShoppingRepository {
     fun refer(
         groupsId: GroupsId,
+        userId: UserId? = null,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,
         memberNo: MemberNo? = null,
@@ -28,6 +30,7 @@ interface ShoppingRepository {
 
     fun save(
         groupsId: GroupsId,
+        userId: UserId,
         shoppingDate: LocalDate,
         memberNo: MemberNo,
         categoryNo: CategoryNo,
@@ -53,6 +56,7 @@ interface ShoppingRepository {
     fun update(
         shoppingId: ShoppingId,
         groupsId: GroupsId,
+        userId: UserId,
         shoppingDate: LocalDate,
         memberNo: MemberNo,
         categoryNo: CategoryNo,

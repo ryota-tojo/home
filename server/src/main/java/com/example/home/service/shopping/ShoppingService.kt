@@ -23,6 +23,7 @@ import com.example.home.domain.value_object.master.ChoicesItemNo
 import com.example.home.domain.value_object.master.ChoicesItemType
 import com.example.home.domain.value_object.member.MemberNo
 import com.example.home.domain.value_object.shopping.*
+import com.example.home.domain.value_object.user.UserId
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -35,6 +36,7 @@ class ShoppingService(
 ) {
     fun refer(
         groupsId: GroupsId,
+        userId: UserId? = null,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,
         memberNo: MemberNo? = null,
@@ -48,6 +50,7 @@ class ShoppingService(
     ): ShoppingReferResult {
         val shoppingList = shoppingRepository.refer(
             groupsId,
+            userId,
             shoppingDateYYYY,
             shoppingDateMM,
             memberNo,
@@ -68,6 +71,7 @@ class ShoppingService(
 
     fun save(
         groupsId: GroupsId,
+        userId: UserId,
         shoppingDate: LocalDate,
         memberNo: MemberNo,
         categoryNo: CategoryNo,
@@ -88,6 +92,7 @@ class ShoppingService(
 
         val shopping = shoppingRepository.save(
             groupsId,
+            userId,
             shoppingDate,
             memberNo,
             categoryNo,
@@ -130,6 +135,7 @@ class ShoppingService(
     fun update(
         shoppingId: ShoppingId,
         groupsId: GroupsId,
+        userId: UserId,
         shoppingDate: LocalDate,
         memberNo: MemberNo,
         categoryNo: CategoryNo,
@@ -151,6 +157,7 @@ class ShoppingService(
         val updateRows = shoppingRepository.update(
             shoppingId,
             groupsId,
+            userId,
             shoppingDate,
             memberNo,
             categoryNo,

@@ -3,6 +3,7 @@ package com.example.home.datasource.comment
 import com.example.home.domain.entity.comment.Comment
 import com.example.home.domain.repository.comment.CommentRepository
 import com.example.home.domain.value_object.comment.Content
+import com.example.home.domain.value_object.etc.FixedFlg
 import com.example.home.domain.value_object.etc.MM
 import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
@@ -28,7 +29,8 @@ class CommentRepositoryImpl : CommentRepository {
                             GroupsId(it[TbTsComment.groupsId]),
                             YYYY(it[TbTsComment.yyyy]),
                             MM(it[TbTsComment.mm]),
-                            Content(it[TbTsComment.content])
+                            Content(it[TbTsComment.content]),
+                            FixedFlg(it[TbTsComment.fixedFlg])
                         )
                     }
             } else {
@@ -45,7 +47,8 @@ class CommentRepositoryImpl : CommentRepository {
                         GroupsId(it[TbTsComment.groupsId]),
                         YYYY(it[TbTsComment.yyyy]),
                         MM(it[TbTsComment.mm]),
-                        Content(it[TbTsComment.content])
+                        Content(it[TbTsComment.content]),
+                        FixedFlg(it[TbTsComment.fixedFlg])
                     )
                 }
             }
@@ -64,6 +67,7 @@ class CommentRepositoryImpl : CommentRepository {
                 it[TbTsComment.yyyy] = yyyy.value
                 it[TbTsComment.mm] = mm.value
                 it[TbTsComment.content] = content.value
+                it[fixedFlg] = 0
             }
 
             val comment = TbTsComment.select {
@@ -78,7 +82,8 @@ class CommentRepositoryImpl : CommentRepository {
                     GroupsId(it[TbTsComment.groupsId]),
                     YYYY(it[TbTsComment.yyyy]),
                     MM(it[TbTsComment.mm]),
-                    Content(it[TbTsComment.content])
+                    Content(it[TbTsComment.content]),
+                    FixedFlg(it[TbTsComment.fixedFlg])
                 )
             } ?: throw IllegalStateException("Failed to save the Comment")
         }

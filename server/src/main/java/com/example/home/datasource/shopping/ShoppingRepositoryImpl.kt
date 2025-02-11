@@ -10,6 +10,7 @@ import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberNo
 import com.example.home.domain.value_object.shopping.*
+import com.example.home.domain.value_object.user.UserId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsShopping
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.month
@@ -20,6 +21,7 @@ import java.time.LocalDate
 class ShoppingRepositoryImpl : ShoppingRepository {
     override fun refer(
         groupsId: GroupsId,
+        userId: UserId?,
         shoppingDateYYYY: YYYY?,
         shoppingDateMM: MM?,
         memberNo: MemberNo?,
@@ -36,6 +38,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 Op.build {
                     var condition: Op<Boolean> = Op.TRUE
                     condition = condition and (TbTsShopping.groupsId eq groupsId.value)
+                    userId?.let { condition = condition and (TbTsShopping.userId eq it.value) }
                     shoppingDateYYYY?.let { condition = condition and (TbTsShopping.shoppingDate.year() eq it.value) }
                     shoppingDateMM?.let { condition = condition and (TbTsShopping.shoppingDate.month() eq it.value) }
                     memberNo?.let { condition = condition and (TbTsShopping.memberNo eq it.value) }
@@ -52,6 +55,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 Shopping(
                     ShoppingId(it[TbTsShopping.id]),
                     GroupsId(it[TbTsShopping.groupsId]),
+                    UserId(it[TbTsShopping.userId]),
                     it[TbTsShopping.shoppingDate],
                     MemberNo(it[TbTsShopping.memberNo]),
                     CategoryNo(it[TbTsShopping.categoryNo]),
@@ -68,6 +72,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
 
     override fun save(
         groupsId: GroupsId,
+        userId: UserId,
         shoppingDate: LocalDate,
         memberNo: MemberNo,
         categoryNo: CategoryNo,
@@ -80,6 +85,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         return transaction {
             TbTsShopping.insert {
                 it[TbTsShopping.groupsId] = groupsId.value
+                it[TbTsShopping.userId] = userId.value
                 it[TbTsShopping.shoppingDate] = shoppingDate
                 it[TbTsShopping.memberNo] = memberNo.value
                 it[TbTsShopping.categoryNo] = categoryNo.value
@@ -91,8 +97,9 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 it[fixedFlg] = 0
             }
 
-            val budgets = TbTsShopping.select {
+            val shopping = TbTsShopping.select {
                 (TbTsShopping.groupsId eq groupsId.value) and
+                        (TbTsShopping.userId eq userId.value) and
                         (TbTsShopping.shoppingDate eq shoppingDate) and
                         (TbTsShopping.memberNo eq memberNo.value) and
                         (TbTsShopping.categoryNo eq categoryNo.value) and
@@ -104,10 +111,11 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                         (TbTsShopping.fixedFlg eq 0)
             }.singleOrNull()
 
-            return@transaction budgets?.let {
+            return@transaction shopping?.let {
                 Shopping(
                     ShoppingId(it[TbTsShopping.id]),
                     GroupsId(it[TbTsShopping.groupsId]),
+                    UserId(it[TbTsShopping.userId]),
                     it[TbTsShopping.shoppingDate],
                     MemberNo(it[TbTsShopping.memberNo]),
                     CategoryNo(it[TbTsShopping.categoryNo]),
@@ -152,6 +160,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 Shopping(
                     ShoppingId(it[TbTsShopping.id]),
                     GroupsId(it[TbTsShopping.groupsId]),
+                    UserId(it[TbTsShopping.userId]),
                     it[TbTsShopping.shoppingDate],
                     MemberNo(it[TbTsShopping.memberNo]),
                     CategoryNo(it[TbTsShopping.categoryNo]),
@@ -170,6 +179,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
     override fun update(
         shoppingId: ShoppingId,
         groupsId: GroupsId,
+        userId: UserId,
         shoppingDate: LocalDate,
         memberNo: MemberNo,
         categoryNo: CategoryNo,
@@ -185,6 +195,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 TbTsShopping.id eq shoppingId.value
             }) {
                 it[TbTsShopping.groupsId] = groupsId.value
+                it[TbTsShopping.userId] = userId.value
                 it[TbTsShopping.shoppingDate] = shoppingDate
                 it[TbTsShopping.memberNo] = memberNo.value
                 it[TbTsShopping.categoryNo] = categoryNo.value

@@ -8,5 +8,6 @@ object TbTsComment : Table("ts_comment") {
     val yyyy = integer("yyyy")
     val mm = integer("mm")
     val content = varchar("content", 65535)
+    val fixedFlg = integer("fixed_flg")
     override val primaryKey = PrimaryKey(id)
 }

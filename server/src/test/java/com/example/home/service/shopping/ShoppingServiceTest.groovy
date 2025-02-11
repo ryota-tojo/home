@@ -7,6 +7,7 @@ import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.master.FixtureChoices
 import com.example.home.data.member.FixtureMember
 import com.example.home.data.shopping.FixtureShopping
+import com.example.home.data.user.FixtureUserInfo
 import com.example.home.domain.entity.master.MasterChoices
 import com.example.home.domain.entity.shopping.result.ShoppingDeleteResult
 import com.example.home.domain.entity.shopping.result.ShoppingReferResult
@@ -31,13 +32,14 @@ class ShoppingServiceTest extends Specification {
 
         setup:
         def groupsId = FixtureGroupList.所属グループID_正常()
+        def userId = FixtureUserInfo.ユーザーID_正常()
 
         when:
-        def result = sut.refer(groupsId, shoppingDateYYYY, shoppingDateMM, memberNo, categoryNo, type, payment, settlement, minAmount, maxAmount, remarks
+        def result = sut.refer(groupsId, userId, shoppingDateYYYY, shoppingDateMM, memberNo, categoryNo, type, payment, settlement, minAmount, maxAmount, remarks
         )
 
         then:
-        1 * shoppingRepository.refer(groupsId, shoppingDateYYYY, shoppingDateMM, memberNo, categoryNo, type, payment, settlement, minAmount, maxAmount, remarks
+        1 * shoppingRepository.refer(groupsId, userId, shoppingDateYYYY, shoppingDateMM, memberNo, categoryNo, type, payment, settlement, minAmount, maxAmount, remarks
         ) >> shoppingList
         result == expected
 
@@ -61,6 +63,7 @@ class ShoppingServiceTest extends Specification {
 
         setup:
         def groupsId = FixtureGroupList.所属グループID_正常()
+        def userId = FixtureUserInfo.ユーザーID_正常()
         def shoppingDate = FixtureShopping.購入日_正常()
         def memberNo = FixtureMember.メンバー番号_正常()
         def categoryNo = FixtureCategory.カテゴリー番号_正常()
@@ -71,7 +74,7 @@ class ShoppingServiceTest extends Specification {
         def remarks = FixtureShopping.備考_正常()
 
         when:
-        def result = sut.save(groupsId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks
+        def result = sut.save(groupsId, userId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks
         )
 
         then:
@@ -80,7 +83,7 @@ class ShoppingServiceTest extends Specification {
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3
-        saveCnt * shoppingRepository.save(groupsId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks
+        saveCnt * shoppingRepository.save(groupsId, userId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks
         ) >> shopping
         result == expected
 
@@ -127,6 +130,7 @@ class ShoppingServiceTest extends Specification {
         setup:
         def shoppingId = FixtureShopping.買い物ID_正常()
         def groupsId = FixtureGroupList.所属グループID_正常()
+        def userId = FixtureUserInfo.ユーザーID_正常()
         def shoppingDate = FixtureShopping.購入日_正常()
         def memberNo = FixtureMember.メンバー番号_正常()
         def categoryNo = FixtureCategory.カテゴリー番号_正常()
@@ -138,7 +142,7 @@ class ShoppingServiceTest extends Specification {
         def fixedFlg = FixtureFixed.確定フラグ_未確定()
 
         when:
-        def result = sut.update(shoppingId, groupsId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks, fixedFlg
+        def result = sut.update(shoppingId, groupsId, userId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks, fixedFlg
         )
 
         then:
@@ -147,7 +151,7 @@ class ShoppingServiceTest extends Specification {
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3
-        updateCnt * shoppingRepository.update(shoppingId, groupsId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks, fixedFlg
+        updateCnt * shoppingRepository.update(shoppingId, groupsId, userId, shoppingDate, memberNo, categoryNo, type, payment, settlement, amount, remarks, fixedFlg
         ) >> updateRows
         result == expected
 
