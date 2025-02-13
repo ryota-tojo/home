@@ -23,7 +23,8 @@ data class ShoppingSearchTemplate(
     val shoppingType: ShoppingType,
     val shoppingPayment: ShoppingPayment,
     val shoppingSettlement: ShoppingSettlement,
-    val shoppingAmount: Amount,
+    val shoppingMinAmount: Amount,
+    val shoppingMaxAmount: Amount,
     val shoppingRemarks: ShoppingRemarks,
     val templateUseFlg: TemplateUseFlg
 )
