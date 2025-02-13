@@ -1,13 +1,13 @@
 package com.example.home.domain.repository.shopping
 
 import com.example.home.domain.entity.shopping.Shopping
-import com.example.home.domain.value_object.category.CategoryNo
+import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.etc.Amount
 import com.example.home.domain.value_object.etc.FixedFlg
 import com.example.home.domain.value_object.etc.MM
 import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.value_object.member.MemberNo
+import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.shopping.*
 import com.example.home.domain.value_object.user.UserId
 import java.time.LocalDate
@@ -18,8 +18,8 @@ interface ShoppingRepository {
         userId: UserId? = null,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,
-        memberNo: MemberNo? = null,
-        categoryNo: CategoryNo? = null,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
         type: ShoppingType? = null,
         payment: ShoppingPayment? = null,
         settlement: ShoppingSettlement? = null,
@@ -32,8 +32,8 @@ interface ShoppingRepository {
         groupsId: GroupsId,
         userId: UserId,
         shoppingDate: LocalDate,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
@@ -44,8 +44,8 @@ interface ShoppingRepository {
     fun isDuplication(
         groupsId: GroupsId,
         shoppingDate: LocalDate,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
@@ -58,8 +58,8 @@ interface ShoppingRepository {
         groupsId: GroupsId,
         userId: UserId,
         shoppingDate: LocalDate,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,

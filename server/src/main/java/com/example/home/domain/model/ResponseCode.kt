@@ -17,6 +17,11 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
     ログインエラー_未承認ユーザー("error", "LOGIN_ERROR_UNAPPROVED_USER", "未承認ユーザーです"),
     ログインエラー_所属グループ不正("error", "LOGIN_ERROR_GROUP_FRAUD", "所属グループが間違っています"),
 
+    重複するテンプレートID(
+        "error",
+        "TEMPLATE_ID_IS_DUPLICATION_ERROR",
+        "既に登録されたテンプレートIDが指定されています"
+    ),
     存在しないメンバー("error", "MEMBER_NOT_FOUND_ERROR", "存在しないメンバーが指定されています"),
     存在しないカテゴリー("error", "CATEGORY_NOT_FOUND_ERROR", "存在しないカテゴリーが指定されています"),
     存在しない購入種別("error", "SHOPPING_TYPE_NOT_FOUND_ERROR", "存在しない購入種別が指定されています"),

@@ -4,7 +4,6 @@ import com.example.home.domain.entity.category.Category
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
-import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
 import org.jetbrains.exposed.sql.*
@@ -17,22 +16,26 @@ class CategoryRepositoryImpl : CategoryRepository {
     override fun refer(groupsId: GroupsId?): List<Category> {
         return transaction {
             if (groupsId == null) {
-                TbTsCategorys.selectAll()
+                TbTsCategorys
+                    .selectAll()
+                    .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
                     .map {
                         Category(
-                            CategoryId(it[TbTsCategorys.id]),
+                            CategoryId(it[TbTsCategorys.categoryId]),
                             GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryNo(it[TbTsCategorys.categoryNo]),
+                            CategoryId(it[TbTsCategorys.categoryNo]),
                             CategoryName(it[TbTsCategorys.categoryName])
                         )
                     }
             } else {
-                TbTsCategorys.select(TbTsCategorys.groupsId eq groupsId.value)
+                TbTsCategorys
+                    .select(TbTsCategorys.groupsId eq groupsId.value)
+                    .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
                     .map {
                         Category(
-                            CategoryId(it[TbTsCategorys.id]),
+                            CategoryId(it[TbTsCategorys.categoryId]),
                             GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryNo(it[TbTsCategorys.categoryNo]),
+                            CategoryId(it[TbTsCategorys.categoryNo]),
                             CategoryName(it[TbTsCategorys.categoryName])
                         )
                     }
@@ -42,7 +45,7 @@ class CategoryRepositoryImpl : CategoryRepository {
 
     override fun save(
         groupsId: GroupsId,
-        categoryNo: CategoryNo,
+        categoryNo: CategoryId,
         categoryName: CategoryName
     ): Category {
         return transaction {
@@ -60,9 +63,9 @@ class CategoryRepositoryImpl : CategoryRepository {
 
             return@transaction category?.let {
                 Category(
-                    CategoryId(it[TbTsCategorys.id]),
+                    CategoryId(it[TbTsCategorys.categoryId]),
                     GroupsId(it[TbTsCategorys.groupsId]),
-                    CategoryNo(it[TbTsCategorys.categoryNo]),
+                    CategoryId(it[TbTsCategorys.categoryNo]),
                     CategoryName(it[TbTsCategorys.categoryName])
                 )
             } ?: throw IllegalStateException("Failed to save the Category")
@@ -71,7 +74,7 @@ class CategoryRepositoryImpl : CategoryRepository {
 
     override fun update(
         groupsId: GroupsId,
-        categoryNo: CategoryNo,
+        categoryNo: CategoryId,
         categoryName: CategoryName
     ): Int {
         return transaction {
@@ -87,7 +90,7 @@ class CategoryRepositoryImpl : CategoryRepository {
         }
     }
 
-    override fun delete(groupsId: GroupsId, categoryNo: CategoryNo?, categoryName: CategoryName?): Int {
+    override fun delete(groupsId: GroupsId, categoryNo: CategoryId?, categoryName: CategoryName?): Int {
         return transaction {
             val condition = TbTsCategorys.groupsId eq groupsId.value
 

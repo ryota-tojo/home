@@ -1,6 +1,5 @@
 package com.example.home.service.master
 
-import com.example.home.datasource.master.MasterSettingRepositoryImpl
 import com.example.home.domain.entity.master.result.MasterSettingDeleteResult
 import com.example.home.domain.entity.master.result.MasterSettingReferResult
 import com.example.home.domain.entity.master.result.MasterSettingSaveResult
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class MasterSettingService(
-    private val masterSettingRepository: MasterSettingRepository = MasterSettingRepositoryImpl()
+    private val masterSettingRepository: MasterSettingRepository
 ) {
     fun refer(masterSettingKey: MasterSettingKey? = null): MasterSettingReferResult {
         val masterSettingList = masterSettingRepository.refer(masterSettingKey)

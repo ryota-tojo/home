@@ -1,6 +1,5 @@
 package com.example.home.service.member
 
-import com.example.home.datasource.member.MemberRepositoryImpl
 import com.example.home.domain.entity.member.result.MemberDeleteResult
 import com.example.home.domain.entity.member.result.MemberReferResult
 import com.example.home.domain.entity.member.result.MemberSaveResult
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class MemberService(
-    private val memberRepository: MemberRepository = MemberRepositoryImpl()
+    private val memberRepository: MemberRepository
 ) {
     fun refer(groupsId: GroupsId): MemberReferResult {
         val MemberList = memberRepository.refer(groupsId)

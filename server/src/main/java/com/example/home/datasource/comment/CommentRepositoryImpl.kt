@@ -25,7 +25,7 @@ class CommentRepositoryImpl : CommentRepository {
                 TbTsComment.selectAll()
                     .map {
                         Comment(
-                            it[TbTsComment.id],
+                            it[TbTsComment.commentId],
                             GroupsId(it[TbTsComment.groupsId]),
                             YYYY(it[TbTsComment.yyyy]),
                             MM(it[TbTsComment.mm]),
@@ -43,7 +43,7 @@ class CommentRepositoryImpl : CommentRepository {
                     }
                 }.map {
                     Comment(
-                        it[TbTsComment.id],
+                        it[TbTsComment.commentId],
                         GroupsId(it[TbTsComment.groupsId]),
                         YYYY(it[TbTsComment.yyyy]),
                         MM(it[TbTsComment.mm]),
@@ -78,7 +78,7 @@ class CommentRepositoryImpl : CommentRepository {
 
             return@transaction comment?.let {
                 Comment(
-                    it[TbTsComment.id],
+                    it[TbTsComment.commentId],
                     GroupsId(it[TbTsComment.groupsId]),
                     YYYY(it[TbTsComment.yyyy]),
                     MM(it[TbTsComment.mm]),

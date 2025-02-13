@@ -1,9 +1,5 @@
 package com.example.home.service.user
 
-import com.example.home.datasource.group.GroupInfoRepositoryImpl
-import com.example.home.datasource.group.GroupListRepositoryImpl
-import com.example.home.datasource.user.UserInfoRepositoryImpl
-import com.example.home.datasource.user.UserSettingRepositoryImpl
 import com.example.home.domain.entity.user.result.*
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
@@ -17,10 +13,10 @@ import com.example.home.domain.value_object.user.*
 import com.example.home.util.ValidationCheck
 
 class UserControlService(
-    val userInfoRepository: UserInfoRepository = UserInfoRepositoryImpl(),
-    val userSettingRepository: UserSettingRepository = UserSettingRepositoryImpl(),
-    val groupListRepository: GroupListRepository = GroupListRepositoryImpl(),
-    val groupInfoRepository: GroupInfoRepository = GroupInfoRepositoryImpl(),
+    val userInfoRepository: UserInfoRepository,
+    val userSettingRepository: UserSettingRepository,
+    val groupListRepository: GroupListRepository,
+    val groupInfoRepository: GroupInfoRepository,
 ) {
     fun refer(userId: UserId? = null, userName: UserName? = null): UserReferResult {
         if (userId == null && userName == null) {

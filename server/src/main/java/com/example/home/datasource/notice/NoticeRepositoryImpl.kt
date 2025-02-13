@@ -9,8 +9,10 @@ import com.example.home.infrastructure.persistence.exposed_tables.transaction.Tb
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
+@Repository
 class NoticeRepositoryImpl : NoticeRepository {
 
     override fun refer(noticeId: NoticeId?): List<Notice> {
@@ -18,12 +20,12 @@ class NoticeRepositoryImpl : NoticeRepository {
             TbTsNotice.select {
                 Op.build {
                     var condition: Op<Boolean> = Op.TRUE
-                    noticeId?.let { condition = TbTsNotice.id eq it.value }
+                    noticeId?.let { condition = TbTsNotice.noticeId eq it.value }
                     condition
                 }
             }.map {
                 Notice(
-                    NoticeId(it[TbTsNotice.id]),
+                    NoticeId(it[TbTsNotice.noticeId]),
                     NoticeTitle(it[TbTsNotice.title]),
                     NoticeContent(it[TbTsNotice.content]),
                     it[TbTsNotice.createDate],
@@ -40,7 +42,7 @@ class NoticeRepositoryImpl : NoticeRepository {
                 it[content] = noticeContent.value
                 it[createDate] = LocalDateTime.now()
                 it[updateDate] = LocalDateTime.now()
-            }.resultedValues?.firstOrNull()?.get(TbTsNotice.id)
+            }.resultedValues?.firstOrNull()?.get(TbTsNotice.noticeId)
 
             if (id == null || id == 0) {
                 throw IllegalStateException("データの挿入に失敗しました")
@@ -53,7 +55,7 @@ class NoticeRepositoryImpl : NoticeRepository {
     override fun update(noticeId: NoticeId, noticeTitle: NoticeTitle, noticeContent: NoticeContent): Int {
         return transaction {
             val updateRows = TbTsNotice.update({
-                TbTsNotice.id eq noticeId.value
+                TbTsNotice.noticeId eq noticeId.value
             }) {
                 it[title] = noticeTitle.value
                 it[content] = noticeContent.value
@@ -65,7 +67,7 @@ class NoticeRepositoryImpl : NoticeRepository {
 
     override fun delete(noticeId: NoticeId): Int {
         return transaction {
-            val updateRows = TbTsNotice.deleteWhere { id eq noticeId.value }
+            val updateRows = TbTsNotice.deleteWhere { this.noticeId eq noticeId.value }
             return@transaction updateRows
         }
     }

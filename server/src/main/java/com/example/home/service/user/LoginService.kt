@@ -1,7 +1,5 @@
 package com.example.home.service.user
 
-import com.example.home.datasource.group.GroupInfoRepositoryImpl
-import com.example.home.datasource.user.LoginRepositoryImpl
 import com.example.home.domain.entity.user.LoginInfo
 import com.example.home.domain.entity.user.result.UserLoginResult
 import com.example.home.domain.model.ResponseCode
@@ -11,8 +9,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class LoginService(
-    private val groupInfoRepository: GroupInfoRepository = GroupInfoRepositoryImpl(),
-    private val loginRepository: LoginRepository = LoginRepositoryImpl()
+    private val groupInfoRepository: GroupInfoRepository,
+    private val loginRepository: LoginRepository
 ) {
     fun login(loginInfo: LoginInfo): UserLoginResult {
         // ユーザー情報を取得する

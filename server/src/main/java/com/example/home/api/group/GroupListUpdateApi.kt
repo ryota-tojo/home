@@ -4,8 +4,12 @@ import com.example.home.api.group.request.GroupListUpdateRequest
 import com.example.home.api.group.response.GroupListUpdateResponse
 import com.example.home.api.group.response.GroupListUpdateResponse.GroupListUpdateResponseData
 import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.repository.category.CategoryRepository
+import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.value_object.group.GroupName
 import com.example.home.domain.value_object.group.GroupPassword
 import com.example.home.domain.value_object.group.GroupsId
@@ -21,10 +25,14 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class GroupListUpdateApi(
     private val groupListRepository: GroupListRepository,
-    private val groupSettingRepository: GroupSettingRepository
+    private val groupSettingRepository: GroupSettingRepository,
+    private val groupInfoRepository: GroupInfoRepository,
+    private val memberRepository: MemberRepository,
+    private val categoryRepository: CategoryRepository,
+    private val commentRepository: CommentRepository
 ) {
     companion object {
-        const val API_PATH = "api/group/update/list";
+        const val API_PATH = "api/group/update/list"
     }
 
     @PostMapping(value = [API_PATH])
@@ -36,11 +44,18 @@ class GroupListUpdateApi(
         val groupName = GroupName(request.groupName)
         val groupPassword = GroupPassword(request.groupPassword)
 
-        val groupControlService: GroupControlService = GroupControlService(groupListRepository, groupSettingRepository)
+        val groupControlService: GroupControlService = GroupControlService(
+            groupListRepository,
+            groupSettingRepository,
+            groupInfoRepository,
+            memberRepository,
+            categoryRepository,
+            commentRepository
+        )
         val result = groupControlService.listUpdate(groupsId, groupName, groupPassword)
 
         val groupListUpdateResponseData: GroupListUpdateResponseData =
-            GroupListUpdateResponse.GroupListUpdateResponseData(
+            GroupListUpdateResponseData(
                 result.updateRow
             )
 

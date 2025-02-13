@@ -9,8 +9,10 @@ import com.example.home.infrastructure.persistence.exposed_tables.transaction.Tb
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
+@Repository
 class GroupInfoRepositoryImpl : GroupInfoRepository {
     override fun refer(groupsId: GroupsId?, userId: UserId?): List<GroupInfo> {
         return transaction {

@@ -1,9 +1,5 @@
 package com.example.home.service.shopping
 
-import com.example.home.datasource.category.CategoryRepositoryImpl
-import com.example.home.datasource.master.ChoicesRepositoryImpl
-import com.example.home.datasource.member.MemberRepositoryImpl
-import com.example.home.datasource.shopping.ShoppingRepositoryImpl
 import com.example.home.domain.entity.shopping.result.ShoppingDeleteResult
 import com.example.home.domain.entity.shopping.result.ShoppingReferResult
 import com.example.home.domain.entity.shopping.result.ShoppingSaveResult
@@ -13,7 +9,7 @@ import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.repository.master.ChoicesRepository
 import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.repository.shopping.ShoppingRepository
-import com.example.home.domain.value_object.category.CategoryNo
+import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.etc.Amount
 import com.example.home.domain.value_object.etc.FixedFlg
 import com.example.home.domain.value_object.etc.MM
@@ -21,7 +17,7 @@ import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.master.ChoicesItemNo
 import com.example.home.domain.value_object.master.ChoicesItemType
-import com.example.home.domain.value_object.member.MemberNo
+import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.shopping.*
 import com.example.home.domain.value_object.user.UserId
 import org.springframework.stereotype.Service
@@ -29,18 +25,18 @@ import java.time.LocalDate
 
 @Service
 class ShoppingService(
-    private val shoppingRepository: ShoppingRepository = ShoppingRepositoryImpl(),
-    private val memberRepository: MemberRepository = MemberRepositoryImpl(),
-    private val categoryRepository: CategoryRepository = CategoryRepositoryImpl(),
-    private val choicesRepository: ChoicesRepository = ChoicesRepositoryImpl()
+    private val shoppingRepository: ShoppingRepository,
+    private val memberRepository: MemberRepository,
+    private val categoryRepository: CategoryRepository,
+    private val choicesRepository: ChoicesRepository,
 ) {
     fun refer(
         groupsId: GroupsId,
         userId: UserId? = null,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,
-        memberNo: MemberNo? = null,
-        categoryNo: CategoryNo? = null,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
         type: ShoppingType? = null,
         payment: ShoppingPayment? = null,
         settlement: ShoppingSettlement? = null,
@@ -53,8 +49,8 @@ class ShoppingService(
             userId,
             shoppingDateYYYY,
             shoppingDateMM,
-            memberNo,
-            categoryNo,
+            memberId,
+            categoryId,
             type,
             payment,
             settlement,
@@ -73,16 +69,15 @@ class ShoppingService(
         groupsId: GroupsId,
         userId: UserId,
         shoppingDate: LocalDate,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
         amount: Amount,
         remarks: ShoppingRemarks
     ): ShoppingSaveResult {
-
-        val inputDataCheckResult = inputDataCheck(groupsId, memberNo, categoryNo, type, payment, settlement)
+        val inputDataCheckResult = inputDataCheck(groupsId, memberId, categoryId, type, payment, settlement)
         if (inputDataCheckResult != ResponseCode.成功.code) {
             return ShoppingSaveResult(
                 inputDataCheckResult,
@@ -94,8 +89,8 @@ class ShoppingService(
             groupsId,
             userId,
             shoppingDate,
-            memberNo,
-            categoryNo,
+            memberId,
+            categoryId,
             type,
             payment,
             settlement,
@@ -111,8 +106,8 @@ class ShoppingService(
     fun isDuplication(
         groupsId: GroupsId,
         shoppingDate: LocalDate,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
@@ -122,8 +117,8 @@ class ShoppingService(
         return shoppingRepository.isDuplication(
             groupsId,
             shoppingDate,
-            memberNo,
-            categoryNo,
+            memberId,
+            categoryId,
             type,
             payment,
             settlement,
@@ -137,8 +132,8 @@ class ShoppingService(
         groupsId: GroupsId,
         userId: UserId,
         shoppingDate: LocalDate,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
@@ -146,7 +141,7 @@ class ShoppingService(
         remarks: ShoppingRemarks,
         fixedFlg: FixedFlg
     ): ShoppingUpdateResult {
-        val inputDataCheckResult = inputDataCheck(groupsId, memberNo, categoryNo, type, payment, settlement)
+        val inputDataCheckResult = inputDataCheck(groupsId, memberId, categoryId, type, payment, settlement)
         if (inputDataCheckResult != ResponseCode.成功.code) {
             return ShoppingUpdateResult(
                 inputDataCheckResult,
@@ -159,8 +154,8 @@ class ShoppingService(
             groupsId,
             userId,
             shoppingDate,
-            memberNo,
-            categoryNo,
+            memberId,
+            categoryId,
             type,
             payment,
             settlement,
@@ -202,19 +197,19 @@ class ShoppingService(
 
     fun inputDataCheck(
         groupsId: GroupsId,
-        memberNo: MemberNo,
-        categoryNo: CategoryNo,
+        memberId: MemberId,
+        categoryId: CategoryId,
         type: ShoppingType,
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
     ): String {
         val memberList = memberRepository.refer(groupsId)
-        if (!memberList.any { it.memberNo == memberNo }) {
+        if (!memberList.any { it.id == memberId }) {
             return ResponseCode.存在しないメンバー.code
         }
 
         val categoryList = categoryRepository.refer(groupsId)
-        if (!categoryList.any { it.categoryNo == categoryNo }) {
+        if (!categoryList.any { it.id == categoryId }) {
             return ResponseCode.存在しないカテゴリー.code
         }
 

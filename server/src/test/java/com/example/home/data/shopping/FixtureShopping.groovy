@@ -12,7 +12,7 @@ import com.example.home.domain.value_object.shopping.*
 import java.time.LocalDate
 
 class FixtureShopping {
-    static 買い物ID_正常() {
+    static 購入ID_正常() {
         new ShoppingId(0)
     }
 
@@ -20,15 +20,15 @@ class FixtureShopping {
         LocalDate.of(2025, 2, 2)
     }
 
-    static 買い物種別_収入() {
+    static 購入種別_収入() {
         new ShoppingType(0)
     }
 
-    static 買い物種別_出費() {
+    static 購入種別_出費() {
         new ShoppingType(1)
     }
 
-    static 買い物種別_存在しない値() {
+    static 購入種別_存在しない値() {
         new ShoppingType(999)
     }
 
@@ -68,15 +68,15 @@ class FixtureShopping {
         new ShoppingRemarks("備考")
     }
 
-    static 買い物_正常() {
+    static 購入データ_正常() {
         return new Shopping(
-                買い物ID_正常(),
+                購入ID_正常(),
                 FixtureGroupList.所属グループID_正常(),
                 FixtureUserInfo.ユーザーID_正常(),
                 購入日_正常(),
-                FixtureMember.メンバー番号_正常(),
-                FixtureCategory.カテゴリー番号_正常(),
-                買い物種別_出費(),
+                FixtureMember.メンバーID_正常(),
+                FixtureCategory.カテゴリーID_正常(),
+                購入種別_出費(),
                 支払い方法_現金(),
                 精算状態_未精算(),
                 FixtureEtc.金額_正常(),
