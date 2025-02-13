@@ -125,7 +125,8 @@ create table ts_tmp_shopping_search(
     tmps_type integer,
     tmps_payment integer,
     tmps_settlement integer,
-    tmps_amount integer,
+    tmps_min_amount integer,
+    tmps_max_amount integer,
     tmps_remarks varchar(1024),
     tmps_use_flg integer,
     PRIMARY KEY (id)
