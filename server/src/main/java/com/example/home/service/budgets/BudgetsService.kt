@@ -48,11 +48,11 @@ class BudgetsService(
 
     fun update(
         groupsId: GroupsId,
-        yyyy: YYYY,
-        mm: MM,
-        categoryId: CategoryId,
-        amount: Amount,
-        fixedFlg: FixedFlg
+        yyyy: YYYY? = null,
+        mm: MM? = null,
+        categoryId: CategoryId? = null,
+        amount: Amount? = null,
+        fixedFlg: FixedFlg? = null
     ): BudgetsUpdateResult {
         val updateRows = budgetsRepository.update(groupsId, yyyy, mm, categoryId, amount, fixedFlg)
         if (updateRows == 0) {

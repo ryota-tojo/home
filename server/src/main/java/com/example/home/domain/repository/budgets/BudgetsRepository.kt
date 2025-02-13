@@ -11,6 +11,13 @@ import com.example.home.domain.value_object.group.GroupsId
 interface BudgetsRepository {
     fun refer(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryNo: CategoryId? = null): List<Budgets>
     fun save(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryNo: CategoryId, amount: Amount): Budgets
-    fun update(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryNo: CategoryId, amount: Amount, fixedFlg: FixedFlg): Int
+    fun update(
+        groupsId: GroupsId,
+        yyyy: YYYY? = null,
+        mm: MM? = null,
+        categoryId: CategoryId? = null,
+        amount: Amount? = null,
+        fixedFlg: FixedFlg? = null
+    ): Int
     fun delete(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryNo: CategoryId? = null): Int
 }

@@ -10,6 +10,7 @@ import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsBudgets
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 
@@ -73,25 +74,29 @@ class BudgetsRepositoryImpl : BudgetsRepository {
 
     override fun update(
         groupsId: GroupsId,
-        yyyy: YYYY,
-        mm: MM,
-        categoryNo: CategoryId,
-        amount: Amount,
-        fixedFlg: FixedFlg
+        yyyy: YYYY?,
+        mm: MM?,
+        categoryId: CategoryId?,
+        amount: Amount?,
+        fixedFlg: FixedFlg?
     ): Int {
         return transaction {
+            var condition: Op<Boolean> = TbTsBudgets.groupsId eq groupsId.value
+            yyyy?.let { condition = condition and (TbTsBudgets.bgYyyy eq it.value) }
+            mm?.let { condition = condition and (TbTsBudgets.bgMm eq it.value) }
+            categoryId?.let { condition = condition and (TbTsBudgets.bgCategoryId eq it.value) }
+
             val updateRows = TbTsBudgets.update({
-                (TbTsBudgets.groupsId eq groupsId.value) and
-                        (TbTsBudgets.bgYyyy eq yyyy.value) and
-                        (TbTsBudgets.bgMm eq mm.value) and
-                        (TbTsBudgets.bgCategoryId eq categoryNo.value)
+                condition
             }) {
-                it[bgAmount] = amount.value
-                it[TbTsBudgets.fixedFlg] = fixedFlg.value
+                if (amount != null) it[bgAmount] = amount.value
+                if (fixedFlg != null) it[TbTsBudgets.fixedFlg] = fixedFlg.value
             }
+
             return@transaction updateRows
         }
     }
+
 
     override fun delete(groupsId: GroupsId, yyyy: YYYY?, mm: MM?, categoryNo: CategoryId?): Int {
         return transaction {
