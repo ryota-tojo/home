@@ -23,7 +23,7 @@ class GroupSettingRepositoryImpl : GroupSettingRepository {
                 }
             }.map {
                 GroupSetting(
-                    it[TbTsGroupSetting.id],
+                    it[TbTsGroupSetting.groupSettingId],
                     GroupsId(it[TbTsGroupSetting.groupsId]),
                     GroupSettingKey(it[TbTsGroupSetting.settingKey]),
                     GroupSettingValue(it[TbTsGroupSetting.settingValue])
@@ -46,13 +46,13 @@ class GroupSettingRepositoryImpl : GroupSettingRepository {
 
             val group = TbTsGroupSetting
                 .select { TbTsGroupSetting.groupsId eq groupsId.value }
-                .orderBy(TbTsGroupSetting.id, SortOrder.DESC)
+                .orderBy(TbTsGroupSetting.groupSettingId, SortOrder.DESC)
                 .limit(1)
                 .singleOrNull()
 
             return@transaction group?.let {
                 GroupSetting(
-                    it[TbTsGroupSetting.id],
+                    it[TbTsGroupSetting.groupSettingId],
                     GroupsId(it[TbTsGroupSetting.groupsId]),
                     GroupSettingKey(it[TbTsGroupSetting.settingKey]),
                     GroupSettingValue(it[TbTsGroupSetting.settingValue])

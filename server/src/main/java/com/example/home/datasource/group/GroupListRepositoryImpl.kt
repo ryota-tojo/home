@@ -23,7 +23,7 @@ class GroupListRepositoryImpl : GroupListRepository {
                 }
             }.map {
                 GroupList(
-                    it[TbTsGroupList.groupId],
+                    it[TbTsGroupList.groupListId],
                     GroupsId(it[TbTsGroupList.groupsId]),
                     GroupName(it[TbTsGroupList.groupName]),
                     GroupPassword(it[TbTsGroupList.groupPassword])
@@ -63,7 +63,7 @@ class GroupListRepositoryImpl : GroupListRepository {
 
             return@transaction group?.let {
                 GroupList(
-                    it[TbTsGroupList.groupId],
+                    it[TbTsGroupList.groupListId],
                     GroupsId(it[TbTsGroupList.groupsId]),
                     GroupName(it[TbTsGroupList.groupName]),
                     GroupPassword(it[TbTsGroupList.groupPassword])

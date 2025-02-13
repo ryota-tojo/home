@@ -1,11 +1,5 @@
 package com.example.home.service.group
 
-import com.example.home.datasource.category.CategoryRepositoryImpl
-import com.example.home.datasource.comment.CommentRepositoryImpl
-import com.example.home.datasource.group.GroupInfoRepositoryImpl
-import com.example.home.datasource.group.GroupListRepositoryImpl
-import com.example.home.datasource.group.GroupSettingRepositoryImpl
-import com.example.home.datasource.member.MemberRepositoryImpl
 import com.example.home.domain.entity.group.GroupListAndSetting
 import com.example.home.domain.entity.group.result.*
 import com.example.home.domain.model.ResponseCode
@@ -16,8 +10,8 @@ import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
 import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.value_object.TsDefaultData
+import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
-import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.comment.Content
 import com.example.home.domain.value_object.etc.MM
 import com.example.home.domain.value_object.etc.YYYY
@@ -29,12 +23,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class GroupControlService(
-    private val groupListRepository: GroupListRepository = GroupListRepositoryImpl(),
-    private val groupSettingRepository: GroupSettingRepository = GroupSettingRepositoryImpl(),
-    private val groupInfoRepository: GroupInfoRepository = GroupInfoRepositoryImpl(),
-    private val categoryRepository: CategoryRepository = CategoryRepositoryImpl(),
-    private val memberRepository: MemberRepository = MemberRepositoryImpl(),
-    private val commentRepository: CommentRepository = CommentRepositoryImpl(),
+    private val groupListRepository: GroupListRepository,
+    private val groupSettingRepository: GroupSettingRepository,
+    private val groupInfoRepository: GroupInfoRepository,
+    private val memberRepository: MemberRepository,
+    private val categoryRepository: CategoryRepository,
+    private val commentRepository: CommentRepository,
 ) {
     fun refer(groupsId: GroupsId): GroupReferResult {
         val groupList = groupListRepository.refer(groupsId)
@@ -76,7 +70,7 @@ class GroupControlService(
             try {
                 categoryRepository.save(
                     groupsId,
-                    CategoryNo(no.toInt()),
+                    CategoryId(no.toInt()),
                     CategoryName(value),
                 )
             } catch (e: Exception) {

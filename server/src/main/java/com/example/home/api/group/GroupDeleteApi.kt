@@ -3,9 +3,13 @@ package com.example.home.api.group
 import com.example.home.api.group.request.GroupDeleteRequest
 import com.example.home.api.group.response.GroupDeleteResponse
 import com.example.home.domain.model.ResponseCode
-import com.example.home.domain.value_object.group.GroupsId
+import com.example.home.domain.repository.category.CategoryRepository
+import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
+import com.example.home.domain.repository.member.MemberRepository
+import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.service.group.GroupControlService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
@@ -18,11 +22,15 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class GroupDeleteApi(
     private val groupListRepository: GroupListRepository,
-    private val groupSettingRepository: GroupSettingRepository
+    private val groupSettingRepository: GroupSettingRepository,
+    private val groupInfoRepository: GroupInfoRepository,
+    private val memberRepository: MemberRepository,
+    private val categoryRepository: CategoryRepository,
+    private val commentRepository: CommentRepository
 
 ) {
     companion object {
-        const val API_PATH = "api/group/delete";
+        const val API_PATH = "api/group/delete"
     }
 
     @PostMapping(value = [API_PATH])
@@ -32,7 +40,14 @@ class GroupDeleteApi(
     ): ResponseEntity<GroupDeleteResponse> {
         val groupsId = GroupsId(request.groupsId)
 
-        val groupControlService: GroupControlService = GroupControlService(groupListRepository, groupSettingRepository)
+        val groupControlService: GroupControlService = GroupControlService(
+            groupListRepository,
+            groupSettingRepository,
+            groupInfoRepository,
+            memberRepository,
+            categoryRepository,
+            commentRepository
+        )
         val result = groupControlService.delete(groupsId)
 
         if (result.result == ResponseCode.バリデーションエラー.code) {

@@ -1,21 +1,20 @@
 package com.example.home.service.category
 
-import com.example.home.datasource.category.CategoryRepositoryImpl
 import com.example.home.domain.entity.category.result.CategoryDeleteResult
 import com.example.home.domain.entity.category.result.CategoryReferResult
 import com.example.home.domain.entity.category.result.CategorySaveResult
 import com.example.home.domain.entity.category.result.CategoryUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.category.CategoryRepository
+import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
-import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
 
 @Service
 class CategoryService(
-    private val categoryRepository: CategoryRepository = CategoryRepositoryImpl()
+    private val categoryRepository: CategoryRepository
 ) {
     fun refer(groupsId: GroupsId): CategoryReferResult {
         val CategoryList = categoryRepository.refer(groupsId)
@@ -25,7 +24,7 @@ class CategoryService(
         )
     }
 
-    fun save(groupsId: GroupsId, categoryNo: CategoryNo, categoryName: CategoryName): CategorySaveResult {
+    fun save(groupsId: GroupsId, categoryNo: CategoryId, categoryName: CategoryName): CategorySaveResult {
         if (!ValidationCheck.symbol(categoryName.toString()).result) {
             return CategorySaveResult(
                 ResponseCode.バリデーションエラー.code,
@@ -39,7 +38,7 @@ class CategoryService(
         )
     }
 
-    fun update(groupsId: GroupsId, categoryNo: CategoryNo, categoryName: CategoryName): CategoryUpdateResult {
+    fun update(groupsId: GroupsId, categoryNo: CategoryId, categoryName: CategoryName): CategoryUpdateResult {
         if (!ValidationCheck.symbol(categoryName.toString()).result) {
             return CategoryUpdateResult(
                 ResponseCode.バリデーションエラー.code,
@@ -59,7 +58,7 @@ class CategoryService(
         )
     }
 
-    fun delete(groupsId: GroupsId, categoryNo: CategoryNo?): CategoryDeleteResult {
+    fun delete(groupsId: GroupsId, categoryNo: CategoryId?): CategoryDeleteResult {
         val deleteRows = if (categoryNo != null) {
             categoryRepository.delete(groupsId, categoryNo)
         } else {

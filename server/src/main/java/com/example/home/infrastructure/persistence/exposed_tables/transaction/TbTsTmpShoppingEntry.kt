@@ -6,9 +6,10 @@ import org.jetbrains.exposed.sql.Table
 object TbTsTmpShoppingEntry : Table("ts_tmp_shopping_entry") {
     val id = integer("id").autoIncrement()
     val groupsId = varchar("groups_id", 64)
+    val templateId = varchar("template_id", 64)
     val tmpeName = varchar("tmpe_name", 64)
-    val tmpeMemberName = integer("tmpe_member_no")
-    val tmpeCategoryName = integer("tmpe_category_no")
+    val tmpeMemberId = integer("tmpe_member_id")
+    val tmpeCategoryId = integer("tmpe_category_id")
     val tmpeType = integer("tmpe_type")
     val tmpePayment = integer("tmpe_payment")
     val tmpeSettlement = integer("tmpe_settlement")

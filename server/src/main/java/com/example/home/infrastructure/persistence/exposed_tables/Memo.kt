@@ -1,6 +1,4 @@
-import com.example.home.datasource.group.GroupListRepositoryImpl
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsNotice
-import com.example.home.domain.repository.group.GroupListRepository
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -15,7 +13,7 @@ fun main() {
         println("-- SELECT * すべて")
         val results_all = TbTsNotice.selectAll().map {
             mapOf(
-                "id" to it[TbTsNotice.id],
+                "id" to it[TbTsNotice.noticeId],
                 "title" to it[TbTsNotice.title],
                 "content" to it[TbTsNotice.content],
                 "createDate" to it[TbTsNotice.createDate],

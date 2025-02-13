@@ -16,20 +16,24 @@ class MemberRepositoryImpl : MemberRepository {
     override fun refer(groupsId: GroupsId?): List<com.example.home.domain.entity.member.Member> {
         return transaction {
             if (groupsId == null) {
-                TbTsMembers.selectAll()
+                TbTsMembers
+                    .selectAll()
+                    .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
                     .map {
                         com.example.home.domain.entity.member.Member(
-                            MemberId(it[TbTsMembers.id]),
+                            MemberId(it[TbTsMembers.memberId]),
                             GroupsId(it[TbTsMembers.groupsId]),
                             MemberNo(it[TbTsMembers.memberNo]),
                             MemberName(it[TbTsMembers.memberName])
                         )
                     }
             } else {
-                TbTsMembers.select(TbTsMembers.groupsId eq groupsId.value)
+                TbTsMembers
+                    .select(TbTsMembers.groupsId eq groupsId.value)
+                    .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
                     .map {
                         com.example.home.domain.entity.member.Member(
-                            MemberId(it[TbTsMembers.id]),
+                            MemberId(it[TbTsMembers.memberId]),
                             GroupsId(it[TbTsMembers.groupsId]),
                             MemberNo(it[TbTsMembers.memberNo]),
                             MemberName(it[TbTsMembers.memberName])
@@ -59,7 +63,7 @@ class MemberRepositoryImpl : MemberRepository {
 
             return@transaction member?.let {
                 com.example.home.domain.entity.member.Member(
-                    MemberId(it[TbTsMembers.id]),
+                    MemberId(it[TbTsMembers.memberId]),
                     GroupsId(it[TbTsMembers.groupsId]),
                     MemberNo(it[TbTsMembers.memberNo]),
                     MemberName(it[TbTsMembers.memberName])

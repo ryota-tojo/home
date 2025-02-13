@@ -1,6 +1,5 @@
 package com.example.home.service.notice
 
-import com.example.home.datasource.notice.NoticeRepositoryImpl
 import com.example.home.domain.entity.notice.result.NoticeDeleteResult
 import com.example.home.domain.entity.notice.result.NoticeReferResult
 import com.example.home.domain.entity.notice.result.NoticeSaveResult
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class NoticeService(
-    private val noticeRepository: NoticeRepository = NoticeRepositoryImpl()
+    private val noticeRepository: NoticeRepository
 ) {
     fun refer(noticeId: NoticeId? = null): NoticeReferResult {
         val noticeList = noticeRepository.refer(noticeId)

@@ -18,13 +18,13 @@ class UserSettingRepositoryImpl : UserSettingRepository {
             TbTsUserSetting.select {
                 Op.build {
                     var condition: Op<Boolean> = Op.TRUE
-                    userId.let { condition = TbTsUserSetting.id eq it.value }
+                    userId.let { condition = TbTsUserSetting.userSettingId eq it.value }
                     settingKey?.let { condition = condition and (TbTsUserSetting.settingKey eq it.value) }
                     condition
                 }
             }.map {
                 UserSetting(
-                    it[TbTsUserSetting.id],
+                    it[TbTsUserSetting.userSettingId],
                     UserId(it[TbTsUserSetting.userId]),
                     UserSettingKey(it[TbTsUserSetting.settingKey]),
                     UserSettingValue(it[TbTsUserSetting.settingValue])
