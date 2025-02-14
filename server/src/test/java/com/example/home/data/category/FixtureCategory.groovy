@@ -4,6 +4,7 @@ import com.example.home.data.group.FixtureGroupList
 import com.example.home.domain.entity.category.Category
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
 
 class FixtureCategory {
     static カテゴリーID_正常() {
@@ -11,7 +12,7 @@ class FixtureCategory {
     }
 
     static カテゴリー番号_正常() {
-        new CategoryId(1)
+        new CategoryNo(1)
     }
 
     static カテゴリー名_正常() {

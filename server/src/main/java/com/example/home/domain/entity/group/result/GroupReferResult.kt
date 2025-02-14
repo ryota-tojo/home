@@ -4,5 +4,5 @@ import com.example.home.domain.entity.group.GroupListAndSetting
 
 data class GroupReferResult(
     val result: String,
-    val groupListAndSetting: GroupListAndSetting
+    val groupListAndSetting: GroupListAndSetting? = null
 )

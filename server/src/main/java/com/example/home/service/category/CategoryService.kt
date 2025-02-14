@@ -8,7 +8,9 @@ import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
+import com.example.home.domain.value_object.member.MemberId
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
 
@@ -16,15 +18,19 @@ import org.springframework.stereotype.Service
 class CategoryService(
     private val categoryRepository: CategoryRepository
 ) {
-    fun refer(groupsId: GroupsId): CategoryReferResult {
-        val CategoryList = categoryRepository.refer(groupsId)
+    fun refer(
+        categoryId: CategoryId? = null,
+        groupsId: GroupsId? = null,
+        categoryNo: CategoryNo? = null
+    ): CategoryReferResult {
+        val CategoryList = categoryRepository.refer(categoryId, groupsId, categoryNo)
         return CategoryReferResult(
             ResponseCode.成功.code,
             CategoryList
         )
     }
 
-    fun save(groupsId: GroupsId, categoryNo: CategoryId, categoryName: CategoryName): CategorySaveResult {
+    fun save(groupsId: GroupsId, categoryNo: CategoryNo, categoryName: CategoryName): CategorySaveResult {
         if (!ValidationCheck.symbol(categoryName.toString()).result) {
             return CategorySaveResult(
                 ResponseCode.バリデーションエラー.code,
@@ -38,14 +44,20 @@ class CategoryService(
         )
     }
 
-    fun update(groupsId: GroupsId, categoryNo: CategoryId, categoryName: CategoryName): CategoryUpdateResult {
-        if (!ValidationCheck.symbol(categoryName.toString()).result) {
-            return CategoryUpdateResult(
-                ResponseCode.バリデーションエラー.code,
-                0
-            )
+    fun update(
+        categoryId: CategoryId,
+        categoryNo: CategoryNo? = null,
+        categoryName: CategoryName? = null
+    ): CategoryUpdateResult {
+        if (categoryName != null) {
+            if (!ValidationCheck.symbol(categoryName.toString()).result) {
+                return CategoryUpdateResult(
+                    ResponseCode.バリデーションエラー.code,
+                    0
+                )
+            }
         }
-        val updateRows = categoryRepository.update(groupsId, categoryNo, categoryName)
+        val updateRows = categoryRepository.update(categoryId, categoryNo, categoryName)
         if (updateRows == 0) {
             return CategoryUpdateResult(
                 ResponseCode.データ不在エラー.code,
@@ -58,12 +70,8 @@ class CategoryService(
         )
     }
 
-    fun delete(groupsId: GroupsId, categoryNo: CategoryId?): CategoryDeleteResult {
-        val deleteRows = if (categoryNo != null) {
-            categoryRepository.delete(groupsId, categoryNo)
-        } else {
-            categoryRepository.delete(groupsId)
-        }
+    fun delete(groupsId: GroupsId? = null, categoryId: CategoryId? = null): CategoryDeleteResult {
+        val deleteRows = categoryRepository.delete(groupsId, categoryId)
         if (deleteRows == 0) {
             return CategoryDeleteResult(
                 ResponseCode.データ不在エラー.code,

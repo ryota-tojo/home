@@ -11,8 +11,10 @@ import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.shopping.*
 import com.example.home.domain.value_object.user.UserId
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsShopping
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.month
 import org.jetbrains.exposed.sql.javatime.year
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -22,7 +24,8 @@ import java.time.LocalDate
 @Repository
 class ShoppingRepositoryImpl : ShoppingRepository {
     override fun refer(
-        groupsId: GroupsId,
+        id: ShoppingId?,
+        groupsId: GroupsId?,
         userId: UserId?,
         shoppingDateYYYY: YYYY?,
         shoppingDateMM: MM?,
@@ -36,41 +39,88 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         remarks: ShoppingRemarks?
     ): List<Shopping> {
         return transaction {
-            TbTsShopping.select {
-                Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
-                    condition = condition and (TbTsShopping.groupsId eq groupsId.value)
-                    userId?.let { condition = condition and (TbTsShopping.userId eq it.value) }
-                    shoppingDateYYYY?.let { condition = condition and (TbTsShopping.shoppingDate.year() eq it.value) }
-                    shoppingDateMM?.let { condition = condition and (TbTsShopping.shoppingDate.month() eq it.value) }
-                    memberId?.let { condition = condition and (TbTsShopping.id eq it.value) }
-                    categoryId?.let { condition = condition and (TbTsShopping.categoryId eq it.value) }
-                    type?.let { condition = condition and (TbTsShopping.type eq it.value) }
-                    payment?.let { condition = condition and (TbTsShopping.payment eq it.value) }
-                    settlement?.let { condition = condition and (TbTsShopping.settlement eq it.value) }
-                    minAmount?.let { condition = condition and (TbTsShopping.amount greaterEq it.value) }
-                    maxAmount?.let { condition = condition and (TbTsShopping.amount lessEq it.value) }
-                    remarks?.let { condition = condition and (TbTsShopping.remarks like "%${it.value}%") }
+            if (id == null && groupsId == null) {
+                TbTsShopping
+                    .selectAll()
+                    .orderBy(TbTsShopping.shoppingDate to SortOrder.ASC)
+                    .map {
+                        Shopping(
+                            ShoppingId(it[TbTsShopping.id]),
+                            GroupsId(it[TbTsShopping.groupsId]),
+                            UserId(it[TbTsShopping.userId]),
+                            it[TbTsShopping.shoppingDate],
+                            MemberId(it[TbTsShopping.id]),
+                            CategoryId(it[TbTsShopping.categoryId]),
+                            ShoppingType(it[TbTsShopping.type]),
+                            ShoppingPayment(it[TbTsShopping.payment]),
+                            ShoppingSettlement(it[TbTsShopping.settlement]),
+                            Amount(it[TbTsShopping.amount]),
+                            ShoppingRemarks(it[TbTsShopping.remarks]),
+                            FixedFlg(it[TbTsShopping.fixedFlg])
+                        )
+                    }
+            } else if (id != null) {
+                var condition: Op<Boolean> = TbTsShopping.id eq id.value
+                TbTsShopping.select {
                     condition
                 }
-            }
-                .orderBy(TbTsShopping.shoppingDate to SortOrder.ASC)
-                .map {
-                    Shopping(
-                        ShoppingId(it[TbTsShopping.id]),
-                        GroupsId(it[TbTsShopping.groupsId]),
-                        UserId(it[TbTsShopping.userId]),
-                        it[TbTsShopping.shoppingDate],
-                        MemberId(it[TbTsShopping.id]),
-                        CategoryId(it[TbTsShopping.categoryId]),
-                        ShoppingType(it[TbTsShopping.type]),
-                        ShoppingPayment(it[TbTsShopping.payment]),
-                        ShoppingSettlement(it[TbTsShopping.settlement]),
-                        Amount(it[TbTsShopping.amount]),
-                        ShoppingRemarks(it[TbTsShopping.remarks]),
-                        FixedFlg(it[TbTsShopping.fixedFlg])
-                    )
+                    .map {
+                        Shopping(
+                            ShoppingId(it[TbTsShopping.id]),
+                            GroupsId(it[TbTsShopping.groupsId]),
+                            UserId(it[TbTsShopping.userId]),
+                            it[TbTsShopping.shoppingDate],
+                            MemberId(it[TbTsShopping.id]),
+                            CategoryId(it[TbTsShopping.categoryId]),
+                            ShoppingType(it[TbTsShopping.type]),
+                            ShoppingPayment(it[TbTsShopping.payment]),
+                            ShoppingSettlement(it[TbTsShopping.settlement]),
+                            Amount(it[TbTsShopping.amount]),
+                            ShoppingRemarks(it[TbTsShopping.remarks]),
+                            FixedFlg(it[TbTsShopping.fixedFlg])
+                        )
+                    }
+            } else {
+                TbTsShopping.select {
+                    Op.build {
+                        var condition: Op<Boolean> = Op.TRUE
+                        groupsId?.let { condition = condition and (TbTsShopping.groupsId eq it.value) }
+                        userId?.let { condition = condition and (TbTsShopping.userId eq it.value) }
+                        shoppingDateYYYY?.let {
+                            condition = condition and (TbTsShopping.shoppingDate.year() eq it.value)
+                        }
+                        shoppingDateMM?.let {
+                            condition = condition and (TbTsShopping.shoppingDate.month() eq it.value)
+                        }
+                        memberId?.let { condition = condition and (TbTsShopping.id eq it.value) }
+                        categoryId?.let { condition = condition and (TbTsShopping.categoryId eq it.value) }
+                        type?.let { condition = condition and (TbTsShopping.type eq it.value) }
+                        payment?.let { condition = condition and (TbTsShopping.payment eq it.value) }
+                        settlement?.let { condition = condition and (TbTsShopping.settlement eq it.value) }
+                        minAmount?.let { condition = condition and (TbTsShopping.amount greaterEq it.value) }
+                        maxAmount?.let { condition = condition and (TbTsShopping.amount lessEq it.value) }
+                        remarks?.let { condition = condition and (TbTsShopping.remarks like "%${it.value}%") }
+                        condition
+                    }
                 }
+                    .orderBy(TbTsShopping.shoppingDate to SortOrder.ASC)
+                    .map {
+                        Shopping(
+                            ShoppingId(it[TbTsShopping.id]),
+                            GroupsId(it[TbTsShopping.groupsId]),
+                            UserId(it[TbTsShopping.userId]),
+                            it[TbTsShopping.shoppingDate],
+                            MemberId(it[TbTsShopping.id]),
+                            CategoryId(it[TbTsShopping.categoryId]),
+                            ShoppingType(it[TbTsShopping.type]),
+                            ShoppingPayment(it[TbTsShopping.payment]),
+                            ShoppingSettlement(it[TbTsShopping.settlement]),
+                            Amount(it[TbTsShopping.amount]),
+                            ShoppingRemarks(it[TbTsShopping.remarks]),
+                            FixedFlg(it[TbTsShopping.fixedFlg])
+                        )
+                    }
+            }
         }
     }
 

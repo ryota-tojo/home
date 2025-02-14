@@ -1,10 +1,16 @@
 package com.example.home.datasource.member
 
+import com.example.home.domain.entity.category.Category
+import com.example.home.domain.entity.member.Member
 import com.example.home.domain.repository.member.MemberRepository
+import com.example.home.domain.value_object.category.CategoryId
+import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
 import com.example.home.domain.value_object.member.MemberNo
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -13,14 +19,29 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MemberRepositoryImpl : MemberRepository {
-    override fun refer(groupsId: GroupsId?): List<com.example.home.domain.entity.member.Member> {
+    override fun refer(memberId: MemberId?, groupsId: GroupsId?, memberNo: MemberNo?): List<Member> {
         return transaction {
-            if (groupsId == null) {
+            if (memberId == null && groupsId == null && memberNo == null) {
                 TbTsMembers
                     .selectAll()
                     .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
                     .map {
-                        com.example.home.domain.entity.member.Member(
+                        Member(
+                            MemberId(it[TbTsMembers.memberId]),
+                            GroupsId(it[TbTsMembers.groupsId]),
+                            MemberNo(it[TbTsMembers.memberNo]),
+                            MemberName(it[TbTsMembers.memberName])
+                        )
+                    }
+            } else if (memberId != null) {
+                var condition: Op<Boolean> = TbTsMembers.memberId eq memberId.value
+
+                TbTsCategorys
+                    .select {
+                        condition
+                    }
+                    .map {
+                        Member(
                             MemberId(it[TbTsMembers.memberId]),
                             GroupsId(it[TbTsMembers.groupsId]),
                             MemberNo(it[TbTsMembers.memberNo]),
@@ -28,11 +49,17 @@ class MemberRepositoryImpl : MemberRepository {
                         )
                     }
             } else {
+                var condition: Op<Boolean> = Op.TRUE
+                groupsId?.let { condition = condition and (TbTsMembers.groupsId eq it.value) }
+                memberNo?.let { condition = condition and (TbTsMembers.memberNo eq it.value) }
+
                 TbTsMembers
-                    .select(TbTsMembers.groupsId eq groupsId.value)
+                    .select {
+                        condition
+                    }
                     .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
                     .map {
-                        com.example.home.domain.entity.member.Member(
+                        Member(
                             MemberId(it[TbTsMembers.memberId]),
                             GroupsId(it[TbTsMembers.groupsId]),
                             MemberNo(it[TbTsMembers.memberNo]),
@@ -47,7 +74,7 @@ class MemberRepositoryImpl : MemberRepository {
         groupsId: GroupsId,
         memberNo: MemberNo,
         memberName: MemberName
-    ): com.example.home.domain.entity.member.Member {
+    ): Member {
         return transaction {
             TbTsMembers.insert {
                 it[TbTsMembers.groupsId] = groupsId.value
@@ -62,7 +89,7 @@ class MemberRepositoryImpl : MemberRepository {
             }.singleOrNull()
 
             return@transaction member?.let {
-                com.example.home.domain.entity.member.Member(
+                Member(
                     MemberId(it[TbTsMembers.memberId]),
                     GroupsId(it[TbTsMembers.groupsId]),
                     MemberNo(it[TbTsMembers.memberNo]),
@@ -73,52 +100,42 @@ class MemberRepositoryImpl : MemberRepository {
     }
 
     override fun update(
-        groupsId: GroupsId,
-        memberNo: MemberNo,
-        memberName: MemberName
+        memberId: MemberId,
+        memberNo: MemberNo?,
+        memberName: MemberName?
     ): Int {
         return transaction {
-            val affectedRows = TbTsMembers.update({
-                (TbTsMembers.groupsId eq groupsId.value) and
-                        (TbTsMembers.memberNo eq memberNo.value)
+            var condition: Op<Boolean> = TbTsMembers.memberId eq memberId.value
+            memberNo?.let { condition = condition and (TbTsMembers.memberNo eq it.value) }
+            memberName?.let { condition = condition and (TbTsMembers.memberName eq it.value) }
+            val updateRows = TbTsMembers.update({
+                condition
             }) {
-                it[TbTsMembers.groupsId] = groupsId.value
-                it[TbTsMembers.memberNo] = memberNo.value
-                it[TbTsMembers.memberName] = memberName.value
+                if (memberNo != null) {
+                    it[TbTsMembers.memberNo] = memberNo.value
+                }
+                if (memberName != null) {
+                    it[TbTsMembers.memberName] = memberName.value
+                }
             }
-            if (affectedRows == 0) {
-                throw IllegalStateException("No rows updated for groupsId: ${groupsId.value}")
-            }
-            return@transaction affectedRows
+            return@transaction updateRows
         }
     }
 
-    override fun delete(groupsId: GroupsId, memberNo: MemberNo?, memberName: MemberName?): Int {
+    override fun delete(groupsId: GroupsId?, memberId: MemberId?): Int {
         return transaction {
-            val condition = TbTsMembers.groupsId eq groupsId.value
-
-            val fullCondition = when {
-                memberNo != null && memberName != null ->
-                    condition and (TbTsMembers.memberNo eq memberNo.value) and (TbTsMembers.memberName eq memberName.value)
-
-                memberNo != null ->
-                    condition and (TbTsMembers.memberNo eq memberNo.value)
-
-                memberName != null ->
-                    condition and (TbTsMembers.memberName eq memberName.value)
-
-                else -> condition
+            val condition = if (groupsId != null) {
+                TbTsMembers.groupsId eq groupsId.value
+            } else {
+                if (memberId != null) {
+                    TbTsMembers.memberId eq memberId.value
+                } else {
+                    return@transaction 0
+                }
             }
-
-            val deleteRows = TbTsMembers.deleteWhere { fullCondition }
-
-            if (deleteRows == 0) {
-                throw IllegalStateException(
-                    "No rows deleted for groupsId: ${groupsId.value}, memberNo: ${memberNo?.value}, memberName: ${memberName?.value}"
-                )
-            }
-            deleteRows
-
+            val deleteRows = TbTsMembers.deleteWhere { condition }
+            return@transaction deleteRows
         }
     }
+
 }

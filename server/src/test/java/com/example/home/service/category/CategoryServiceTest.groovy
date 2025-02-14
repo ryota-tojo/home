@@ -22,16 +22,18 @@ class CategoryServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(FixtureGroupList.所属グループID_正常())
+        def result = sut.refer(categoryId, GroupsId, FixtureCategory.カテゴリー番号_正常())
 
         then:
-        1 * categoryRepository.refer(FixtureGroupList.所属グループID_正常()) >> categoryList
+        1 * categoryRepository.refer(categoryId, GroupsId, FixtureCategory.カテゴリー番号_正常()) >> categoryList
         result == expected
 
         where:
-        useCase           | expected                                                                               | categoryList
-        "正常"            | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()]
-        "正常_データなし" | new CategoryReferResult(ResponseCode.成功.code, null)                                  | null
+        useCase                    | expected                                                                               | categoryList                          | categoryId                          | GroupsId
+        "正常_idあり_groupsIdあり" | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()] | FixtureCategory.カテゴリーID_正常() | FixtureGroupList.所属グループID_正常()
+        "正常_idなし_groupsIdあり" | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()] | null                                | FixtureGroupList.所属グループID_正常()
+        "正常_idなし_groupsIdなし" | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()] | null                                | null
+        "正常_データなし"          | new CategoryReferResult(ResponseCode.成功.code, null)                                  | null                                  | FixtureCategory.カテゴリーID_正常() | FixtureGroupList.所属グループID_正常()
     }
 
     def "category_save_#useCase"() {
@@ -56,15 +58,16 @@ class CategoryServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.update(FixtureGroupList.所属グループID_正常(), FixtureCategory.カテゴリー番号_正常(), categoryName)
+        def result = sut.update(FixtureCategory.カテゴリーID_正常(), FixtureCategory.カテゴリー番号_正常(), categoryName)
 
         then:
-        updateCnt * categoryRepository.update(FixtureGroupList.所属グループID_正常(), FixtureCategory.カテゴリー番号_正常(), FixtureCategory.カテゴリー名_正常()) >> updateRows
+        updateCnt * categoryRepository.update(FixtureCategory.カテゴリーID_正常(), FixtureCategory.カテゴリー番号_正常(), categoryName) >> updateRows
         result == expected
 
         where:
         useCase                     | expected                                                            | updateCnt | categoryName                                        | updateRows
         "正常"                      | new CategoryUpdateResult(ResponseCode.成功.code, 1)                 | 1         | FixtureCategory.カテゴリー名_正常()                 | 1
+        "正常_カテゴリー名なし" | new CategoryUpdateResult(ResponseCode.成功.code, 1) | 1 | null | 1
         "異常_バリデーションエラー" | new CategoryUpdateResult(ResponseCode.バリデーションエラー.code, 0) | 0         | FixtureCategory.カテゴリー名_バリデーションエラー() | _
         "異常_データ不在エラー"     | new CategoryUpdateResult(ResponseCode.データ不在エラー.code, 0)     | 1         | FixtureCategory.カテゴリー名_正常()                 | 0
     }
@@ -74,16 +77,17 @@ class CategoryServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.delete(FixtureGroupList.所属グループID_正常(), categoryNo)
+        def result = sut.delete(groupId, categoryId)
 
         then:
-        1 * categoryRepository.delete(FixtureGroupList.所属グループID_正常(), categoryNo, null) >> deleteRows
+        1 * categoryRepository.delete(groupId, categoryId) >> deleteRows
         result == expected
 
         where:
-        useCase                   | expected                                                        | categoryNo                            | deleteRows
-        "正常_カテゴリー番号あり" | new CategoryDeleteResult(ResponseCode.成功.code, 1)             | FixtureCategory.カテゴリー番号_正常() | 1
-        "正常_カテゴリー番号なし" | new CategoryDeleteResult(ResponseCode.成功.code, 1)             | null                                  | 1
-        "異常_データ不在エラー"   | new CategoryDeleteResult(ResponseCode.データ不在エラー.code, 0) | FixtureCategory.カテゴリー番号_正常() | 0
+        useCase                 | expected                                                        | groupId                                | categoryId                          | deleteRows
+        "正常"                  | new CategoryDeleteResult(ResponseCode.成功.code, 1)             | FixtureGroupList.所属グループID_正常() | FixtureCategory.カテゴリーID_正常() | 1
+        "正常_グループIDなし"   | new CategoryDeleteResult(ResponseCode.成功.code, 1)             | null                                   | FixtureCategory.カテゴリーID_正常() | 1
+        "正常_カテゴリーIDなし" | new CategoryDeleteResult(ResponseCode.成功.code, 1)             | FixtureGroupList.所属グループID_正常() | null                                | 1
+        "異常_データ不在エラー" | new CategoryDeleteResult(ResponseCode.データ不在エラー.code, 0) | FixtureGroupList.所属グループID_正常() | FixtureCategory.カテゴリーID_正常() | 0
     }
 }

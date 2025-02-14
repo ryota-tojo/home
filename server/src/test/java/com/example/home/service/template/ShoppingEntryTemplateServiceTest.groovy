@@ -65,8 +65,8 @@ class ShoppingEntryTemplateServiceTest extends Specification {
 
         then:
         referCnt * shoppingEntryTemplateRepository.refer(groupsId, templateId) >> tmpList
-        memberCnt * memberRepository.refer(groupsId) >> memberList
-        categoryCnt * categoryRepository.refer(groupsId) >> categoryList
+        memberCnt * memberRepository.refer(null, groupsId, null) >> memberList
+        categoryCnt * categoryRepository.refer(null, groupsId, null) >> categoryList
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3
@@ -103,8 +103,8 @@ class ShoppingEntryTemplateServiceTest extends Specification {
         def result = sut.update(groupsId, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag)
 
         then:
-        memberCnt * memberRepository.refer(groupsId) >> memberList
-        categoryCnt * categoryRepository.refer(groupsId) >> categoryList
+        memberCnt * memberRepository.refer(null, groupsId, null) >> memberList
+        categoryCnt * categoryRepository.refer(null, groupsId, null) >> categoryList
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3

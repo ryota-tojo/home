@@ -14,7 +14,8 @@ import java.time.LocalDate
 
 interface ShoppingRepository {
     fun refer(
-        groupsId: GroupsId,
+        id: ShoppingId? = null,
+        groupsId: GroupsId? = null,
         userId: UserId? = null,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,

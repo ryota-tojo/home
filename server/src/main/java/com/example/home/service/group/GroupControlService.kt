@@ -12,6 +12,7 @@ import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.value_object.TsDefaultData
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.comment.Content
 import com.example.home.domain.value_object.etc.MM
 import com.example.home.domain.value_object.etc.YYYY
@@ -33,6 +34,12 @@ class GroupControlService(
     fun refer(groupsId: GroupsId): GroupReferResult {
         val groupList = groupListRepository.refer(groupsId)
         val groupSetting = groupSettingRepository.refer(groupsId)
+        if (groupList == null || groupSetting == null) {
+            return GroupReferResult(
+                String.format(ResponseCode.成功_条件付き.code, "GROUP_NOT_FOUND"),
+                null
+            )
+        }
         return GroupReferResult(
             ResponseCode.成功.code,
             GroupListAndSetting(groupList, groupSetting)
@@ -70,7 +77,7 @@ class GroupControlService(
             try {
                 categoryRepository.save(
                     groupsId,
-                    CategoryId(no.toInt()),
+                    CategoryNo(no.toInt()),
                     CategoryName(value),
                 )
             } catch (e: Exception) {
@@ -119,19 +126,22 @@ class GroupControlService(
 
     fun listUpdate(
         groupsId: GroupsId,
-        groupName: GroupName?,
-        groupPassword: GroupPassword?,
+        groupName: GroupName? = null,
+        groupPassword: GroupPassword? = null,
     ): GroupListUpdateResult {
         if (!ValidationCheck.symbol(groupsId.toString()).result ||
             !ValidationCheck.symbol(groupName.toString()).result
         ) {
             return GroupListUpdateResult(ResponseCode.バリデーションエラー.code)
         }
-        if (groupListRepository.refer(groupsId).isEmpty()) {
+        val updateRows = groupListRepository.update(groupsId, groupName, groupPassword)
+        if (updateRows == 0) {
             return GroupListUpdateResult(ResponseCode.データ不在エラー.code)
         }
-        val res = groupListRepository.update(groupsId, groupName, groupPassword)
-        return GroupListUpdateResult(ResponseCode.成功.code, res)
+        return GroupListUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
     }
 
     fun settingUpdate(
@@ -145,25 +155,22 @@ class GroupControlService(
         ) {
             return GroupSettingUpdateResult(ResponseCode.バリデーションエラー.code)
         }
-        if (groupSettingRepository.refer(groupsId).isEmpty()) {
+        val updateRows = groupSettingRepository.update(groupsId, settingKey, settingValue)
+        if (updateRows == 0) {
             return GroupSettingUpdateResult(ResponseCode.データ不在エラー.code)
         }
-        val res = groupSettingRepository.update(groupsId, settingKey, settingValue)
-        return GroupSettingUpdateResult(ResponseCode.成功.code, res)
+        return GroupSettingUpdateResult(ResponseCode.成功.code, updateRows)
     }
 
     fun delete(groupsId: GroupsId): GroupDeleteResult {
-        if (!ValidationCheck.symbol(groupsId.toString()).result) {
-            return GroupDeleteResult(ResponseCode.バリデーションエラー.code)
-        }
         if (groupListRepository.refer(groupsId).isEmpty()) {
             return GroupDeleteResult(ResponseCode.データ不在エラー.code)
         }
         if (groupSettingRepository.refer(groupsId).isEmpty()) {
             return GroupDeleteResult(ResponseCode.データ不在エラー.code)
         }
-        val groupListDeletedResult = groupListRepository.delete(groupsId)
         val groupSettingDeletedResult = groupSettingRepository.delete(groupsId)
+        val groupListDeletedResult = groupListRepository.delete(groupsId)
         groupInfoRepository.delete(groupsId)
         categoryRepository.delete(groupsId)
         memberRepository.delete(groupsId)

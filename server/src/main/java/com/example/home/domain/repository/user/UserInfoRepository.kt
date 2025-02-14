@@ -13,13 +13,15 @@ interface UserInfoRepository {
         deleteFlg: UserDeleteFlg
     ): UserInfo
 
+    fun isDuplication(userName: UserName): Boolean
+
     fun update(
         userId: UserId,
-        userName: UserName,
-        password: UserPassword,
-        permission: UserPermission,
-        approvalFlg: UserApprovalFlg,
-        deleteFlg: UserDeleteFlg
+        userName: UserName? = null,
+        password: UserPassword? = null,
+        permission: UserPermission? = null,
+        approvalFlg: UserApprovalFlg? = null,
+        deleteFlg: UserDeleteFlg? = null
     ): Int
 
     fun delete(userId: UserId): Int

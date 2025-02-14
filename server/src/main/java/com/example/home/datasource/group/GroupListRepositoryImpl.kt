@@ -39,7 +39,6 @@ class GroupListRepositoryImpl : GroupListRepository {
                         (TbTsGroupList.groupPassword eq groupPassword.value)
             }.any()
         }
-
         return true
     }
 

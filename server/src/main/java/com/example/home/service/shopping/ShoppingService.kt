@@ -31,7 +31,8 @@ class ShoppingService(
     private val choicesRepository: ChoicesRepository,
 ) {
     fun refer(
-        groupsId: GroupsId,
+        id: ShoppingId? = null,
+        groupsId: GroupsId? = null,
         userId: UserId? = null,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,
@@ -45,6 +46,7 @@ class ShoppingService(
         remarks: ShoppingRemarks? = null
     ): ShoppingReferResult {
         val shoppingList = shoppingRepository.refer(
+            id,
             groupsId,
             userId,
             shoppingDateYYYY,
@@ -182,6 +184,7 @@ class ShoppingService(
         shoppingDateYYYY: YYYY?,
         shoppingDateMM: MM?,
     ): ShoppingDeleteResult {
+
         val deleteRows = shoppingRepository.delete(shoppingId, groupsId, shoppingDateYYYY, shoppingDateMM)
         if (deleteRows == 0) {
             return ShoppingDeleteResult(
@@ -203,12 +206,12 @@ class ShoppingService(
         payment: ShoppingPayment,
         settlement: ShoppingSettlement,
     ): String {
-        val memberList = memberRepository.refer(groupsId)
+        val memberList = memberRepository.refer(null, groupsId, null)
         if (!memberList.any { it.id == memberId }) {
             return ResponseCode.存在しないメンバー.code
         }
 
-        val categoryList = categoryRepository.refer(groupsId)
+        val categoryList = categoryRepository.refer(null, groupsId, null)
         if (!categoryList.any { it.id == categoryId }) {
             return ResponseCode.存在しないカテゴリー.code
         }
