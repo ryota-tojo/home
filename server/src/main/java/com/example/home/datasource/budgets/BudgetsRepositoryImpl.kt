@@ -89,8 +89,12 @@ class BudgetsRepositoryImpl : BudgetsRepository {
             val updateRows = TbTsBudgets.update({
                 condition
             }) {
-                if (amount != null) it[bgAmount] = amount.value
-                if (fixedFlg != null) it[TbTsBudgets.fixedFlg] = fixedFlg.value
+                if (amount != null) {
+                    it[TbTsBudgets.bgAmount] = amount.value
+                }
+                if (fixedFlg != null) {
+                    it[TbTsBudgets.fixedFlg] = fixedFlg.value
+                }
             }
 
             return@transaction updateRows

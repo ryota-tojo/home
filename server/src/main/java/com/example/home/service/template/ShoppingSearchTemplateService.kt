@@ -191,12 +191,12 @@ class ShoppingSearchTemplateService(
         settlement: ShoppingSettlement,
     ): String {
 
-        val memberList = memberRepository.refer(groupsId)
+        val memberList = memberRepository.refer(null, groupsId, null)
         if (!memberList.any { it.id == memberId }) {
             return ResponseCode.存在しないメンバー.code
         }
 
-        val categoryList = categoryRepository.refer(groupsId)
+        val categoryList = categoryRepository.refer(null, groupsId, null)
         if (!categoryList.any { it.id == categoryId }) {
             return ResponseCode.存在しないカテゴリー.code
         }

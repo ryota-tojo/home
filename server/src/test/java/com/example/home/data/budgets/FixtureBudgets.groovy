@@ -22,7 +22,7 @@ class FixtureBudgets {
                 FixtureGroupList.所属グループID_正常(),
                 FixtureEtc.年_正常(),
                 FixtureEtc.月_正常(),
-                FixtureCategory.カテゴリー番号_正常(),
+                FixtureCategory.カテゴリーID_正常(),
                 予算金額_正常(),
                 FixtureFixed.確定フラグ_未確定()
         )

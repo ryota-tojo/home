@@ -23,16 +23,18 @@ class MemberServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(FixtureGroupList.所属グループID_正常())
+        def result = sut.refer(null, FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常())
 
         then:
-        1 * memberRepository.refer(FixtureGroupList.所属グループID_正常()) >> memberList
+        1 * memberRepository.refer(null, FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常()) >> memberList
         result == expected
 
         where:
-        useCase           | expected                                                                         | memberList
-        "正常"            | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()]
-        "正常_データなし" | new MemberReferResult(ResponseCode.成功.code, null)                              | null
+        useCase                    | expected                                                                         | memberList                        | memberId                        | groupsId
+        "正常_idあり_groupsIdあり" | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()] | FixtureMember.メンバーID_正常() | FixtureGroupList.所属グループID_正常()
+        "正常_idなし_groupsIdあり" | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()] | null                            | FixtureGroupList.所属グループID_正常()
+        "正常_idなし_groupsIdなし" | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()] | null                            | null
+        "正常_データなし"          | new MemberReferResult(ResponseCode.成功.code, null)                              | null                              | FixtureMember.メンバーID_正常() | FixtureGroupList.所属グループID_正常()
     }
 
     def "member_save_#useCase"() {
@@ -57,10 +59,10 @@ class MemberServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.update(FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常(), memberName)
+        def result = sut.update(FixtureMember.メンバーID_正常(), FixtureMember.メンバー番号_正常(), memberName)
 
         then:
-        updateCnt * memberRepository.update(FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常(), FixtureMember.メンバー名_正常()) >> updateRows
+        updateCnt * memberRepository.update(FixtureMember.メンバーID_正常(), FixtureMember.メンバー番号_正常(), FixtureMember.メンバー名_正常()) >> updateRows
         result == expected
 
         where:
@@ -75,16 +77,16 @@ class MemberServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.delete(FixtureGroupList.所属グループID_正常(), memberNo)
+        def result = sut.delete(FixtureGroupList.所属グループID_正常(), memberId)
 
         then:
-        1 * memberRepository.delete(FixtureGroupList.所属グループID_正常(), memberNo, null) >> deleteRows
+        1 * memberRepository.delete(FixtureGroupList.所属グループID_正常(), memberId) >> deleteRows
         result == expected
 
         where:
-        useCase                 | expected                                                      | memberNo                          | deleteRows
-        "正常_メンバー番号あり" | new MemberDeleteResult(ResponseCode.成功.code, 1)             | FixtureMember.メンバー番号_正常() | 1
-        "正常_メンバー番号なし" | new MemberDeleteResult(ResponseCode.成功.code, 1)             | null                              | 1
-        "異常_データ不在エラー" | new MemberDeleteResult(ResponseCode.データ不在エラー.code, 0) | FixtureMember.メンバー番号_正常() | 0
+        useCase                 | expected                                                      | memberId                        | deleteRows
+        "正常_メンバー番号あり" | new MemberDeleteResult(ResponseCode.成功.code, 1)             | FixtureMember.メンバーID_正常() | 1
+        "正常_メンバー番号なし" | new MemberDeleteResult(ResponseCode.成功.code, 1)             | null                            | 1
+        "異常_データ不在エラー" | new MemberDeleteResult(ResponseCode.データ不在エラー.code, 0) | FixtureMember.メンバーID_正常() | 0
     }
 }

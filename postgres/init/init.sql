@@ -1,223 +1,222 @@
 -- 設定マスタ
-create table ms_setting(
+CREATE TABLE ms_setting (
     id SERIAL NOT NULL,
-    setting_key varchar(512),
-    setting_value varchar(256), 
+    setting_key VARCHAR(512),
+    setting_value VARCHAR(256), 
     PRIMARY KEY (id)
 );
 
 -- 選択肢マスタ
-create table ms_choices(
+CREATE TABLE ms_choices (
     id SERIAL NOT NULL,
-    item_type varchar(256), 
-    item_no integer, 
-    item_name_pc varchar(256), 
-    item_name_sp varchar(256), 
+    item_type VARCHAR(256), 
+    item_no INTEGER, 
+    item_name_pc VARCHAR(256), 
+    item_name_sp VARCHAR(256), 
     PRIMARY KEY (id)
 );
 
 -- お知らせ
-create table ts_notice(
+CREATE TABLE ts_notice (
     id SERIAL NOT NULL,
-    title varchar(1024), 
-    content varchar(65535), 
-    create_date timestamp,
-    update_date timestamp,
+    title VARCHAR(1024), 
+    content VARCHAR(65535), 
+    create_date TIMESTAMP,
+    update_date TIMESTAMP,
     PRIMARY KEY (id)
 );
 
 -- ユーザー情報
-create table ts_userinfo(
+CREATE TABLE ts_userinfo (
     user_id SERIAL NOT NULL,
-    user_name varchar(64) UNIQUE, 
-    password varchar(64), 
-    permission integer, 
-    approval_flg integer,
-    delete_flg integer, 
-    create_date timestamp,
-    update_date timestamp,
-    approval_date timestamp,
-    delete_date timestamp,
+    user_name VARCHAR(64) UNIQUE, 
+    password VARCHAR(64), 
+    permission INTEGER, 
+    approval_flg INTEGER,
+    delete_flg INTEGER, 
+    create_date TIMESTAMP,
+    update_date TIMESTAMP,
+    approval_date TIMESTAMP,
+    delete_date TIMESTAMP,
     PRIMARY KEY (user_id)
 );
 
 -- ユーザー設定
-create table ts_user_setting(
+CREATE TABLE ts_user_setting (
     id SERIAL NOT NULL,
-    user_id integer,
-    setting_key varchar(512),
-    setting_value varchar(256), 
+    user_id INTEGER,
+    setting_key VARCHAR(512),
+    setting_value VARCHAR(256), 
     PRIMARY KEY (id)
 );
 
 -- 所属グループ一覧
-create table ts_grouplist(
+CREATE TABLE ts_grouplist (
     group_id SERIAL NOT NULL,
-    groups_id varchar(64) UNIQUE, 
-    group_name varchar(64),
-    group_password varchar(64)
+    groups_id VARCHAR(64) UNIQUE, 
+    group_name VARCHAR(64),
+    group_password VARCHAR(64)
 );
 
 -- 所属グループ情報
-create table ts_groupinfo(
+CREATE TABLE ts_groupinfo (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    user_id integer, 
-    leader_flg integer,
-    create_date timestamp,
-    update_date timestamp,
-    PRIMARY KEY (group_id),
+    groups_id VARCHAR(64), 
+    user_id INTEGER, 
+    leader_flg INTEGER,
+    create_date TIMESTAMP,
+    update_date TIMESTAMP,
+    PRIMARY KEY (id),
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES ts_userinfo (user_id)
 );
 
 -- 所属グループ設定
-create table ts_group_setting(
+CREATE TABLE ts_group_setting (
     id SERIAL NOT NULL,
-    groups_id varchar(64),
-    setting_key varchar(512),
-    setting_value varchar(256), 
+    groups_id VARCHAR(64),
+    setting_key VARCHAR(512),
+    setting_value VARCHAR(256), 
     PRIMARY KEY (id)
 );
 
 -- カテゴリー
-create table ts_categorys(
+CREATE TABLE ts_categorys (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    category_no integer,
-    category_name varchar(64),
+    groups_id VARCHAR(64), 
+    category_no INTEGER,
+    category_name VARCHAR(64),
     PRIMARY KEY (id)
 );
 
 -- メンバー
-create table ts_members(
+CREATE TABLE ts_members (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    member_no integer,
-    member_name varchar(64),
+    groups_id VARCHAR(64), 
+    member_no INTEGER,
+    member_name VARCHAR(64),
     PRIMARY KEY (id)
 );
 
 -- 購入データ入力テンプレート
-create table ts_tmp_shopping_input(
+CREATE TABLE ts_tmp_shopping_input (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    template_id varchar(64),
-    tmpi_name varchar(64), 
-    tmpi_member_id integer,
-    tmpi_category_id integer, 
-    tmpi_type integer,
-    tmpi_payment integer,
-    tmpi_settlement integer,
-    tmpi_amount integer,
-    tmpi_remarks varchar(1024),
-    tmpi_use_flg integer,
+    groups_id VARCHAR(64), 
+    template_id VARCHAR(64),
+    tmpi_name VARCHAR(64), 
+    tmpi_member_id INTEGER,
+    tmpi_category_id INTEGER, 
+    tmpi_type INTEGER,
+    tmpi_payment INTEGER,
+    tmpi_settlement INTEGER,
+    tmpi_amount INTEGER,
+    tmpi_remarks VARCHAR(1024),
+    tmpi_use_flg INTEGER,
     PRIMARY KEY (id)
 );
 
 -- 購入データ検索テンプレート
-create table ts_tmp_shopping_search(
+CREATE TABLE ts_tmp_shopping_search (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    template_id varchar(64),
-    tmps_name varchar(64), 
-    tmps_member_id integer,
-    tmps_category_id integer, 
-    tmps_type integer,
-    tmps_payment integer,
-    tmps_settlement integer,
-    tmps_min_amount integer,
-    tmps_max_amount integer,
-    tmps_remarks varchar(1024),
-    tmps_use_flg integer,
+    groups_id VARCHAR(64), 
+    template_id VARCHAR(64),
+    tmps_name VARCHAR(64), 
+    tmps_member_id INTEGER,
+    tmps_category_id INTEGER, 
+    tmps_type INTEGER,
+    tmps_payment INTEGER,
+    tmps_settlement INTEGER,
+    tmps_min_amount INTEGER,
+    tmps_max_amount INTEGER,
+    tmps_remarks VARCHAR(1024),
+    tmps_use_flg INTEGER,
     PRIMARY KEY (id)
 );
 
 -- 購入データ登録テンプレート
-create table ts_tmp_shopping_entry(
+CREATE TABLE ts_tmp_shopping_entry (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    template_id varchar(64),
-    tmpe_name varchar(64), 
-    tmpe_member_id integer,
-    tmpe_category_id integer, 
-    tmpe_type integer,
-    tmpe_payment integer,
-    tmpe_settlement integer,
-    tmpe_amount integer,
-    tmpe_remarks varchar(1024),
-    tmpe_use_flg integer,
+    groups_id VARCHAR(64), 
+    template_id VARCHAR(64),
+    tmpe_name VARCHAR(64), 
+    tmpe_member_id INTEGER,
+    tmpe_category_id INTEGER, 
+    tmpe_type INTEGER,
+    tmpe_payment INTEGER,
+    tmpe_settlement INTEGER,
+    tmpe_amount INTEGER,
+    tmpe_remarks VARCHAR(1024),
+    tmpe_use_flg INTEGER,
     PRIMARY KEY (id)
 );
 
 -- 予算
-create table ts_budgets(
+CREATE TABLE ts_budgets (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    bg_yyyy integer,
-    bg_mm integer,
-    bg_category_id integer, 
-    bg_amount integer,
-    fixed_flg integer,
+    groups_id VARCHAR(64), 
+    bg_yyyy INTEGER,
+    bg_mm INTEGER,
+    bg_category_id INTEGER, 
+    bg_amount INTEGER,
+    fixed_flg INTEGER,
     PRIMARY KEY (id)
 );
 
 -- 購入データ
-create table ts_shopping(
+CREATE TABLE ts_shopping (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    user_id integer,
-    shopping_date date,
-    member_id integer,
-    category_id integer, 
-    type integer,
-    payment integer,
-    settlement integer,
-    amount integer,
-    remarks varchar(1024),
-    fixed_flg integer,
+    groups_id VARCHAR(64), 
+    user_id INTEGER,
+    shopping_date DATE,
+    member_id INTEGER,
+    category_id INTEGER, 
+    type INTEGER,
+    payment INTEGER,
+    settlement INTEGER,
+    amount INTEGER,
+    remarks VARCHAR(1024),
+    fixed_flg INTEGER,
     PRIMARY KEY (id)
 );
 
 -- 確定データ
-create table ts_fixed(
+CREATE TABLE ts_fixed (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    yyyy integer,
-    mm integer,
+    groups_id VARCHAR(64), 
+    yyyy INTEGER,
+    mm INTEGER,
     PRIMARY KEY (id)
 );
 
 -- コメント
-create table ts_comment(
+CREATE TABLE ts_comment (
     id SERIAL NOT NULL,
-    groups_id varchar(64), 
-    yyyy integer,
-    mm integer,
-    content varchar(65535),
-    fixed_flg integer,
+    groups_id VARCHAR(64), 
+    yyyy INTEGER,
+    mm INTEGER,
+    content VARCHAR(65535),
+    fixed_flg INTEGER,
     PRIMARY KEY (id)
 );
 
 -- お付き合い帳
-create table ts_communication(
+CREATE TABLE ts_communication (
     id SERIAL NOT NULL,
-    groups_id varchar(64),
-    gift_date date,
-    gift_from varchar(64),
-    gift_to varchar(64),
-    gift_item varchar(64),
-    gift_amount integer,
-    gift_remarks varchar(65535),
-    gift_rtn_date date,
-    gift_rtn_item varchar(64),
-    gift_rtn_amount varchar(64),
-    gift_rtn_remarks varchar(65535),
-    return_flg integer,
+    groups_id VARCHAR(64),
+    gift_date DATE,
+    gift_from VARCHAR(64),
+    gift_to VARCHAR(64),
+    gift_item VARCHAR(64),
+    gift_amount INTEGER,
+    gift_remarks VARCHAR(65535),
+    gift_rtn_date DATE,
+    gift_rtn_item VARCHAR(64),
+    gift_rtn_amount VARCHAR(64),
+    gift_rtn_remarks VARCHAR(65535),
+    return_flg INTEGER,
     PRIMARY KEY (id)
 );
 
-
-
+-- 設定マスタへのデータ挿入
 INSERT INTO ms_setting (setting_key, setting_value)
 VALUES
     ('account_lockout_count', '5'),
@@ -242,7 +241,8 @@ VALUES
     ('user_communication_list_view', '20'),
     ('user_communication_view_conditions', '0');
 
-INSERT INTO ms_choices (item_type, item_no, item_name_pc,item_name_sp)
+-- 選択肢マスタへのデータ挿入
+INSERT INTO ms_choices (item_type, item_no, item_name_pc, item_name_sp)
 VALUES
     ('type', 0, '収入', '収入'),
     ('type', 1, '支出', '支出'),
@@ -251,8 +251,9 @@ VALUES
     ('payment', 2, '引落し', '引落し'),
     ('payment', 3, '振込み', '振込み'),
     ('settlement', 0, '未精算','未'),
-    ('settlement', 1, '精算済','済'),
+    ('settlement', 1, '精算済','済');
 
+-- ユーザー情報へのデータ挿入
 INSERT INTO ts_userinfo (
     user_name, 
     password, 
@@ -267,6 +268,7 @@ INSERT INTO ts_userinfo (
 VALUES
     ('admin', 'adminadmin', 2, 1, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
+-- グループ一覧へのデータ挿入
 INSERT INTO ts_grouplist (
     groups_id, 
     group_name,
@@ -275,6 +277,7 @@ INSERT INTO ts_grouplist (
 VALUES
     ('maintenance', '管理者','adminadmin');
 
+-- 所属グループ情報へのデータ挿入
 INSERT INTO ts_groupinfo (
     groups_id, 
     user_id, 
@@ -284,11 +287,12 @@ INSERT INTO ts_groupinfo (
 )
 VALUES
     ('maintenance',  
-     (SELECT user_id FROM ts_userinfo WHERE user_name = 'admin' and password = 'adminadmin'), 
+     (SELECT user_id FROM ts_userinfo WHERE user_name = 'admin' AND password = 'adminadmin'), 
      1, 
      CURRENT_TIMESTAMP, 
      CURRENT_TIMESTAMP);
 
+-- お知らせデータの挿入
 INSERT INTO ts_notice (
     title, 
     content, 

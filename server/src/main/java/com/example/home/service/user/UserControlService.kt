@@ -1,6 +1,11 @@
 package com.example.home.service.user
 
-import com.example.home.domain.entity.user.result.*
+import com.example.home.domain.entity.category.result.CategoryDeleteResult
+import com.example.home.domain.entity.user.UserRefer
+import com.example.home.domain.entity.user.result.UserDeleteResult
+import com.example.home.domain.entity.user.result.UserReferResult
+import com.example.home.domain.entity.user.result.UserSaveResult
+import com.example.home.domain.entity.user.result.UserUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
@@ -19,66 +24,36 @@ class UserControlService(
     val groupInfoRepository: GroupInfoRepository,
 ) {
     fun refer(userId: UserId? = null, userName: UserName? = null): UserReferResult {
-        if (userId == null && userName == null) {
-            return UserReferResult(
-                ResponseCode.キー未設定エラー.code,
-                null,
-                null,
-                null
-            )
-        }
-        if (userName != null) {
-            if (!ValidationCheck.symbol(userName.toString()).result) {
-                return UserReferResult(
-                    ResponseCode.バリデーションエラー.code,
-                    null,
-                    null,
-                    null
-                )
-            }
-        }
+
+        // ユーザー情報を取得する
         val userInfoList = userInfoRepository.refer(userId = userId, userName = userName)
-        if (userInfoList.isNullOrEmpty()) {
+        if (userInfoList.isEmpty()) {
             return UserReferResult(
                 String.format(ResponseCode.成功_条件付き.code, "USER_NOT_FOUND"),
-                null,
-                null,
                 null
             )
         }
-        val userInfo = userInfoList.first()
-        val userSetting = userSettingRepository.refer(userInfo.userId)
-        val groupsId = groupInfoRepository.getGroupsId(userInfo.userId)
-        if (groupsId == null) {
-            return UserReferResult(
-                return UserReferResult(
-                    String.format(ResponseCode.成功_条件付き.code, "NO_GROUP_AFFILIATION"),
+        // ユーザー情報をループ
+        val userRefer = userInfoList.map { userInfo ->
+            val userSetting = userSettingRepository.refer(userInfo.userId)
+            val groupsId = groupInfoRepository.getGroupsId(userInfo.userId)
+            if (groupsId == null) {
+                UserRefer(
                     userInfo,
                     userSetting,
                     null
                 )
+            }
+            val groupInfo = groupInfoRepository.refer(groupsId, userInfo.userId)
+            UserRefer(
+                userInfo,
+                userSetting,
+                groupInfo
             )
         }
-        val groupInfo = groupInfoRepository.refer(groupsId, userInfo.userId)
         return UserReferResult(
             ResponseCode.成功.code,
-            userInfo,
-            userSetting,
-            groupInfo,
-        )
-    }
-
-    fun referAll(): UserReferAllResult {
-        val userInfo = userInfoRepository.refer()
-        if (userInfo == null) {
-            return UserReferAllResult(
-                String.format(ResponseCode.成功_条件付き.code, "USER_NOT_FOUND"),
-                null
-            )
-        }
-        return UserReferAllResult(
-            ResponseCode.成功.code,
-            userInfo
+            userRefer
         )
     }
 
@@ -91,38 +66,27 @@ class UserControlService(
         approvalFlg: UserApprovalFlg,
         deleteFlg: UserDeleteFlg
     ): UserSaveResult {
-        // バリデーションエラー
         if (!ValidationCheck.symbol(userName.toString()).result ||
             !ValidationCheck.symbol(password.toString()).result
         ) {
             return UserSaveResult(
                 ResponseCode.バリデーションエラー.code,
-                null,
-                null,
                 null
             )
         }
-        // 既存のデータが存在しないか確認する
-        val userReferResult = refer(userName = userName)
-        if (userReferResult.userInfo != null) {
+        val isDuplication = userInfoRepository.isDuplication(userName)
+        if (isDuplication) {
             return UserSaveResult(
                 ResponseCode.重複エラー.code,
-                null,
-                null,
                 null
             )
         }
-        // グループ認証
         if (!groupListRepository.certification(groupsId, groupPassword)) {
             return UserSaveResult(
                 ResponseCode.グループ認証エラー.code,
-                null,
-                null,
                 null
             )
         }
-
-        // ユーザー情報登録
         val createUser = userInfoRepository.save(
             userName,
             password,
@@ -130,8 +94,6 @@ class UserControlService(
             approvalFlg,
             deleteFlg
         )
-
-        // ユーザー設定登録
         val userDefaultSettings = mutableListOf<Pair<String, String>>()
         for ((key, value) in TsDefaultData.USER_SETTING) {
             userDefaultSettings.add(Pair(key, value))
@@ -150,35 +112,33 @@ class UserControlService(
 
         // 所属グループ情報登録（グループに誰も登録されていない場合はleader）
         val getGroupInfo = groupInfoRepository.refer(groupsId, null)
-        val leaderFlg = if (getGroupInfo == null) {
-            1
-        } else {
-            0
+        val leaderFlg = when {
+            getGroupInfo == null -> 1
+            else -> 0
         }
         val groupInfo = groupInfoRepository.save(
             groupsId,
             createUser.userId,
             UserLeaderFlg(leaderFlg)
         )
-
         return UserSaveResult(
             ResponseCode.成功.code,
-            createUser,
-            userSetting,
-            groupInfo
+            UserRefer(
+                createUser,
+                userSetting,
+                listOf(groupInfo)
+            )
         )
     }
 
-
     fun userInfoUpdate(
         userId: UserId,
-        userName: UserName,
-        password: UserPassword,
-        permission: UserPermission,
-        approvalFlg: UserApprovalFlg,
-        deleteFlg: UserDeleteFlg
+        userName: UserName? = null,
+        password: UserPassword? = null,
+        permission: UserPermission? = null,
+        approvalFlg: UserApprovalFlg? = null,
+        deleteFlg: UserDeleteFlg? = null
     ): UserUpdateResult {
-        // バリデーションエラー
         if (!ValidationCheck.symbol(userName.toString()).result ||
             !ValidationCheck.symbol(password.toString()).result
         ) {
@@ -187,15 +147,6 @@ class UserControlService(
                 0
             )
         }
-        // 既存のデータが存在するか確認する
-        val userReferResult = refer(userId = userId)
-        if (userReferResult.userInfo == null) {
-            return UserUpdateResult(
-                ResponseCode.データ不在エラー.code,
-                0
-            )
-        }
-
         val updateRows = userInfoRepository.update(
             userId,
             userName,
@@ -204,6 +155,12 @@ class UserControlService(
             approvalFlg,
             deleteFlg
         )
+        if (updateRows == 0) {
+            return UserUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                0
+            )
+        }
         return UserUpdateResult(
             ResponseCode.成功.code,
             updateRows
@@ -215,7 +172,6 @@ class UserControlService(
         userSettingKey: UserSettingKey,
         userSettingValue: UserSettingValue
     ): UserUpdateResult {
-        // バリデーションエラー
         if (!ValidationCheck.symbol(userSettingKey.toString()).result ||
             !ValidationCheck.symbol(userSettingValue.toString()).result
         ) {
@@ -224,21 +180,17 @@ class UserControlService(
                 0
             )
         }
-
-        // 既存のデータが存在するか確認する
-        val userReferResult = userSettingRepository.refer(userId, userSettingKey)
-        if (userReferResult.isEmpty()) {
-            return UserUpdateResult(
-                ResponseCode.データ不在エラー.code,
-                0
-            )
-        }
-
         val updateRows = userSettingRepository.update(
             userId,
             userSettingKey,
             userSettingValue
         )
+        if (updateRows == 0) {
+            return UserUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                0
+            )
+        }
         return UserUpdateResult(
             ResponseCode.成功.code,
             updateRows
@@ -253,27 +205,31 @@ class UserControlService(
                 0
             )
         }
-        val groupInfoReferResult = groupInfoRepository.refer(groupsId, userId).firstOrNull()
+        val groupInfoReferResult = groupInfoRepository.refer(groupsId, userId)
         if (groupInfoReferResult == null) {
             return UserDeleteResult(
                 ResponseCode.データ不正エラー.code,
                 0
             )
         }
-        if (groupInfoReferResult.userLeaderFlg.value == 1) {
+        if (groupInfoReferResult.first().userLeaderFlg.value == 1) {
             return UserDeleteResult(
                 ResponseCode.ユーザーエラー_グループリーダー削除.code,
                 0
             )
         }
-
         groupInfoRepository.delete(userId = userId)
         userSettingRepository.delete(userId)
-        val deletedRows = userInfoRepository.delete(userId)
+        val deleteRows = userInfoRepository.delete(userId)
+        if (deleteRows == 0) {
+            return UserDeleteResult(
+                ResponseCode.データ不在エラー.code,
+                deleteRows
+            )
+        }
         return UserDeleteResult(
             ResponseCode.成功.code,
-            deletedRows
+            deleteRows
         )
     }
-
 }

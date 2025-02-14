@@ -52,14 +52,14 @@ class GroupReferApi(
         )
         val result = groupControlService.refer(groupsId)
 
-        val groupListResponse = result.groupListAndSetting.groupList.map{ groupList ->
+        val groupListResponse = result.groupListAndSetting?.groupList?.map { groupList ->
             GroupListResponse(
                 groupId = groupList.id,
                 groupsId = groupList.groupsId.value,
                 groupName = groupList.groupName.value
             )
         }
-        val groupSettingResponse = result.groupListAndSetting.groupSetting.map{ groupSetting ->
+        val groupSettingResponse = result.groupListAndSetting?.groupSetting?.map { groupSetting ->
             GroupSettingResponse(
                 id = groupSetting.id,
                 groupsId = groupSetting.groupsId.value,
@@ -70,8 +70,8 @@ class GroupReferApi(
 
         val groupReferResponseData: GroupReferResponse.GroupReferResponseData =
             GroupReferResponse.GroupReferResponseData(
-                groupListResponse,
-                groupSettingResponse
+                groupListResponse!!,
+                groupSettingResponse!!
             )
 
         val response = GroupReferResponse(

@@ -15,6 +15,10 @@ class FixtureGroupList {
         new GroupName("group_name")
     }
 
+    static 所属グループ名_バリデーションエラー() {
+        new GroupName("group_,name")
+    }
+
     static 所属グループパスワード_正常() {
         new GroupPassword("group_password")
     }

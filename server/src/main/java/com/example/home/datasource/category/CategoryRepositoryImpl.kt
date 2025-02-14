@@ -4,7 +4,9 @@ import com.example.home.domain.entity.category.Category
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsBudgets
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -13,9 +15,9 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class CategoryRepositoryImpl : CategoryRepository {
-    override fun refer(groupsId: GroupsId?): List<Category> {
+    override fun refer(categoryId: CategoryId?, groupsId: GroupsId?, categoryNo: CategoryNo?): List<Category> {
         return transaction {
-            if (groupsId == null) {
+            if (categoryId == null && groupsId == null && categoryNo == null) {
                 TbTsCategorys
                     .selectAll()
                     .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
@@ -23,19 +25,40 @@ class CategoryRepositoryImpl : CategoryRepository {
                         Category(
                             CategoryId(it[TbTsCategorys.categoryId]),
                             GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryId(it[TbTsCategorys.categoryNo]),
+                            CategoryNo(it[TbTsCategorys.categoryNo]),
+                            CategoryName(it[TbTsCategorys.categoryName])
+                        )
+                    }
+            } else if (categoryId != null) {
+                var condition: Op<Boolean> = TbTsCategorys.categoryId eq categoryId.value
+
+                TbTsCategorys
+                    .select {
+                        condition
+                    }
+                    .map {
+                        Category(
+                            CategoryId(it[TbTsCategorys.categoryId]),
+                            GroupsId(it[TbTsCategorys.groupsId]),
+                            CategoryNo(it[TbTsCategorys.categoryNo]),
                             CategoryName(it[TbTsCategorys.categoryName])
                         )
                     }
             } else {
+                var condition: Op<Boolean> = Op.TRUE
+                groupsId?.let { condition = condition and (TbTsCategorys.groupsId eq it.value) }
+                categoryNo?.let { condition = condition and (TbTsCategorys.categoryNo eq it.value) }
+
                 TbTsCategorys
-                    .select(TbTsCategorys.groupsId eq groupsId.value)
+                    .select {
+                        condition
+                    }
                     .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
                     .map {
                         Category(
                             CategoryId(it[TbTsCategorys.categoryId]),
                             GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryId(it[TbTsCategorys.categoryNo]),
+                            CategoryNo(it[TbTsCategorys.categoryNo]),
                             CategoryName(it[TbTsCategorys.categoryName])
                         )
                     }
@@ -45,7 +68,7 @@ class CategoryRepositoryImpl : CategoryRepository {
 
     override fun save(
         groupsId: GroupsId,
-        categoryNo: CategoryId,
+        categoryNo: CategoryNo,
         categoryName: CategoryName
     ): Category {
         return transaction {
@@ -65,7 +88,7 @@ class CategoryRepositoryImpl : CategoryRepository {
                 Category(
                     CategoryId(it[TbTsCategorys.categoryId]),
                     GroupsId(it[TbTsCategorys.groupsId]),
-                    CategoryId(it[TbTsCategorys.categoryNo]),
+                    CategoryNo(it[TbTsCategorys.categoryNo]),
                     CategoryName(it[TbTsCategorys.categoryName])
                 )
             } ?: throw IllegalStateException("Failed to save the Category")
@@ -73,44 +96,41 @@ class CategoryRepositoryImpl : CategoryRepository {
     }
 
     override fun update(
-        groupsId: GroupsId,
-        categoryNo: CategoryId,
-        categoryName: CategoryName
+        categoryId: CategoryId,
+        categoryNo: CategoryNo?,
+        categoryName: CategoryName?
     ): Int {
         return transaction {
+            var condition: Op<Boolean> = TbTsCategorys.categoryId eq categoryId.value
+            categoryNo?.let { condition = condition and (TbTsCategorys.categoryNo eq it.value) }
+            categoryName?.let { condition = condition and (TbTsCategorys.categoryName eq it.value) }
             val updateRows = TbTsCategorys.update({
-                (TbTsCategorys.groupsId eq groupsId.value) and
-                        (TbTsCategorys.categoryNo eq categoryNo.value)
+                condition
             }) {
-                it[TbTsCategorys.groupsId] = groupsId.value
-                it[TbTsCategorys.categoryNo] = categoryNo.value
-                it[TbTsCategorys.categoryName] = categoryName.value
+                if (categoryNo != null) {
+                    it[TbTsCategorys.categoryNo] = categoryNo.value
+                }
+                if (categoryName != null) {
+                    it[TbTsCategorys.categoryName] = categoryName.value
+                }
             }
             return@transaction updateRows
         }
     }
 
-    override fun delete(groupsId: GroupsId, categoryNo: CategoryId?, categoryName: CategoryName?): Int {
+    override fun delete(groupsId: GroupsId?, categoryId: CategoryId?): Int {
         return transaction {
-            val condition = TbTsCategorys.groupsId eq groupsId.value
-
-            val fullCondition = when {
-                categoryNo != null && categoryName != null ->
-                    condition and (TbTsCategorys.categoryNo eq categoryNo.value) and (TbTsCategorys.categoryName eq categoryName.value)
-
-                categoryNo != null ->
-                    condition and (TbTsCategorys.categoryNo eq categoryNo.value)
-
-                categoryName != null ->
-                    condition and (TbTsCategorys.categoryName eq categoryName.value)
-
-                else -> condition
+            val condition = if (groupsId != null) {
+                TbTsCategorys.groupsId eq groupsId.value
+            } else {
+                if (categoryId != null) {
+                    TbTsCategorys.categoryId eq categoryId.value
+                } else {
+                    return@transaction 0
+                }
             }
-
-            val deleteRows = TbTsCategorys.deleteWhere { fullCondition }
-
+            val deleteRows = TbTsCategorys.deleteWhere { condition }
             return@transaction deleteRows
-
         }
     }
 
