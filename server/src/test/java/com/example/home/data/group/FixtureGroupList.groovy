@@ -31,5 +31,4 @@ class FixtureGroupList {
                 所属グループパスワード_正常()
         )
     }
-
 }
