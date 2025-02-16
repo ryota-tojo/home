@@ -14,7 +14,7 @@ object TbTsCommunication : Table("ts_communication") {
     val comGiftReason = varchar("com_gift_reason", 65535)
     val comReturnDate = date("com_return_date")
     val comReturnWhat = varchar("com_return_what", 64)
-    val comReturnMoney = varchar("com_return_money", 64)
+    val comReturnMoney = integer("com_return_money")
     val comReturnRemarks = varchar("com_return_remarks", 65535)
     val returnFlg = integer("return_flg")
     override val primaryKey = PrimaryKey(communicationId)

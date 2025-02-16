@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 data class Communication(
     val id: GiftId,
-    val groups_id: GroupsId,
+    val groupsId: GroupsId,
     val giftDate : LocalDate,
     val giftFrom : GiftFrom,
     val giftTo: GiftTo,
