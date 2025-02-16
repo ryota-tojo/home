@@ -101,9 +101,7 @@ class CommentRepositoryImpl : CommentRepository {
                         (TbTsComment.yyyy eq yyyy.value) and
                         (TbTsComment.mm eq mm.value)
             }) {
-                it[TbTsComment.groupsId] = groupsId.value
-                it[TbTsComment.yyyy] = yyyy.value
-                it[TbTsComment.mm] = mm.value
+                it[TbTsComment.content] = content.value
             }
             if (affectedRows == 0) {
                 throw IllegalStateException("No rows updated for groupsId: ${groupsId.value}, yyyy: ${yyyy.value}, mm: ${mm.value}")

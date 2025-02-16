@@ -210,7 +210,7 @@ CREATE TABLE ts_communication (
     gift_remarks VARCHAR(65535),
     gift_rtn_date DATE,
     gift_rtn_item VARCHAR(64),
-    gift_rtn_amount VARCHAR(64),
+    gift_rtn_amount INTEGER,
     gift_rtn_remarks VARCHAR(65535),
     return_flg INTEGER,
     PRIMARY KEY (id)
