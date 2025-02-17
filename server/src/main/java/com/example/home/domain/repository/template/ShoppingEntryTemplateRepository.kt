@@ -32,15 +32,30 @@ interface ShoppingEntryTemplateRepository {
     fun update(
         groupsId: GroupsId,
         templateId: TemplateId,
-        templateName: TemplateName,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        shoppingType: ShoppingType,
-        shoppingPayment: ShoppingPayment,
-        shoppingSettlement: ShoppingSettlement,
-        shoppingAmount: Amount,
-        shoppingRemarks: ShoppingRemarks,
-        templateUseFlg: TemplateUseFlg
+        templateName: TemplateName? = null,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        shoppingType: ShoppingType? = null,
+        shoppingPayment: ShoppingPayment? = null,
+        shoppingSettlement: ShoppingSettlement? = null,
+        shoppingAmount: Amount? = null,
+        shoppingRemarks: ShoppingRemarks? = null,
+        templateUseFlg: TemplateUseFlg? = null
+    ): Int
+
+    fun usage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int
+
+    fun unUsage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int
+
+    fun setDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
     ): Int
 
     fun delete(groupsId: GroupsId, templateId: TemplateId? = null): Int

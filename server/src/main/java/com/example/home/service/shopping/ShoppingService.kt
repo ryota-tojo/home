@@ -67,6 +67,15 @@ class ShoppingService(
         )
     }
 
+    fun getOldCategories(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY? = null,
+        shoppingDateMM: MM? = null
+    ): List<CategoryId> {
+        val oldCategoryIdList = shoppingRepository.getOldCategories(groupsId, shoppingDateYYYY, shoppingDateMM)
+        return oldCategoryIdList
+    }
+
     fun save(
         groupsId: GroupsId,
         userId: UserId,
@@ -132,16 +141,16 @@ class ShoppingService(
     fun update(
         shoppingId: ShoppingId,
         groupsId: GroupsId,
-        userId: UserId,
-        shoppingDate: LocalDate,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        type: ShoppingType,
-        payment: ShoppingPayment,
-        settlement: ShoppingSettlement,
-        amount: Amount,
-        remarks: ShoppingRemarks,
-        fixedFlg: FixedFlg
+        userId: UserId? = null,
+        shoppingDate: LocalDate? = null,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        type: ShoppingType? = null,
+        payment: ShoppingPayment? = null,
+        settlement: ShoppingSettlement? = null,
+        amount: Amount? = null,
+        remarks: ShoppingRemarks? = null,
+        fixedFlg: FixedFlg? = null
     ): ShoppingUpdateResult {
         val inputDataCheckResult = inputDataCheck(groupsId, memberId, categoryId, type, payment, settlement)
         if (inputDataCheckResult != ResponseCode.成功.code) {
@@ -200,31 +209,40 @@ class ShoppingService(
 
     fun inputDataCheck(
         groupsId: GroupsId,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        type: ShoppingType,
-        payment: ShoppingPayment,
-        settlement: ShoppingSettlement,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        type: ShoppingType? = null,
+        payment: ShoppingPayment? = null,
+        settlement: ShoppingSettlement? = null
     ): String {
-        val memberList = memberRepository.refer(null, groupsId, null)
-        if (!memberList.any { it.id == memberId }) {
-            return ResponseCode.存在しないメンバー.code
+        if (memberId != null) {
+            val memberList = memberRepository.refer(null, groupsId, null)
+            if (!memberList.any { it.id == memberId }) {
+                return ResponseCode.存在しないメンバー.code
+            }
         }
 
-        val categoryList = categoryRepository.refer(null, groupsId, null)
-        if (!categoryList.any { it.id == categoryId }) {
-            return ResponseCode.存在しないカテゴリー.code
+        if (categoryId != null) {
+            val categoryList = categoryRepository.refer(null, groupsId, null)
+            if (!categoryList.any { it.id == categoryId }) {
+                return ResponseCode.存在しないカテゴリー.code
+            }
         }
 
-        choicesRepository.getItemName(ChoicesItemType("type"), ChoicesItemNo(type.value))
-            ?: return ResponseCode.存在しない購入種別.code
+        if (type != null) {
+            choicesRepository.getItemName(ChoicesItemType("type"), ChoicesItemNo(type.value))
+                ?: return ResponseCode.存在しない購入種別.code
+        }
 
-        choicesRepository.getItemName(ChoicesItemType("payment"), ChoicesItemNo(payment.value))
-            ?: return ResponseCode.存在しない支払い方法.code
+        if (payment != null) {
+            choicesRepository.getItemName(ChoicesItemType("payment"), ChoicesItemNo(payment.value))
+                ?: return ResponseCode.存在しない支払い方法.code
+        }
 
-        choicesRepository.getItemName(ChoicesItemType("settlement"), ChoicesItemNo(settlement.value))
-            ?: return ResponseCode.存在しない精算状況.code
-
+        if (settlement != null) {
+            choicesRepository.getItemName(ChoicesItemType("settlement"), ChoicesItemNo(settlement.value))
+                ?: return ResponseCode.存在しない精算状況.code
+        }
         return ResponseCode.成功.code
 
     }

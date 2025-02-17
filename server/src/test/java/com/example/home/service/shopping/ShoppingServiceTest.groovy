@@ -60,6 +60,27 @@ class ShoppingServiceTest extends Specification {
         "正常_データなし"                      | new ShoppingReferResult(ResponseCode.成功.code, null)                                | null                                | FixtureShopping.購入ID_正常() | FixtureGroupList.所属グループID_正常() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureMember.メンバーID_正常() | FixtureCategory.カテゴリーID_正常() | FixtureShopping.購入種別_出費() | FixtureShopping.支払い方法_現金() | FixtureShopping.精算状態_未精算() | FixtureEtc.金額_正常() | FixtureEtc.金額_正常() | FixtureShopping.備考_正常()
     }
 
+    def "shopping_getOldCategories_#useCase"() {
+        setup:
+        def groupsId = FixtureGroupList.所属グループID_正常()
+
+        when:
+        def result = sut.getOldCategories(groupsId, yyyy, mm)
+        then:
+        1 * shoppingRepository.getOldCategories(groupsId, yyyy, mm) >> categogryIdList
+        result == expected
+
+        where:
+        useCase                | expected                                  | yyyy                 | mm                   | categogryIdList
+        "正常"                 | FixtureCategory.カテゴリーID一覧_正常値() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID一覧_正常値()
+        "正常_yyyyなし"        | FixtureCategory.カテゴリーID一覧_正常値() | null                 | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID一覧_正常値()
+        "正常_mmなし"          | FixtureCategory.カテゴリーID一覧_正常値() | FixtureEtc.年_正常() | null                 | FixtureCategory.カテゴリーID一覧_正常値()
+        "正常_yyyyなし_mmなし" | FixtureCategory.カテゴリーID一覧_正常値() | null                 | null                 | FixtureCategory.カテゴリーID一覧_正常値()
+        "正常_データなし"      | null                                      | FixtureEtc.年_正常() | FixtureEtc.月_正常() | null
+
+
+    }
+
     def "shopping_save_#useCase"() {
 
         setup:

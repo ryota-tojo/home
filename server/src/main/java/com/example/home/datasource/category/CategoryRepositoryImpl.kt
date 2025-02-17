@@ -6,7 +6,6 @@ import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsBudgets
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -17,52 +16,26 @@ import org.springframework.stereotype.Repository
 class CategoryRepositoryImpl : CategoryRepository {
     override fun refer(categoryId: CategoryId?, groupsId: GroupsId?, categoryNo: CategoryNo?): List<Category> {
         return transaction {
-            if (categoryId == null && groupsId == null && categoryNo == null) {
-                TbTsCategorys
-                    .selectAll()
-                    .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
-                    .map {
-                        Category(
-                            CategoryId(it[TbTsCategorys.categoryId]),
-                            GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryNo(it[TbTsCategorys.categoryNo]),
-                            CategoryName(it[TbTsCategorys.categoryName])
-                        )
-                    }
-            } else if (categoryId != null) {
-                var condition: Op<Boolean> = TbTsCategorys.categoryId eq categoryId.value
-
-                TbTsCategorys
-                    .select {
-                        condition
-                    }
-                    .map {
-                        Category(
-                            CategoryId(it[TbTsCategorys.categoryId]),
-                            GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryNo(it[TbTsCategorys.categoryNo]),
-                            CategoryName(it[TbTsCategorys.categoryName])
-                        )
-                    }
+            var condition: Op<Boolean> = TbTsCategorys.deletedFlg eq 0
+            if (categoryId != null) {
+                categoryId.let { condition = condition and (TbTsCategorys.categoryId eq categoryId.value) }
             } else {
-                var condition: Op<Boolean> = Op.TRUE
                 groupsId?.let { condition = condition and (TbTsCategorys.groupsId eq it.value) }
                 categoryNo?.let { condition = condition and (TbTsCategorys.categoryNo eq it.value) }
-
-                TbTsCategorys
-                    .select {
-                        condition
-                    }
-                    .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
-                    .map {
-                        Category(
-                            CategoryId(it[TbTsCategorys.categoryId]),
-                            GroupsId(it[TbTsCategorys.groupsId]),
-                            CategoryNo(it[TbTsCategorys.categoryNo]),
-                            CategoryName(it[TbTsCategorys.categoryName])
-                        )
-                    }
             }
+            TbTsCategorys
+                .select {
+                    condition
+                }
+                .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
+                .map {
+                    Category(
+                        CategoryId(it[TbTsCategorys.categoryId]),
+                        GroupsId(it[TbTsCategorys.groupsId]),
+                        CategoryNo(it[TbTsCategorys.categoryNo]),
+                        CategoryName(it[TbTsCategorys.categoryName])
+                    )
+                }
         }
     }
 
@@ -113,6 +86,18 @@ class CategoryRepositoryImpl : CategoryRepository {
                 if (categoryName != null) {
                     it[TbTsCategorys.categoryName] = categoryName.value
                 }
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun setDeleted(categoryId: CategoryId): Int {
+        return transaction {
+            var condition: Op<Boolean> = TbTsCategorys.categoryId eq categoryId.value
+            val updateRows = TbTsCategorys.update({
+                condition
+            }) {
+                it[deletedFlg] = 1
             }
             return@transaction updateRows
         }

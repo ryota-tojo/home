@@ -16,5 +16,6 @@ object TbTsTmpShoppingEntry : Table("ts_tmp_shopping_entry") {
     val tmpeAmount = integer("tmpe_amount")
     val tmpeRemarks = varchar("tmpe_remarks", 1024)
     val tmpeUseFlg = integer("tmpe_use_flg")
+    val deletedFlg = integer("deleted_flag")
     override val primaryKey = PrimaryKey(id)
 }

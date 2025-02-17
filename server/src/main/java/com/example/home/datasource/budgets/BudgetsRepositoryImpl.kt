@@ -90,7 +90,7 @@ class BudgetsRepositoryImpl : BudgetsRepository {
                 condition
             }) {
                 if (amount != null) {
-                    it[TbTsBudgets.bgAmount] = amount.value
+                    it[bgAmount] = amount.value
                 }
                 if (fixedFlg != null) {
                     it[TbTsBudgets.fixedFlg] = fixedFlg.value
@@ -101,6 +101,43 @@ class BudgetsRepositoryImpl : BudgetsRepository {
         }
     }
 
+    override fun fixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int {
+        return transaction {
+            var condition: Op<Boolean> = TbTsBudgets.groupsId eq groupsId.value
+            yyyy.let { condition = condition and (TbTsBudgets.bgYyyy eq it.value) }
+            mm.let { condition = condition and (TbTsBudgets.bgMm eq it.value) }
+
+            val updateRows = TbTsBudgets.update({
+                condition
+            }) {
+                it[fixedFlg] = 1
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun unFixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int {
+        return transaction {
+            var condition: Op<Boolean> = TbTsBudgets.groupsId eq groupsId.value
+            yyyy.let { condition = condition and (TbTsBudgets.bgYyyy eq it.value) }
+            mm.let { condition = condition and (TbTsBudgets.bgMm eq it.value) }
+
+            val updateRows = TbTsBudgets.update({
+                condition
+            }) {
+                it[fixedFlg] = 0
+            }
+            return@transaction updateRows
+        }
+    }
 
     override fun delete(groupsId: GroupsId, yyyy: YYYY?, mm: MM?, categoryNo: CategoryId?): Int {
         return transaction {

@@ -40,7 +40,7 @@ fun main() {
         dbConnectConfirmation.dbConnect()
 
         // 確認用のデータ定義
-        val groupsId = GroupsId("group003")
+        val groupsId = GroupsId("group001")
         val userId = UserId(1)
         val shoppingDate = LocalDate.now()
         val memberId = MemberId(3)
@@ -52,21 +52,12 @@ fun main() {
         val remarks = ShoppingRemarks("aaaa")
 
         // 確認対象のサービスを呼び出す
-        val res = shoppingService.save(
-            groupsId,
-            userId,
-            shoppingDate,
-            memberId,
-            categoryId,
-            type,
-            payment,
-            settlement,
-            amount,
-            remarks
+        val res = shoppingService.getOldCategories(
+            GroupsId("group002")
         )
 
         println("---------- 処理結果 ----------")
-        println(res.result)
+        println(res)
 
     }
 

@@ -21,20 +21,27 @@ VALUES
     ('group003', 'グループ設定２', '3002');
 
 -- ts_categorys にデータを挿入
-INSERT INTO ts_categorys (groups_id, category_no, category_name) 
+INSERT INTO ts_categorys (groups_id, category_no, category_name, deleted_flag) 
 VALUES 
-    ('group001', 1, 'カテゴリー１'),
-    ('group001', 2, 'カテゴリー２'),
-    ('group002', 1, 'カテゴリー１'),
-    ('group002', 2, 'カテゴリー２');
+    ('group001', 1, 'カテゴリー１', 0),
+    ('group001', 2, 'カテゴリー２', 0),
+    ('group001', 3, '削除済みカテゴリー１', 1),
+    ('group001', 4, '削除済みカテゴリー２', 1),
+    ('group001', 5, '削除済みカテゴリー３', 1),
+    ('group001', 6, '削除済みカテゴリー４', 1),
+    ('group001', 7, '削除済みカテゴリー５', 1),
+    ('group001', 8, '削除済みカテゴリー６', 1),
+    ('group001', 9, '削除済みカテゴリー７', 1),
+    ('group002', 1, 'カテゴリー１', 0),
+    ('group002', 2, 'カテゴリー２', 0);
 
 -- ts_members にデータを挿入
-INSERT INTO ts_members (groups_id, member_no, member_name) 
+INSERT INTO ts_members (groups_id, member_no, member_name, deleted_flag) 
 VALUES 
-    ('group001', 1, 'メンバー１'),
-    ('group001', 2, 'メンバー２'),
-    ('group003', 1, 'メンバー１'),
-    ('group003', 2, 'メンバー２');
+    ('group001', 1, 'メンバー１', 0),
+    ('group001', 2, 'メンバー２', 0),
+    ('group003', 1, 'メンバー１', 0),
+    ('group003', 2, 'メンバー２', 0);
 
 -- ts_comment にデータを挿入
 INSERT INTO ts_comment (groups_id, yyyy, mm, content, fixed_flg) 
@@ -74,3 +81,17 @@ VALUES
     ('group002', 3, 1, NOW(), NOW()),
     ('group002', 4, 0, NOW(), NOW()),
     ('group003', 5, 1, NOW(), NOW());
+
+INSERT INTO ts_shopping (
+    groups_id, user_id, shopping_date, member_id, category_id, type, 
+    payment, settlement, amount, remarks, fixed_flg
+) VALUES 
+('group001', 1, '2024-02-17', 1, 1, 1, 1, 1, 5000, '買い物メモ1', 1),
+('group001', 1, '2024-02-16', 1, 3, 1, 1, 1, 3000, '買い物メモ2', 1),
+('group001', 1, '2024-02-15', 1, 4, 1, 1, 1, 7000, '買い物メモ3', 1),
+('group001', 1, '2024-03-17', 1, 2, 1, 1, 1, 5000, '買い物メモ4', 1),
+('group001', 1, '2024-03-16', 1, 5, 1, 1, 1, 3000, '買い物メモ5', 1),
+('group001', 1, '2024-03-15', 1, 6, 1, 1, 1, 7000, '買い物メモ6', 1),
+('group001', 1, '2025-02-17', 1, 7, 1, 1, 1, 5000, '買い物メモ7', 1),
+('group001', 1, '2025-02-16', 1, 8, 1, 1, 1, 3000, '買い物メモ8', 1),
+('group001', 1, '2025-02-15', 1, 9, 1, 1, 1, 7000, '買い物メモ9', 1);

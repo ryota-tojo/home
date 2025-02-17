@@ -1,11 +1,7 @@
 package com.example.home.datasource.member
 
-import com.example.home.domain.entity.category.Category
 import com.example.home.domain.entity.member.Member
 import com.example.home.domain.repository.member.MemberRepository
-import com.example.home.domain.value_object.category.CategoryId
-import com.example.home.domain.value_object.category.CategoryName
-import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
@@ -21,52 +17,26 @@ import org.springframework.stereotype.Repository
 class MemberRepositoryImpl : MemberRepository {
     override fun refer(memberId: MemberId?, groupsId: GroupsId?, memberNo: MemberNo?): List<Member> {
         return transaction {
-            if (memberId == null && groupsId == null && memberNo == null) {
-                TbTsMembers
-                    .selectAll()
-                    .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
-                    .map {
-                        Member(
-                            MemberId(it[TbTsMembers.memberId]),
-                            GroupsId(it[TbTsMembers.groupsId]),
-                            MemberNo(it[TbTsMembers.memberNo]),
-                            MemberName(it[TbTsMembers.memberName])
-                        )
-                    }
-            } else if (memberId != null) {
-                var condition: Op<Boolean> = TbTsMembers.memberId eq memberId.value
-
-                TbTsCategorys
-                    .select {
-                        condition
-                    }
-                    .map {
-                        Member(
-                            MemberId(it[TbTsMembers.memberId]),
-                            GroupsId(it[TbTsMembers.groupsId]),
-                            MemberNo(it[TbTsMembers.memberNo]),
-                            MemberName(it[TbTsMembers.memberName])
-                        )
-                    }
+            var condition: Op<Boolean> = TbTsMembers.deletedFlg eq 0
+            if (memberId != null) {
+                memberId.let { condition = condition and (TbTsMembers.memberId eq memberId.value) }
             } else {
-                var condition: Op<Boolean> = Op.TRUE
                 groupsId?.let { condition = condition and (TbTsMembers.groupsId eq it.value) }
                 memberNo?.let { condition = condition and (TbTsMembers.memberNo eq it.value) }
-
-                TbTsMembers
-                    .select {
-                        condition
-                    }
-                    .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
-                    .map {
-                        Member(
-                            MemberId(it[TbTsMembers.memberId]),
-                            GroupsId(it[TbTsMembers.groupsId]),
-                            MemberNo(it[TbTsMembers.memberNo]),
-                            MemberName(it[TbTsMembers.memberName])
-                        )
-                    }
             }
+            TbTsCategorys
+                .select {
+                    condition
+                }
+                .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
+                .map {
+                    Member(
+                        MemberId(it[TbTsMembers.memberId]),
+                        GroupsId(it[TbTsMembers.groupsId]),
+                        MemberNo(it[TbTsMembers.memberNo]),
+                        MemberName(it[TbTsMembers.memberName])
+                    )
+                }
         }
     }
 
@@ -117,6 +87,18 @@ class MemberRepositoryImpl : MemberRepository {
                 if (memberName != null) {
                     it[TbTsMembers.memberName] = memberName.value
                 }
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun setDeleted(memberId: MemberId): Int {
+        return transaction {
+            var condition: Op<Boolean> = TbTsMembers.memberId eq memberId.value
+            val updateRows = TbTsMembers.update({
+                condition
+            }) {
+                it[deletedFlg] = 1
             }
             return@transaction updateRows
         }

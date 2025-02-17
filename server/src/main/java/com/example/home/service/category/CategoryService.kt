@@ -10,7 +10,6 @@ import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.domain.value_object.member.MemberId
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
 
@@ -58,6 +57,20 @@ class CategoryService(
             }
         }
         val updateRows = categoryRepository.update(categoryId, categoryNo, categoryName)
+        if (updateRows == 0) {
+            return CategoryUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                updateRows
+            )
+        }
+        return CategoryUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
+    fun setDeleted(categoryId: CategoryId): CategoryUpdateResult {
+        val updateRows = categoryRepository.setDeleted(categoryId)
         if (updateRows == 0) {
             return CategoryUpdateResult(
                 ResponseCode.データ不在エラー.code,

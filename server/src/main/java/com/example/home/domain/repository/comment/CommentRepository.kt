@@ -22,5 +22,17 @@ interface CommentRepository {
         content: Content
     ): Int
 
+    fun fixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int
+
+    fun unFixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int
+
     fun delete(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null): Int
 }

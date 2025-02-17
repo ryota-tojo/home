@@ -107,15 +107,15 @@ class ShoppingEntryTemplateService(
     fun update(
         groupsId: GroupsId,
         templateId: TemplateId,
-        templateName: TemplateName,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        shoppingType: ShoppingType,
-        shoppingPayment: ShoppingPayment,
-        shoppingSettlement: ShoppingSettlement,
-        shoppingAmount: Amount,
-        shoppingRemarks: ShoppingRemarks,
-        templateUseFlg: TemplateUseFlg
+        templateName: TemplateName? = null,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        shoppingType: ShoppingType? = null,
+        shoppingPayment: ShoppingPayment? = null,
+        shoppingSettlement: ShoppingSettlement? = null,
+        shoppingAmount: Amount? = null,
+        shoppingRemarks: ShoppingRemarks? = null,
+        templateUseFlg: TemplateUseFlg? = null
     ): ShoppingEntryTemplateUpdateResult {
         if (!ValidationCheck.symbol(templateId.toString()).result ||
             !ValidationCheck.symbol(templateName.toString()).result
@@ -164,6 +164,46 @@ class ShoppingEntryTemplateService(
         )
     }
 
+    fun usage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): ShoppingEntryTemplateUpdateResult {
+        val updateRows = shoppingEntryTemplateRepository.usage(groupsId, templateId)
+
+        return ShoppingEntryTemplateUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
+    fun unUsage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): ShoppingEntryTemplateUpdateResult {
+        val updateRows = shoppingEntryTemplateRepository.usage(groupsId, templateId)
+        return ShoppingEntryTemplateUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
+    fun setDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): ShoppingEntryTemplateUpdateResult {
+        val updateRows = shoppingEntryTemplateRepository.setDeleted(groupsId, templateId)
+        if (updateRows == 0) {
+            return ShoppingEntryTemplateUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                updateRows
+            )
+        }
+        return ShoppingEntryTemplateUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
     fun delete(groupsId: GroupsId, templateId: TemplateId? = null): ShoppingEntryTemplateDeleteResult {
         val deleteRows = shoppingEntryTemplateRepository.delete(groupsId, templateId)
         if (deleteRows == 0) {
@@ -180,32 +220,40 @@ class ShoppingEntryTemplateService(
 
     fun inputDataCheck(
         groupsId: GroupsId,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        type: ShoppingType,
-        payment: ShoppingPayment,
-        settlement: ShoppingSettlement,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        type: ShoppingType? = null,
+        payment: ShoppingPayment? = null,
+        settlement: ShoppingSettlement? = null
     ): String {
-
-        val memberList = memberRepository.refer(null, groupsId, null)
-        if (!memberList.any { it.id == memberId }) {
-            return ResponseCode.存在しないメンバー.code
+        if (memberId != null) {
+            val memberList = memberRepository.refer(null, groupsId, null)
+            if (!memberList.any { it.id == memberId }) {
+                return ResponseCode.存在しないメンバー.code
+            }
         }
 
-        val categoryList = categoryRepository.refer(null, groupsId, null)
-        if (!categoryList.any { it.id == categoryId }) {
-            return ResponseCode.存在しないカテゴリー.code
+        if (categoryId != null) {
+            val categoryList = categoryRepository.refer(null, groupsId, null)
+            if (!categoryList.any { it.id == categoryId }) {
+                return ResponseCode.存在しないカテゴリー.code
+            }
         }
 
-        choicesRepository.getItemName(ChoicesItemType("type"), ChoicesItemNo(type.value))
-            ?: return ResponseCode.存在しない購入種別.code
+        if (type != null) {
+            choicesRepository.getItemName(ChoicesItemType("type"), ChoicesItemNo(type.value))
+                ?: return ResponseCode.存在しない購入種別.code
+        }
 
-        choicesRepository.getItemName(ChoicesItemType("payment"), ChoicesItemNo(payment.value))
-            ?: return ResponseCode.存在しない支払い方法.code
+        if (payment != null) {
+            choicesRepository.getItemName(ChoicesItemType("payment"), ChoicesItemNo(payment.value))
+                ?: return ResponseCode.存在しない支払い方法.code
+        }
 
-        choicesRepository.getItemName(ChoicesItemType("settlement"), ChoicesItemNo(settlement.value))
-            ?: return ResponseCode.存在しない精算状況.code
-
+        if (settlement != null) {
+            choicesRepository.getItemName(ChoicesItemType("settlement"), ChoicesItemNo(settlement.value))
+                ?: return ResponseCode.存在しない精算状況.code
+        }
         return ResponseCode.成功.code
 
     }

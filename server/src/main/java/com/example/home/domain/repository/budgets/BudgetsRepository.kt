@@ -19,5 +19,18 @@ interface BudgetsRepository {
         amount: Amount? = null,
         fixedFlg: FixedFlg? = null
     ): Int
+
+    fun fixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int
+
+    fun unFixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int
+
     fun delete(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryNo: CategoryId? = null): Int
 }

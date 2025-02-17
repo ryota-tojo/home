@@ -8,5 +8,6 @@ object TbTsCategorys : Table("ts_categorys") {
     val groupsId = varchar("groups_id", 64)
     val categoryNo = integer("category_no")
     val categoryName = varchar("category_name", 64)
+    val deletedFlg = integer("deleted_flag")
     override val primaryKey = PrimaryKey(categoryId)
 }

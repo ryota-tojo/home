@@ -26,7 +26,7 @@ class ShoppingSearchTemplateRepositoryImpl : ShoppingSearchTemplateRepository {
         return transaction {
             TbTsTmpShoppingSearch.select {
                 Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
+                    var condition: Op<Boolean> = TbTsTmpShoppingSearch.deletedFlg eq 0
                     groupsId?.value?.let { condition = condition and (TbTsTmpShoppingSearch.groupsId eq it) }
                     templateId?.value?.let {
                         condition = condition and (TbTsTmpShoppingSearch.templateId eq it)
@@ -123,32 +123,106 @@ class ShoppingSearchTemplateRepositoryImpl : ShoppingSearchTemplateRepository {
     override fun update(
         groupsId: GroupsId,
         templateId: TemplateId,
-        templateName: TemplateName,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        shoppingType: ShoppingType,
-        shoppingPayment: ShoppingPayment,
-        shoppingSettlement: ShoppingSettlement,
-        shoppingMinAmount: Amount,
-        shoppingMaxAmount: Amount,
-        shoppingRemarks: ShoppingRemarks,
-        templateUseFlg: TemplateUseFlg
+        templateName: TemplateName?,
+        memberId: MemberId?,
+        categoryId: CategoryId?,
+        shoppingType: ShoppingType?,
+        shoppingPayment: ShoppingPayment?,
+        shoppingSettlement: ShoppingSettlement?,
+        shoppingMinAmount: Amount?,
+        shoppingMaxAmount: Amount?,
+        shoppingRemarks: ShoppingRemarks?,
+        templateUseFlg: TemplateUseFlg?
     ): Int {
         return transaction {
             val updateRows = TbTsTmpShoppingSearch.update({
                 (TbTsTmpShoppingSearch.groupsId eq groupsId.value) and
                         (TbTsTmpShoppingSearch.templateId eq templateId.value)
             }) {
-                it[tmpsName] = templateName.value
-                it[tmpsMemberId] = memberId.value
-                it[tmpsCategoryId] = categoryId.value
-                it[tmpsType] = shoppingType.value
-                it[tmpsPayment] = shoppingPayment.value
-                it[tmpsSettlement] = shoppingSettlement.value
-                it[tmpsMinAmount] = shoppingMinAmount.value
-                it[tmpsMaxAmount] = shoppingMaxAmount.value
-                it[tmpsRemarks] = shoppingRemarks.value
-                it[tmpsUseFlg] = templateUseFlg.value
+                if (templateName != null) {
+                    it[tmpsName] = templateName.value
+                }
+
+                if (memberId != null) {
+                    it[tmpsMemberId] = memberId.value
+                }
+
+                if (categoryId != null) {
+                    it[tmpsCategoryId] = categoryId.value
+                }
+
+                if (shoppingType != null) {
+                    it[tmpsType] = shoppingType.value
+                }
+
+                if (shoppingPayment != null) {
+                    it[tmpsPayment] = shoppingPayment.value
+                }
+
+                if (shoppingSettlement != null) {
+                    it[tmpsSettlement] = shoppingSettlement.value
+                }
+
+                if (shoppingMinAmount != null) {
+                    it[tmpsMinAmount] = shoppingMinAmount.value
+                }
+
+                if (shoppingMaxAmount != null) {
+                    it[tmpsMaxAmount] = shoppingMaxAmount.value
+                }
+
+                if (shoppingRemarks != null) {
+                    it[tmpsRemarks] = shoppingRemarks.value
+                }
+
+                if (templateUseFlg != null) {
+                    it[tmpsUseFlg] = templateUseFlg.value
+                }
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun usage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingSearch.update({
+                (TbTsTmpShoppingSearch.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingSearch.templateId eq templateId.value)
+            }) {
+                it[tmpsUseFlg] = 1
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun unUsage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingSearch.update({
+                (TbTsTmpShoppingSearch.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingSearch.templateId eq templateId.value)
+            }) {
+                it[tmpsUseFlg] = 0
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun setDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingSearch.update({
+                (TbTsTmpShoppingSearch.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingSearch.templateId eq templateId.value)
+            }) {
+                it[deletedFlg] = 1
             }
             return@transaction updateRows
         }
