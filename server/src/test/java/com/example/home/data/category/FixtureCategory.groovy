@@ -31,4 +31,10 @@ class FixtureCategory {
                 カテゴリー名_正常()
         )
     }
+
+    static カテゴリーID一覧_正常値() {
+        return [
+                カテゴリーID_正常()
+        ]
+    }
 }

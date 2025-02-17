@@ -85,6 +85,7 @@ CREATE TABLE ts_categorys (
     groups_id VARCHAR(64), 
     category_no INTEGER,
     category_name VARCHAR(64),
+    deleted_flag INTEGER,
     PRIMARY KEY (id)
 );
 
@@ -94,6 +95,7 @@ CREATE TABLE ts_members (
     groups_id VARCHAR(64), 
     member_no INTEGER,
     member_name VARCHAR(64),
+    deleted_flag INTEGER,
     PRIMARY KEY (id)
 );
 
@@ -111,6 +113,7 @@ CREATE TABLE ts_tmp_shopping_input (
     tmpi_amount INTEGER,
     tmpi_remarks VARCHAR(1024),
     tmpi_use_flg INTEGER,
+    deleted_flag INTEGER,
     PRIMARY KEY (id)
 );
 
@@ -129,6 +132,7 @@ CREATE TABLE ts_tmp_shopping_search (
     tmps_max_amount INTEGER,
     tmps_remarks VARCHAR(1024),
     tmps_use_flg INTEGER,
+    deleted_flag INTEGER,
     PRIMARY KEY (id)
 );
 
@@ -146,6 +150,7 @@ CREATE TABLE ts_tmp_shopping_entry (
     tmpe_amount INTEGER,
     tmpe_remarks VARCHAR(1024),
     tmpe_use_flg INTEGER,
+    deleted_flag INTEGER,
     PRIMARY KEY (id)
 );
 

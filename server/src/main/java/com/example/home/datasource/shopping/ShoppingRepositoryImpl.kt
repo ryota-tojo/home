@@ -42,7 +42,8 @@ class ShoppingRepositoryImpl : ShoppingRepository {
             if (id == null && groupsId == null) {
                 TbTsShopping
                     .selectAll()
-                    .orderBy(TbTsShopping.shoppingDate to SortOrder.ASC)
+                    .orderBy(TbTsShopping.id to SortOrder.DESC)
+                    .limit(3000)
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -64,6 +65,8 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 TbTsShopping.select {
                     condition
                 }
+                    .orderBy(TbTsShopping.id to SortOrder.DESC)
+                    .limit(3000)
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -103,7 +106,8 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                         condition
                     }
                 }
-                    .orderBy(TbTsShopping.shoppingDate to SortOrder.ASC)
+                    .orderBy(TbTsShopping.id to SortOrder.DESC)
+                    .limit(3000)
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -121,6 +125,45 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                         )
                     }
             }
+        }
+    }
+
+    override fun getOldCategories(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY?,
+        shoppingDateMM: MM?
+    ): List<CategoryId> {
+        return transaction {
+            var categoryCondition: Op<Boolean> = TbTsCategorys.deletedFlg eq 0
+            groupsId.let { categoryCondition = categoryCondition and (TbTsCategorys.groupsId eq it.value) }
+            val categoryList = TbTsCategorys
+                .select {
+                    categoryCondition
+                }
+                .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
+                .map {
+                    CategoryId(it[TbTsCategorys.categoryId])
+                }
+
+            var condition: Op<Boolean> = TbTsShopping.groupsId eq groupsId.value
+            shoppingDateYYYY?.let {
+                condition = condition and (TbTsShopping.shoppingDate.year() eq it.value)
+            }
+            shoppingDateMM?.let {
+                condition = condition and (TbTsShopping.shoppingDate.month() eq it.value)
+            }
+            val shoppingCategoryList = TbTsShopping.select { condition }
+                .orderBy(TbTsShopping.categoryId to SortOrder.ASC)
+                .map {
+                    CategoryId(it[TbTsShopping.categoryId])
+                }
+                .distinct()
+            println(shoppingCategoryList)
+
+            val oldCategoryList = shoppingCategoryList.toMutableList()
+            oldCategoryList.removeAll(categoryList)
+
+            return@transaction oldCategoryList
         }
     }
 
@@ -233,49 +276,82 @@ class ShoppingRepositoryImpl : ShoppingRepository {
     override fun update(
         shoppingId: ShoppingId,
         groupsId: GroupsId,
-        userId: UserId,
-        shoppingDate: LocalDate,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        type: ShoppingType,
-        payment: ShoppingPayment,
-        settlement: ShoppingSettlement,
-        amount: Amount,
-        remarks: ShoppingRemarks,
-        fixedFlg: FixedFlg
+        userId: UserId?,
+        shoppingDate: LocalDate?,
+        memberId: MemberId?,
+        categoryId: CategoryId?,
+        type: ShoppingType?,
+        payment: ShoppingPayment?,
+        settlement: ShoppingSettlement?,
+        amount: Amount?,
+        remarks: ShoppingRemarks?,
+        fixedFlg: FixedFlg?
     ): Int {
         return transaction {
             val updateRows = TbTsShopping.update({
                 TbTsShopping.id eq shoppingId.value
             }) {
-                it[TbTsShopping.groupsId] = groupsId.value
-                it[TbTsShopping.userId] = userId.value
-                it[TbTsShopping.shoppingDate] = shoppingDate
-                it[TbTsShopping.memberId] = memberId.value
-                it[TbTsShopping.categoryId] = categoryId.value
-                it[TbTsShopping.type] = type.value
-                it[TbTsShopping.payment] = payment.value
-                it[TbTsShopping.settlement] = settlement.value
-                it[TbTsShopping.amount] = amount.value
-                it[TbTsShopping.remarks] = remarks.value
-                it[TbTsShopping.fixedFlg] = fixedFlg.value
+                if (userId != null) {
+                    it[TbTsShopping.userId] = userId.value
+                }
+                if (shoppingDate != null) {
+                    it[TbTsShopping.shoppingDate] = shoppingDate
+                }
+                if (memberId != null) {
+                    it[TbTsShopping.memberId] = memberId.value
+                }
+                if (categoryId != null) {
+                    it[TbTsShopping.categoryId] = categoryId.value
+                }
+                if (type != null) {
+                    it[TbTsShopping.type] = type.value
+                }
+                if (payment != null) {
+                    it[TbTsShopping.payment] = payment.value
+                }
+                if (settlement != null) {
+                    it[TbTsShopping.settlement] = settlement.value
+                }
+                if (amount != null) {
+                    it[TbTsShopping.amount] = amount.value
+                }
+                if (remarks != null) {
+                    it[TbTsShopping.remarks] = remarks.value
+                }
+                if (fixedFlg != null) {
+                    it[TbTsShopping.fixedFlg] = fixedFlg.value
+                }
             }
             return@transaction updateRows
         }
     }
 
-    override fun shoppingDatafixed(
+    override fun fixed(
         groupsId: GroupsId,
         shoppingDateYYYY: YYYY,
-        shoppingDateMM: MM,
-        fixedFlg: FixedFlg
+        shoppingDateMM: MM
     ): Int {
         val updateRows = TbTsShopping.update({
             (TbTsShopping.groupsId eq groupsId.value) and
                     (TbTsShopping.shoppingDate.year() eq shoppingDateYYYY.value) and
                     (TbTsShopping.shoppingDate.month() eq shoppingDateMM.value)
         }) {
-            it[TbTsShopping.fixedFlg] = fixedFlg.value
+            it[fixedFlg] = 1
+        }
+        return updateRows
+    }
+
+    override fun unFixed(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY,
+        shoppingDateMM: MM
+    ): Int {
+        val updateRows = TbTsShopping.update({
+            (TbTsShopping.groupsId eq groupsId.value) and
+                    (TbTsShopping.shoppingDate.year() eq shoppingDateYYYY.value) and
+                    (TbTsShopping.shoppingDate.month() eq shoppingDateMM.value)
+        }) {
+            it[fixedFlg] = 0
         }
         return updateRows
     }

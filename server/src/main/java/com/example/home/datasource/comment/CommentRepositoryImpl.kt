@@ -96,17 +96,48 @@ class CommentRepositoryImpl : CommentRepository {
         content: Content
     ): Int {
         return transaction {
-            val affectedRows = TbTsComment.update({
+            val updateRows = TbTsComment.update({
                 (TbTsComment.groupsId eq groupsId.value) and
                         (TbTsComment.yyyy eq yyyy.value) and
                         (TbTsComment.mm eq mm.value)
             }) {
                 it[TbTsComment.content] = content.value
             }
-            if (affectedRows == 0) {
-                throw IllegalStateException("No rows updated for groupsId: ${groupsId.value}, yyyy: ${yyyy.value}, mm: ${mm.value}")
+            return@transaction updateRows
+        }
+    }
+
+    override fun fixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int {
+        return transaction {
+            val updateRows = TbTsComment.update({
+                (TbTsComment.groupsId eq groupsId.value) and
+                        (TbTsComment.yyyy eq yyyy.value) and
+                        (TbTsComment.mm eq mm.value)
+            }) {
+                it[fixedFlg] = 1
             }
-            return@transaction affectedRows
+            return@transaction updateRows
+        }
+    }
+
+    override fun unFixed(
+        groupsId: GroupsId,
+        yyyy: YYYY,
+        mm: MM
+    ): Int {
+        return transaction {
+            val updateRows = TbTsComment.update({
+                (TbTsComment.groupsId eq groupsId.value) and
+                        (TbTsComment.yyyy eq yyyy.value) and
+                        (TbTsComment.mm eq mm.value)
+            }) {
+                it[fixedFlg] = 0
+            }
+            return@transaction updateRows
         }
     }
 

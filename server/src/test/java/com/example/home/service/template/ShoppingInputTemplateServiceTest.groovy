@@ -123,6 +123,63 @@ class ShoppingInputTemplateServiceTest extends Specification {
         "異常_データ不在エラー"     | new ShoppingInputTemplateUpdateResult(ResponseCode.データ不在エラー.code, 0)     | FixtureShoppingInputTemplate.テンプレートID_正常()                 | [FixtureMember.メンバー_正常値()] | [FixtureCategory.カテゴリー_正常値()] | GroovyMock(MasterChoices) | GroovyMock(MasterChoices) | GroovyMock(MasterChoices) | 0          | 1         | 1           | 1          | 1          | 1          | 1
     }
 
+    def "shoppingInputTemplate_setDeleted_#useCase"() {
+
+        setup:
+        def groupsId = FixtureGroupList.所属グループID_正常()
+        def templateId = FixtureShoppingInputTemplate.テンプレートID_正常()
+
+        when:
+        def result = sut.setDeleted(groupsId, templateId)
+
+        then:
+        1 * shoppingInputTemplateRepository.setDeleted(groupsId, templateId) >> updateRows
+        result == expected
+
+        where:
+        useCase                 | expected                                                                     | updateRows
+        "正常"                  | new ShoppingInputTemplateUpdateResult(ResponseCode.成功.code, 1)             | 1
+        "異常_データ不在エラー" | new ShoppingInputTemplateUpdateResult(ResponseCode.データ不在エラー.code, 0) | 0
+    }
+
+    def "shoppingInputTemplate_usage_#useCase"() {
+
+        setup:
+        def groupsId = FixtureGroupList.所属グループID_正常()
+        def templateId = FixtureShoppingInputTemplate.テンプレートID_正常()
+
+        when:
+        def result = sut.usage(groupsId, templateId)
+
+        then:
+        1 * shoppingInputTemplateRepository.usage(groupsId, templateId) >> updateRows
+        result == expected
+
+        where:
+        useCase           | expected                                                         | updateRows
+        "正常"            | new ShoppingInputTemplateUpdateResult(ResponseCode.成功.code, 1) | 1
+        "正常_データなし" | new ShoppingInputTemplateUpdateResult(ResponseCode.成功.code, 0) | 0
+    }
+
+    def "shoppingInputTemplate_unUsage_#useCase"() {
+
+        setup:
+        def groupsId = FixtureGroupList.所属グループID_正常()
+        def templateId = FixtureShoppingInputTemplate.テンプレートID_正常()
+
+        when:
+        def result = sut.usage(groupsId, templateId)
+
+        then:
+        1 * shoppingInputTemplateRepository.usage(groupsId, templateId) >> updateRows
+        result == expected
+
+        where:
+        useCase           | expected                                                         | updateRows
+        "正常"            | new ShoppingInputTemplateUpdateResult(ResponseCode.成功.code, 1) | 1
+        "正常_データなし" | new ShoppingInputTemplateUpdateResult(ResponseCode.成功.code, 0) | 0
+    }
+
     def "shoppingInputTemplate_delete_#useCase"() {
 
         setup:

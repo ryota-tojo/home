@@ -29,6 +29,12 @@ interface ShoppingRepository {
         remarks: ShoppingRemarks? = null
     ): List<Shopping>
 
+    fun getOldCategories(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY? = null,
+        shoppingDateMM: MM? = null,
+    ): List<CategoryId>
+
     fun save(
         groupsId: GroupsId,
         userId: UserId,
@@ -57,23 +63,28 @@ interface ShoppingRepository {
     fun update(
         shoppingId: ShoppingId,
         groupsId: GroupsId,
-        userId: UserId,
-        shoppingDate: LocalDate,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        type: ShoppingType,
-        payment: ShoppingPayment,
-        settlement: ShoppingSettlement,
-        amount: Amount,
-        remarks: ShoppingRemarks,
-        fixedFlg: FixedFlg
+        userId: UserId? = null,
+        shoppingDate: LocalDate? = null,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        type: ShoppingType? = null,
+        payment: ShoppingPayment? = null,
+        settlement: ShoppingSettlement? = null,
+        amount: Amount? = null,
+        remarks: ShoppingRemarks? = null,
+        fixedFlg: FixedFlg? = null
     ): Int
 
-    fun shoppingDatafixed(
+    fun fixed(
         groupsId: GroupsId,
         shoppingDateYYYY: YYYY,
-        shoppingDateMM: MM,
-        fixedFlg: FixedFlg
+        shoppingDateMM: MM
+    ): Int
+
+    fun unFixed(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY,
+        shoppingDateMM: MM
     ): Int
 
     fun delete(

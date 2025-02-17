@@ -25,6 +25,8 @@ interface CategoryRepository {
         categoryName: CategoryName? = null
     ): Int
 
+    fun setDeleted(categoryId: CategoryId): Int
+
     fun delete(groupsId: GroupsId? = null, categoryId: CategoryId? = null): Int
 
 }

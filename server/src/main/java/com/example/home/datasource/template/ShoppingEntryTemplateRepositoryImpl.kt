@@ -26,7 +26,7 @@ class ShoppingEntryTemplateRepositoryImpl : ShoppingEntryTemplateRepository {
         return transaction {
             TbTsTmpShoppingEntry.select {
                 Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
+                    var condition: Op<Boolean> = TbTsTmpShoppingEntry.deletedFlg eq 0
                     groupsId?.value?.let { condition = condition and (TbTsTmpShoppingEntry.groupsId eq it) }
                     templateId?.value?.let {
                         condition = condition and (TbTsTmpShoppingEntry.templateId eq it)
@@ -118,30 +118,101 @@ class ShoppingEntryTemplateRepositoryImpl : ShoppingEntryTemplateRepository {
     override fun update(
         groupsId: GroupsId,
         templateId: TemplateId,
-        templateName: TemplateName,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        shoppingType: ShoppingType,
-        shoppingPayment: ShoppingPayment,
-        shoppingSettlement: ShoppingSettlement,
-        shoppingAmount: Amount,
-        shoppingRemarks: ShoppingRemarks,
-        templateUseFlg: TemplateUseFlg
+        templateName: TemplateName?,
+        memberId: MemberId?,
+        categoryId: CategoryId?,
+        shoppingType: ShoppingType?,
+        shoppingPayment: ShoppingPayment?,
+        shoppingSettlement: ShoppingSettlement?,
+        shoppingAmount: Amount?,
+        shoppingRemarks: ShoppingRemarks?,
+        templateUseFlg: TemplateUseFlg?
     ): Int {
         return transaction {
             val updateRows = TbTsTmpShoppingEntry.update({
                 (TbTsTmpShoppingEntry.groupsId eq groupsId.value) and
                         (TbTsTmpShoppingEntry.templateId eq templateId.value)
             }) {
-                it[tmpeName] = templateName.value
-                it[tmpeMemberId] = memberId.value
-                it[tmpeCategoryId] = categoryId.value
-                it[tmpeType] = shoppingType.value
-                it[tmpePayment] = shoppingPayment.value
-                it[tmpeSettlement] = shoppingSettlement.value
-                it[tmpeAmount] = shoppingAmount.value
-                it[tmpeRemarks] = shoppingRemarks.value
-                it[tmpeUseFlg] = templateUseFlg.value
+                if (templateName != null) {
+                    it[tmpeName] = templateName.value
+                }
+
+                if (memberId != null) {
+                    it[tmpeMemberId] = memberId.value
+                }
+
+                if (categoryId != null) {
+                    it[tmpeCategoryId] = categoryId.value
+                }
+
+                if (shoppingType != null) {
+                    it[tmpeType] = shoppingType.value
+                }
+
+                if (shoppingPayment != null) {
+                    it[tmpePayment] = shoppingPayment.value
+                }
+
+                if (shoppingSettlement != null) {
+                    it[tmpeSettlement] = shoppingSettlement.value
+                }
+
+                if (shoppingAmount != null) {
+                    it[tmpeAmount] = shoppingAmount.value
+                }
+
+                if (shoppingRemarks != null) {
+                    it[tmpeRemarks] = shoppingRemarks.value
+                }
+
+                if (templateUseFlg != null) {
+                    it[tmpeUseFlg] = templateUseFlg.value
+                }
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun usage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingEntry.update({
+                (TbTsTmpShoppingEntry.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingEntry.templateId eq templateId.value)
+            }) {
+                it[tmpeUseFlg] = 1
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun unUsage(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingEntry.update({
+                (TbTsTmpShoppingEntry.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingEntry.templateId eq templateId.value)
+            }) {
+                it[tmpeUseFlg] = 0
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun setDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingEntry.update({
+                (TbTsTmpShoppingEntry.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingEntry.templateId eq templateId.value)
+            }) {
+                it[deletedFlg] = 1
             }
             return@transaction updateRows
         }

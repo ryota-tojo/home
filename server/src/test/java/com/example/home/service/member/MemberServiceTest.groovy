@@ -72,6 +72,23 @@ class MemberServiceTest extends Specification {
         "異常_データ不在エラー"     | new MemberUpdateResult(ResponseCode.データ不在エラー.code, 0)     | 1         | FixtureMember.メンバー名_正常()                 | 0
     }
 
+    def "member_setDeleted_#useCase"() {
+
+        setup:
+
+        when:
+        def result = sut.setDeleted(FixtureMember.メンバーID_正常())
+
+        then:
+        1 * memberRepository.setDeleted(FixtureMember.メンバーID_正常()) >> updateRows
+        result == expected
+
+        where:
+        useCase                 | expected                                                      | updateRows
+        "正常"                  | new MemberUpdateResult(ResponseCode.成功.code, 1)             | 1
+        "異常_データ不在エラー" | new MemberUpdateResult(ResponseCode.データ不在エラー.code, 0) | 0
+    }
+
     def "member_delete_#useCase"() {
 
         setup:
