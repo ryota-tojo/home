@@ -1,13 +1,20 @@
+import com.example.home.datasource.budgets.BudgetsRepositoryImpl
 import com.example.home.datasource.category.CategoryRepositoryImpl
+import com.example.home.datasource.comment.CommentRepositoryImpl
+import com.example.home.datasource.fixed.FixedRepositoryImpl
 import com.example.home.datasource.master.ChoicesRepositoryImpl
 import com.example.home.datasource.member.MemberRepositoryImpl
 import com.example.home.datasource.shopping.ShoppingRepositoryImpl
+import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.repository.category.CategoryRepository
+import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.fixed.FixedRepository
 import com.example.home.domain.repository.master.ChoicesRepository
 import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.repository.shopping.ShoppingRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.etc.Amount
+import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.shopping.ShoppingPayment
@@ -15,6 +22,7 @@ import com.example.home.domain.value_object.shopping.ShoppingRemarks
 import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.user.UserId
+import com.example.home.service.fixed.FixedService
 import com.example.home.service.shopping.ShoppingService
 import confirmation.DbConnectConfirmation
 import java.time.LocalDate
@@ -22,7 +30,7 @@ import java.time.LocalDate
 fun main() {
 
     // 実行フラグ
-    val execFlg = 0
+    val execFlg = 1
 
     if (execFlg == 1) {
         println("\n＊＊＊＊＊＊＊＊＊ 処理開始 ＊＊＊＊＊＊＊＊＊\n")
@@ -35,6 +43,13 @@ fun main() {
         val choicesRepository: ChoicesRepository = ChoicesRepositoryImpl()
         val shoppingService: ShoppingService =
             ShoppingService(shoppingRepository, memberRepository, categoryRepository, choicesRepository)
+
+        val fixedRepository: FixedRepository = FixedRepositoryImpl()
+        val budgetsRepository: BudgetsRepository = BudgetsRepositoryImpl()
+        val commentRepository: CommentRepository = CommentRepositoryImpl()
+
+        val fixedService: FixedService =
+            FixedService(fixedRepository, budgetsRepository, shoppingRepository, commentRepository)
 
         // DB接続
         dbConnectConfirmation.dbConnect()
@@ -52,8 +67,9 @@ fun main() {
         val remarks = ShoppingRemarks("aaaa")
 
         // 確認対象のサービスを呼び出す
-        val res = shoppingService.getOldCategories(
-            GroupsId("group002")
+        val res = fixedService.refer(
+            GroupsId("group001"),
+            YYYY(2024)
         )
 
         println("---------- 処理結果 ----------")
