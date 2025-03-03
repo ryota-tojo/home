@@ -1,5 +1,6 @@
 package com.example.home.domain.entity.group
 
+import com.example.home.domain.value_object.group.GroupApprovalFlg
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
@@ -9,6 +10,7 @@ data class GroupInfo(
     val groupsId: GroupsId,
     val userId: UserId,
     val userLeaderFlg: UserLeaderFlg,
+    val groupApprovalFlg: GroupApprovalFlg,
     val createDate: LocalDateTime,
     val updateDate: LocalDateTime
 )

@@ -8,6 +8,7 @@ object TbTsGroupInfo : Table("ts_groupinfo") {
     val groupsId = varchar("groups_id", 64)
     val userId = integer("user_id").references(TbTsUserInfo.userId)
     val leaderFlg = integer("leader_flg")
+    val approvalFlg = integer("approval_flg")
     val createDate = datetime("create_date")
     val updateDate = datetime("update_date")
     override val primaryKey = PrimaryKey(groupInfoId)

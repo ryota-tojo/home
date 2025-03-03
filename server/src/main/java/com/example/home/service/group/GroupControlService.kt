@@ -1,14 +1,22 @@
 package com.example.home.service.group
 
+import com.example.home.domain.entity.group.GroupDeletionCounts
 import com.example.home.domain.entity.group.GroupListAndSetting
 import com.example.home.domain.entity.group.result.*
 import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.communication.CommunicationRepository
+import com.example.home.domain.repository.fixed.FixedRepository
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
 import com.example.home.domain.repository.member.MemberRepository
+import com.example.home.domain.repository.shopping.ShoppingRepository
+import com.example.home.domain.repository.template.ShoppingEntryTemplateRepository
+import com.example.home.domain.repository.template.ShoppingInputTemplateRepository
+import com.example.home.domain.repository.template.ShoppingSearchTemplateRepository
 import com.example.home.domain.value_object.TsDefaultData
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
@@ -29,12 +37,19 @@ class GroupControlService(
     private val groupInfoRepository: GroupInfoRepository,
     private val memberRepository: MemberRepository,
     private val categoryRepository: CategoryRepository,
+    private val shoppingInputTemplateRepository: ShoppingInputTemplateRepository,
+    private val shoppingSearchTemplateRepository: ShoppingSearchTemplateRepository,
+    private val shoppingEntryTemplateRepository: ShoppingEntryTemplateRepository,
+    private val budgetsRepository: BudgetsRepository,
+    private val shoppingRepository: ShoppingRepository,
+    private val fixedRepository: FixedRepository,
     private val commentRepository: CommentRepository,
+    private val communicationRepository: CommunicationRepository,
 ) {
     fun refer(groupsId: GroupsId): GroupReferResult {
         val groupList = groupListRepository.refer(groupsId)
         val groupSetting = groupSettingRepository.refer(groupsId)
-        if (groupList == null || groupSetting == null) {
+        if (groupList == null) {
             return GroupReferResult(
                 String.format(ResponseCode.成功_条件付き.code, "GROUP_NOT_FOUND"),
                 null
@@ -169,17 +184,39 @@ class GroupControlService(
         if (groupSettingRepository.refer(groupsId).isEmpty()) {
             return GroupDeleteResult(ResponseCode.データ不在エラー.code)
         }
-        val groupSettingDeletedResult = groupSettingRepository.delete(groupsId)
-        val groupListDeletedResult = groupListRepository.delete(groupsId)
-        groupInfoRepository.delete(groupsId)
-        categoryRepository.delete(groupsId)
-        memberRepository.delete(groupsId)
-        commentRepository.delete(groupsId)
+        val groupListDelRows = groupListRepository.delete(groupsId)
+        val groupSettingDelRows = groupSettingRepository.delete(groupsId)
+        val groupInfoDelRows = groupInfoRepository.delete(groupsId)
+        val categoryDelRows = categoryRepository.delete(groupsId)
+        val memberDelRows = memberRepository.delete(groupsId)
+        val shoppingInputTemplateDelRows = shoppingInputTemplateRepository.delete(groupsId)
+        val shoppingSearchTemplateDelRows = shoppingSearchTemplateRepository.delete(groupsId)
+        val shoppingEntryTemplateDelRows = shoppingEntryTemplateRepository.delete(groupsId)
+        val budgetsDelRows = budgetsRepository.delete(groupsId)
+        val shoppingDelRows = shoppingRepository.delete(groupsId = groupsId)
+        val fixedDelRows = fixedRepository.delete(groupsId)
+        val commentDelRows = commentRepository.delete(groupsId)
+        val communicationDelRows = communicationRepository.delete(groupsId)
+
+        val groupDeletionCounts = GroupDeletionCounts(
+            groupListDelRows,
+            groupSettingDelRows,
+            groupInfoDelRows,
+            categoryDelRows,
+            memberDelRows,
+            shoppingInputTemplateDelRows,
+            shoppingSearchTemplateDelRows,
+            shoppingEntryTemplateDelRows,
+            budgetsDelRows,
+            shoppingDelRows,
+            fixedDelRows,
+            commentDelRows,
+            communicationDelRows
+        )
 
         return GroupDeleteResult(
             ResponseCode.成功.code,
-            groupListDeletedResult,
-            groupSettingDeletedResult
+            groupDeletionCounts
         )
     }
 }

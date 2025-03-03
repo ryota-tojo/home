@@ -1,6 +1,7 @@
 package com.example.home.data.group
 
 import com.example.home.domain.entity.group.GroupInfo
+import com.example.home.domain.value_object.group.GroupApprovalFlg
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
@@ -17,6 +18,14 @@ class FixtureGroupInfo {
         new UserLeaderFlg(1)
     }
 
+    static 承認フラグ_未承認() {
+        new GroupApprovalFlg(0)
+    }
+
+    static 承認フラグ_承認() {
+        new GroupApprovalFlg(1)
+    }
+
     static 作成日_正常() {
         LocalDateTime.of(2025, 2, 2, 12, 34, 56, 789000000)
     }
@@ -25,11 +34,12 @@ class FixtureGroupInfo {
         LocalDateTime.of(2025, 2, 2, 12, 34, 56, 789000000)
     }
 
-    static 所属グループ情報_正常() {
+    static 所属グループ情報_メンバー() {
         return new GroupInfo(
                 new GroupsId("groups_id"),
                 new UserId(1),
                 リーダーフラグ_メンバー(),
+                承認フラグ_未承認(),
                 作成日_正常(),
                 更新日_正常()
         )
@@ -40,6 +50,7 @@ class FixtureGroupInfo {
                 new GroupsId("groups_id"),
                 new UserId(1),
                 リーダーフラグ_リーダー(),
+                承認フラグ_承認(),
                 作成日_正常(),
                 更新日_正常()
         )

@@ -1,6 +1,5 @@
 package com.example.home.service.user
 
-import com.example.home.domain.entity.category.result.CategoryDeleteResult
 import com.example.home.domain.entity.user.UserRefer
 import com.example.home.domain.entity.user.result.UserDeleteResult
 import com.example.home.domain.entity.user.result.UserReferResult
@@ -20,7 +19,6 @@ import com.example.home.util.ValidationCheck
 class UserControlService(
     val userInfoRepository: UserInfoRepository,
     val userSettingRepository: UserSettingRepository,
-    val groupListRepository: GroupListRepository,
     val groupInfoRepository: GroupInfoRepository,
 ) {
     fun refer(userId: UserId? = null, userName: UserName? = null): UserReferResult {
@@ -58,8 +56,6 @@ class UserControlService(
     }
 
     fun save(
-        groupsId: GroupsId,
-        groupPassword: GroupPassword,
         userName: UserName,
         password: UserPassword,
         permission: UserPermission,
@@ -78,12 +74,6 @@ class UserControlService(
         if (isDuplication) {
             return UserSaveResult(
                 ResponseCode.重複エラー.code,
-                null
-            )
-        }
-        if (!groupListRepository.certification(groupsId, groupPassword)) {
-            return UserSaveResult(
-                ResponseCode.グループ認証エラー.code,
                 null
             )
         }
@@ -110,23 +100,12 @@ class UserControlService(
             }
         }
 
-        // 所属グループ情報登録（グループに誰も登録されていない場合はleader）
-        val getGroupInfo = groupInfoRepository.refer(groupsId, null)
-        val leaderFlg = when {
-            getGroupInfo == null -> 1
-            else -> 0
-        }
-        val groupInfo = groupInfoRepository.save(
-            groupsId,
-            createUser.userId,
-            UserLeaderFlg(leaderFlg)
-        )
         return UserSaveResult(
             ResponseCode.成功.code,
             UserRefer(
                 createUser,
                 userSetting,
-                listOf(groupInfo)
+                null
             )
         )
     }
@@ -199,26 +178,24 @@ class UserControlService(
 
     fun delete(userId: UserId): UserDeleteResult {
         val groupsId = groupInfoRepository.getGroupsId(userId)
-        if (groupsId == null) {
-            return UserDeleteResult(
-                ResponseCode.データ不正エラー.code,
-                0
-            )
+
+        if (groupsId != null) {
+            val groupInfoReferResult = groupInfoRepository.refer(groupsId, userId)
+            if (groupInfoReferResult == null) {
+                return UserDeleteResult(
+                    ResponseCode.データ不正エラー.code,
+                    0
+                )
+            }
+            if (groupInfoReferResult.first().userLeaderFlg.value == 1) {
+                return UserDeleteResult(
+                    ResponseCode.ユーザーエラー_グループリーダー削除.code,
+                    0
+                )
+            }
+            groupInfoRepository.delete(userId = userId)
         }
-        val groupInfoReferResult = groupInfoRepository.refer(groupsId, userId)
-        if (groupInfoReferResult == null) {
-            return UserDeleteResult(
-                ResponseCode.データ不正エラー.code,
-                0
-            )
-        }
-        if (groupInfoReferResult.first().userLeaderFlg.value == 1) {
-            return UserDeleteResult(
-                ResponseCode.ユーザーエラー_グループリーダー削除.code,
-                0
-            )
-        }
-        groupInfoRepository.delete(userId = userId)
+
         userSettingRepository.delete(userId)
         val deleteRows = userInfoRepository.delete(userId)
         if (deleteRows == 0) {

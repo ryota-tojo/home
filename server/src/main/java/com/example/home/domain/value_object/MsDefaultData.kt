@@ -4,30 +4,31 @@ import java.time.LocalDate
 
 /**
  * マスターテーブル -デフォルト値
+ * (未使用)
  */
 object MsDefaultData {
     val MASTER_SETTING = mapOf(
-        "account_lockout_count" to "5",
-        "maintenance" to "0",
-        "slack_report_send_flg" to "0",
-        "slack_report_webhook_url" to "",
-        "slack_send_test" to "0",
-        "layout" to "0",
-        "admin_userdata_view" to "10",
-        "admin_notice_view" to "5",
-        "admin_notice_initial_title" to "お知らせ",
-        "admin_notice_initial_content" to "XXXXX",
-        "user_input_history_view" to "10",
-        "user_management_view" to "20",
-        "user_analysis_graph_size_pc_width" to "750",
-        "user_analysis_graph_size_pc_height" to "200",
-        "user_analysis_graph_size_sp_width" to "320",
-        "user_analysis_graph_size_sp_height" to "200",
-        "user_analysis_graph_size_tb_width" to "680",
-        "user_analysis_graph_size_tb_height" to "200",
-        "user_communication_histry_view" to "10",
-        "user_communication_list_view" to "20",
-        "user_communication_view_conditions" to "0"
+        "account_lockout_count" to "5" to "",
+        "maintenance" to "0" to "",
+        "slack_report_send_flg" to "0" to "",
+        "slack_report_webhook_url" to "" to "",
+        "slack_send_test" to "0" to "",
+        "layout" to "0" to "",
+        "admin_userdata_view" to "10" to "",
+        "admin_notice_view" to "5" to "",
+        "admin_notice_initial_title" to "お知らせ" to "",
+        "admin_notice_initial_content" to "XXXXX" to "",
+        "user_input_history_view" to "10" to "",
+        "user_management_view" to "20" to "",
+        "user_analysis_graph_size_pc_width" to "750" to "",
+        "user_analysis_graph_size_pc_height" to "200" to "",
+        "user_analysis_graph_size_sp_width" to "320" to "",
+        "user_analysis_graph_size_sp_height" to "200" to "",
+        "user_analysis_graph_size_tb_width" to "680" to "",
+        "user_analysis_graph_size_tb_height" to "200" to "",
+        "user_communication_histry_view" to "10" to "",
+        "user_communication_list_view" to "20" to "",
+        "user_communication_view_conditions" to "0" to ""
     )
 
     val CHOICES = mapOf(

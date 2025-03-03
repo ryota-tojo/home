@@ -1,6 +1,6 @@
 package com.example.home.service.group
 
-
+import com.example.home.data.group.FixtureGroupDelete
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.group.FixtureGroupListAndSetting
 import com.example.home.data.group.FixtureGroupSetting
@@ -10,12 +10,19 @@ import com.example.home.domain.entity.group.result.GroupReferResult
 import com.example.home.domain.entity.group.result.GroupSaveResult
 import com.example.home.domain.entity.group.result.GroupSettingUpdateResult
 import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.communication.CommunicationRepository
+import com.example.home.domain.repository.fixed.FixedRepository
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
 import com.example.home.domain.repository.member.MemberRepository
+import com.example.home.domain.repository.shopping.ShoppingRepository
+import com.example.home.domain.repository.template.ShoppingEntryTemplateRepository
+import com.example.home.domain.repository.template.ShoppingInputTemplateRepository
+import com.example.home.domain.repository.template.ShoppingSearchTemplateRepository
 import spock.lang.Specification
 
 class GroupControlServiceTest extends Specification {
@@ -25,14 +32,30 @@ class GroupControlServiceTest extends Specification {
     private GroupInfoRepository groupInfoRepository = Mock()
     private MemberRepository memberRepository = Mock()
     private CategoryRepository categoryRepository = Mock()
+    private ShoppingInputTemplateRepository shoppingInputTemplateRepository = Mock()
+    private ShoppingSearchTemplateRepository shoppingSearchTemplateRepository = Mock()
+    private ShoppingEntryTemplateRepository shoppingEntryTemplateRepository = Mock()
+    private BudgetsRepository budgetsRepository = Mock()
+    private ShoppingRepository shoppingRepository = Mock()
+    private FixedRepository fixedRepository = Mock()
     private CommentRepository commentRepository = Mock()
+    private CommunicationRepository communicationRepository = Mock()
+
     private GroupControlService sut = new GroupControlService(
             groupListRepository,
             groupSettingRepository,
             groupInfoRepository,
             memberRepository,
             categoryRepository,
-            commentRepository
+            shoppingInputTemplateRepository,
+            shoppingSearchTemplateRepository,
+            shoppingEntryTemplateRepository,
+            budgetsRepository,
+            shoppingRepository,
+            fixedRepository,
+            commentRepository,
+            communicationRepository
+
     )
 
     def "groupList_refer_#useCase"() {
@@ -129,13 +152,20 @@ class GroupControlServiceTest extends Specification {
         _ * groupInfoRepository.delete(groupsId)
         _ * categoryRepository.delete(groupsId)
         _ * memberRepository.delete(groupsId)
+        _ * shoppingInputTemplateRepository.delete(groupsId)
+        _ * shoppingSearchTemplateRepository.delete(groupsId)
+        _ * shoppingEntryTemplateRepository.delete(groupsId)
+        _ * budgetsRepository.delete(groupsId)
+        _ * shoppingRepository.delete(groupsId)
+        _ * fixedRepository.delete(groupsId)
         _ * commentRepository.delete(groupsId)
+        _ * communicationRepository.delete(groupsId)
         result == expected
 
         where:
-        useCase                             | expected                                                        | groupList                                  | GroupSettingList                            | gsDeleteRows | glDeleteRows | glrCnt | gsrCnt | gsdCnt | gldCnt
-        "正常"                              | new GroupDeleteResult(ResponseCode.成功.code, 1, 1)             | [FixtureGroupList.所属グループ一覧_正常()] | FixtureGroupSetting.所属グループ設定_正常() | 1            | 1            | 1      | 1      | 1      | 1
-        "異常_グループ一覧データ不在エラー" | new GroupDeleteResult(ResponseCode.データ不在エラー.code, 0, 0) | []                                         | _                                           | 0            | 0            | 1      | 0      | 0      | 0
-        "異常_グループ設定データ不在エラー" | new GroupDeleteResult(ResponseCode.データ不在エラー.code, 0, 0) | [FixtureGroupList.所属グループ一覧_正常()] | []                                          | 0            | 0            | 1      | 1      | 0      | 0
+        useCase                             | expected                                                                             | groupList                                  | GroupSettingList                            | gsDeleteRows | glDeleteRows | glrCnt | gsrCnt | gsdCnt | gldCnt
+        "正常"                              | new GroupDeleteResult(ResponseCode.成功.code, FixtureGroupDelete.所属グループ削除()) | [FixtureGroupList.所属グループ一覧_正常()] | FixtureGroupSetting.所属グループ設定_正常() | 1            | 1            | 1      | 1      | 1      | 1
+        "異常_グループ一覧データ不在エラー" | new GroupDeleteResult(ResponseCode.データ不在エラー.code, null)                      | []                                         | _                                           | 0            | 0            | 1      | 0      | 0      | 0
+        "異常_グループ設定データ不在エラー" | new GroupDeleteResult(ResponseCode.データ不在エラー.code, null)                      | [FixtureGroupList.所属グループ一覧_正常()] | []                                          | 0            | 0            | 1      | 1      | 0      | 0
     }
 }

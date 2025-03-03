@@ -6,6 +6,7 @@ import com.example.home.domain.entity.master.result.MasterSettingSaveResult
 import com.example.home.domain.entity.master.result.MasterSettingUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.master.MasterSettingRepository
+import com.example.home.domain.value_object.master.MasterSettingRemarks
 import com.example.home.domain.value_object.master.MasterSettingKey
 import com.example.home.domain.value_object.master.MasterSettingValue
 import com.example.home.util.ValidationCheck
@@ -23,7 +24,11 @@ class MasterSettingService(
         )
     }
 
-    fun save(masterSettingKey: MasterSettingKey, masterSettingValue: MasterSettingValue): MasterSettingSaveResult {
+    fun save(
+        masterSettingKey: MasterSettingKey,
+        masterSettingValue: MasterSettingValue,
+        masterSettingRemarks: MasterSettingRemarks
+    ): MasterSettingSaveResult {
 
         if (!ValidationCheck.symbol(masterSettingKey.toString()).result ||
             !ValidationCheck.symbol(masterSettingValue.toString()).result
@@ -42,14 +47,18 @@ class MasterSettingService(
             )
         }
 
-        val masterSetting = masterSettingRepository.save(masterSettingKey, masterSettingValue)
+        val masterSetting = masterSettingRepository.save(masterSettingKey, masterSettingValue, masterSettingRemarks)
         return MasterSettingSaveResult(
             ResponseCode.成功.code,
             masterSetting
         )
     }
 
-    fun update(masterSettingKey: MasterSettingKey, masterSettingValue: MasterSettingValue): MasterSettingUpdateResult {
+    fun update(
+        masterSettingKey: MasterSettingKey,
+        masterSettingValue: MasterSettingValue,
+        masterSettingRemarks: MasterSettingRemarks
+    ): MasterSettingUpdateResult {
 
         if (!ValidationCheck.symbol(masterSettingKey.toString()).result ||
             !ValidationCheck.symbol(masterSettingValue.toString()).result
@@ -60,7 +69,7 @@ class MasterSettingService(
             )
         }
 
-        val updateRows = masterSettingRepository.update(masterSettingKey, masterSettingValue)
+        val updateRows = masterSettingRepository.update(masterSettingKey, masterSettingValue, masterSettingRemarks)
         if (updateRows == 0) {
             return MasterSettingUpdateResult(
                 ResponseCode.データ不在エラー.code,

@@ -6,5 +6,6 @@ object TbMsSetting : Table("ms_setting") {
     val id = integer("id").autoIncrement()
     val settingKey = varchar("setting_key", length = 512)
     val settingValue = varchar("setting_value", length = 256)
+    val settingRemarks = varchar("setting_remarks", 1024)
     override val primaryKey = PrimaryKey(id)
 }

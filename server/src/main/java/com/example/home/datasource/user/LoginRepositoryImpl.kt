@@ -31,7 +31,6 @@ class LoginRepositoryImpl : LoginRepository {
                     it[TbTsUserInfo.approvalDate],
                     it[TbTsUserInfo.deleteDate]
                 )
-
             }
         }
     }

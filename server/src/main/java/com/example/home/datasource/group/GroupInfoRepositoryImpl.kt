@@ -2,6 +2,7 @@ package com.example.home.datasource.group
 
 import com.example.home.domain.entity.group.GroupInfo
 import com.example.home.domain.repository.group.GroupInfoRepository
+import com.example.home.domain.value_object.group.GroupApprovalFlg
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
@@ -28,6 +29,7 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
                     GroupsId(it[TbTsGroupInfo.groupsId]),
                     UserId(it[TbTsGroupInfo.userId]),
                     UserLeaderFlg(it[TbTsGroupInfo.leaderFlg]),
+                    GroupApprovalFlg(it[TbTsGroupInfo.approvalFlg]),
                     it[TbTsGroupInfo.createDate],
                     it[TbTsGroupInfo.updateDate],
                 )
@@ -52,10 +54,16 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
         userLeaderFlg: UserLeaderFlg
     ): GroupInfo {
         return transaction {
+            val approvalFlg = if (userLeaderFlg == UserLeaderFlg(1)) {
+                1
+            } else {
+                0
+            }
             TbTsGroupInfo.insert {
                 it[TbTsGroupInfo.groupsId] = groupsId.value
                 it[TbTsGroupInfo.userId] = userId.value
                 it[leaderFlg] = userLeaderFlg.value
+                it[TbTsGroupInfo.approvalFlg] = approvalFlg
                 it[createDate] = LocalDateTime.now()
                 it[updateDate] = LocalDateTime.now()
             }
@@ -70,6 +78,7 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
                     GroupsId(it[TbTsGroupInfo.groupsId]),
                     UserId(it[TbTsGroupInfo.userId]),
                     UserLeaderFlg(it[TbTsGroupInfo.leaderFlg]),
+                    GroupApprovalFlg(it[TbTsGroupInfo.approvalFlg]),
                     it[TbTsGroupInfo.createDate],
                     it[TbTsGroupInfo.updateDate]
                 )
@@ -80,18 +89,20 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
     override fun update(
         groupsId: GroupsId,
         userId: UserId,
-        userLeaderFlg: UserLeaderFlg
+        userLeaderFlg: UserLeaderFlg?,
+        groupApprovalFlg: GroupApprovalFlg?
     ): Int {
         return transaction {
             val affectedRows = TbTsGroupInfo.update({
                 (TbTsGroupInfo.groupsId eq groupsId.value) and
                         (TbTsGroupInfo.userId eq userId.value)
             }) {
-                it[leaderFlg] = userLeaderFlg.value
-                it[updateDate] = LocalDateTime.now()
-            }
-            if (affectedRows == 0) {
-                throw IllegalStateException("No rows updated for groupsId: ${groupsId.value}, userId: ${userId.value}")
+                if (userLeaderFlg != null) {
+                    it[leaderFlg] = userLeaderFlg.value
+                }
+                if (groupApprovalFlg != null) {
+                    it[updateDate] = LocalDateTime.now()
+                }
             }
             return@transaction affectedRows
         }

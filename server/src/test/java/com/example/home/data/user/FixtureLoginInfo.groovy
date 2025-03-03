@@ -9,7 +9,6 @@ import com.example.home.domain.value_object.user.UserPassword
 class FixtureLoginInfo {
     static 正常値() {
         return new LoginInfo(
-                new GroupsId("groups_id"),
                 new UserName("user_name"),
                 new UserPassword("password")
         )

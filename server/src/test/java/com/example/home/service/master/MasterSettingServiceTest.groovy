@@ -39,19 +39,19 @@ class MasterSettingServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.save(masterSettingKey, masterSettingValue)
+        def result = sut.save(masterSettingKey, masterSettingValue, masterSettingRemarks)
 
         then:
         referCnt * masterSettingRepository.refer(masterSettingKey) >> masterSettingList
-        saveCnt * masterSettingRepository.save(masterSettingKey, masterSettingValue) >> masterSetting
+        saveCnt * masterSettingRepository.save(masterSettingKey, masterSettingValue, masterSettingRemarks) >> masterSetting
         result == expected
 
         where:
-        useCase                          | expected                                                                                      | masterSettingKey                                             | masterSettingValue                                         | masterSettingList                          | masterSetting                            | referCnt | saveCnt
-        "正常"                           | new MasterSettingSaveResult(ResponseCode.成功.code, FixtureMasterSetting.マスター設定_正常()) | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | null                                       | FixtureMasterSetting.マスター設定_正常() | 1        | 1
-        "異常_バリデーションエラー_キー" | new MasterSettingSaveResult(ResponseCode.バリデーションエラー.code, null)                     | FixtureMasterSetting.マスター設定キー_バリデーションエラー() | FixtureMasterSetting.マスター設定値_正常()                 | _                                          | _                                        | 0        | 0
-        "異常_バリデーションエラー_値"   | new MasterSettingSaveResult(ResponseCode.バリデーションエラー.code, null)                     | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_バリデーションエラー() | _                                          | _                                        | 0        | 0
-        "異常_重複エラー"                | new MasterSettingSaveResult(ResponseCode.重複エラー.code, null)                               | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | [FixtureMasterSetting.マスター設定_正常()] | _                                        | 1        | 0
+        useCase                          | expected                                                                                      | masterSettingKey                                             | masterSettingValue                                         | masterSettingRemarks                         | masterSettingList                          | masterSetting                            | referCnt | saveCnt
+        "正常"                           | new MasterSettingSaveResult(ResponseCode.成功.code, FixtureMasterSetting.マスター設定_正常()) | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | FixtureMasterSetting.マスター設定備考_正常() | null                                       | FixtureMasterSetting.マスター設定_正常() | 1        | 1
+        "異常_バリデーションエラー_キー" | new MasterSettingSaveResult(ResponseCode.バリデーションエラー.code, null)                     | FixtureMasterSetting.マスター設定キー_バリデーションエラー() | FixtureMasterSetting.マスター設定値_正常()                 | FixtureMasterSetting.マスター設定備考_正常() | _                                          | _                                        | 0        | 0
+        "異常_バリデーションエラー_値"   | new MasterSettingSaveResult(ResponseCode.バリデーションエラー.code, null)                     | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_バリデーションエラー() | FixtureMasterSetting.マスター設定備考_正常() | _                                          | _                                        | 0        | 0
+        "異常_重複エラー"                | new MasterSettingSaveResult(ResponseCode.重複エラー.code, null)                               | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | FixtureMasterSetting.マスター設定備考_正常() | [FixtureMasterSetting.マスター設定_正常()] | _                                        | 1        | 0
     }
 
     def "master_update_#useCase"() {
@@ -59,18 +59,18 @@ class MasterSettingServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.update(masterSettingKey, masterSettingValue)
+        def result = sut.update(masterSettingKey, masterSettingValue, masterSettingRemarks)
 
         then:
-        updateCnt * masterSettingRepository.update(masterSettingKey, masterSettingValue) >> updateRows
+        updateCnt * masterSettingRepository.update(masterSettingKey, masterSettingValue, masterSettingRemarks) >> updateRows
         result == expected
 
         where:
-        useCase                          | expected                                                                 | masterSettingKey                                             | masterSettingValue                                         | updateRows | updateCnt
-        "正常"                           | new MasterSettingUpdateResult(ResponseCode.成功.code, 1)                 | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | 1          | 1
-        "異常_バリデーションエラー_キー" | new MasterSettingUpdateResult(ResponseCode.バリデーションエラー.code, 0) | FixtureMasterSetting.マスター設定キー_バリデーションエラー() | FixtureMasterSetting.マスター設定値_正常()                 | 0          | 0
-        "異常_バリデーションエラー_値"   | new MasterSettingUpdateResult(ResponseCode.バリデーションエラー.code, 0) | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_バリデーションエラー() | 0          | 0
-        "異常_データ不在エラー"          | new MasterSettingUpdateResult(ResponseCode.データ不在エラー.code, 0)     | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | 0          | 1
+        useCase                          | expected                                                                 | masterSettingKey                                             | masterSettingValue                                         | masterSettingRemarks                         | updateRows | updateCnt
+        "正常"                           | new MasterSettingUpdateResult(ResponseCode.成功.code, 1)                 | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | FixtureMasterSetting.マスター設定備考_正常() | 1          | 1
+        "異常_バリデーションエラー_キー" | new MasterSettingUpdateResult(ResponseCode.バリデーションエラー.code, 0) | FixtureMasterSetting.マスター設定キー_バリデーションエラー() | FixtureMasterSetting.マスター設定値_正常()                 | FixtureMasterSetting.マスター設定備考_正常() | 0          | 0
+        "異常_バリデーションエラー_値"   | new MasterSettingUpdateResult(ResponseCode.バリデーションエラー.code, 0) | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_バリデーションエラー() | FixtureMasterSetting.マスター設定備考_正常() | 0          | 0
+        "異常_データ不在エラー"          | new MasterSettingUpdateResult(ResponseCode.データ不在エラー.code, 0)     | FixtureMasterSetting.マスター設定キー_正常()                 | FixtureMasterSetting.マスター設定値_正常()                 | FixtureMasterSetting.マスター設定備考_正常() | 0          | 1
     }
 
     def "master_delete_#useCase"() {
