@@ -9,7 +9,7 @@ class FixtureUserRefer {
         return new UserRefer(
                 FixtureUserInfo.ユーザー情報_正常(),
                 FixtureUserSetting.ユーザー設定_正常(),
-                [FixtureGroupInfo.所属グループ情報_正常()]
+                [FixtureGroupInfo.所属グループ情報_メンバー()]
         )
     }
 
@@ -17,7 +17,7 @@ class FixtureUserRefer {
         return new UserRefer(
                 FixtureUserInfo.ユーザー情報_正常(),
                 [],
-                [FixtureGroupInfo.所属グループ情報_正常()]
+                [FixtureGroupInfo.所属グループ情報_メンバー()]
         )
     }
 
@@ -29,4 +29,11 @@ class FixtureUserRefer {
         )
     }
 
+    static ユーザー参照_ユーザー設定なし_所属グループ情報なし() {
+        return new UserRefer(
+                FixtureUserInfo.ユーザー情報_正常(),
+                [],
+                null
+        )
+    }
 }

@@ -9,4 +9,5 @@ interface FixedRepository {
     fun refer(groupsId: GroupsId, yyyy: YYYY, mm: MM? = null): List<Fixed>
     fun fixed(groupsId: GroupsId, yyyy: YYYY, mm: MM): Boolean
     fun unFixed(groupsId: GroupsId, yyyy: YYYY, mm: MM): Boolean
+    fun delete(groupsId: GroupsId): Int
 }

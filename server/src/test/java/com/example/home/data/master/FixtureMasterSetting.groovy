@@ -3,6 +3,7 @@ package com.example.home.data.master
 
 import com.example.home.domain.entity.master.MasterSetting
 import com.example.home.domain.value_object.master.MasterSettingKey
+import com.example.home.domain.value_object.master.MasterSettingRemarks
 import com.example.home.domain.value_object.master.MasterSettingValue
 
 class FixtureMasterSetting {
@@ -23,10 +24,15 @@ class FixtureMasterSetting {
         new MasterSettingValue("master_setting_,value")
     }
 
+    static マスター設定備考_正常() {
+        new MasterSettingRemarks("master_setting_remarks")
+    }
+
     static マスター設定_正常() {
         return new MasterSetting(
                 マスター設定キー_正常(),
-                マスター設定値_正常()
+                マスター設定値_正常(),
+                マスター設定備考_正常()
         )
 
     }

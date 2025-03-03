@@ -1,6 +1,7 @@
 package com.example.home.domain.repository.group
 
 import com.example.home.domain.entity.group.GroupInfo
+import com.example.home.domain.value_object.group.GroupApprovalFlg
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
@@ -13,10 +14,12 @@ interface GroupInfoRepository {
         userId: UserId,
         userLeaderFlg: UserLeaderFlg
     ): GroupInfo
+
     fun update(
         groupsId: GroupsId,
         userId: UserId,
-        userLeaderFlg: UserLeaderFlg
+        userLeaderFlg: UserLeaderFlg? = null,
+        groupApprovalFlg: GroupApprovalFlg? = null
     ): Int
 
     fun delete(groupsId: GroupsId? = null, userId: UserId? = null): Int

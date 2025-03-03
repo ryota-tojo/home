@@ -188,10 +188,10 @@ class ShoppingService(
     }
 
     fun delete(
-        shoppingId: ShoppingId?,
-        groupsId: GroupsId?,
-        shoppingDateYYYY: YYYY?,
-        shoppingDateMM: MM?,
+        shoppingId: ShoppingId? = null,
+        groupsId: GroupsId? = null,
+        shoppingDateYYYY: YYYY? = null,
+        shoppingDateMM: MM? = null,
     ): ShoppingDeleteResult {
 
         val deleteRows = shoppingRepository.delete(shoppingId, groupsId, shoppingDateYYYY, shoppingDateMM)

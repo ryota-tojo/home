@@ -5,12 +5,19 @@ import com.example.home.api.group.response.GroupEntryResponse
 import com.example.home.api.group.response.GroupListResponse
 import com.example.home.api.group.response.GroupSettingResponse
 import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.repository.comment.CommentRepository
+import com.example.home.domain.repository.communication.CommunicationRepository
+import com.example.home.domain.repository.fixed.FixedRepository
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.group.GroupSettingRepository
 import com.example.home.domain.repository.member.MemberRepository
+import com.example.home.domain.repository.shopping.ShoppingRepository
+import com.example.home.domain.repository.template.ShoppingEntryTemplateRepository
+import com.example.home.domain.repository.template.ShoppingInputTemplateRepository
+import com.example.home.domain.repository.template.ShoppingSearchTemplateRepository
 import com.example.home.domain.value_object.group.GroupName
 import com.example.home.domain.value_object.group.GroupPassword
 import com.example.home.domain.value_object.group.GroupsId
@@ -30,9 +37,16 @@ class GroupEntryApi(
     private val groupInfoRepository: GroupInfoRepository,
     private val memberRepository: MemberRepository,
     private val categoryRepository: CategoryRepository,
-    private val commentRepository: CommentRepository
+    private val shoppingInputTemplateRepository: ShoppingInputTemplateRepository,
+    private val shoppingSearchTemplateRepository: ShoppingSearchTemplateRepository,
+    private val shoppingEntryTemplateRepository: ShoppingEntryTemplateRepository,
+    private val budgetsRepository: BudgetsRepository,
+    private val shoppingRepository: ShoppingRepository,
+    private val fixedRepository: FixedRepository,
+    private val commentRepository: CommentRepository,
+    private val communicationRepository: CommunicationRepository,
 
-) {
+    ) {
     companion object {
         const val API_PATH = "api/group/entry"
     }
@@ -52,7 +66,14 @@ class GroupEntryApi(
             groupInfoRepository,
             memberRepository,
             categoryRepository,
-            commentRepository
+            shoppingInputTemplateRepository,
+            shoppingSearchTemplateRepository,
+            shoppingEntryTemplateRepository,
+            budgetsRepository,
+            shoppingRepository,
+            fixedRepository,
+            commentRepository,
+            communicationRepository
         )
         val result = groupControlService.save(groupsId, groupName, groupPassword)
 

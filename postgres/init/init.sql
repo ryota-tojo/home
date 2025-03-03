@@ -3,6 +3,7 @@ CREATE TABLE ms_setting (
     id SERIAL NOT NULL,
     setting_key VARCHAR(512),
     setting_value VARCHAR(256), 
+    setting_remarks VARCHAR(1024),
     PRIMARY KEY (id)
 );
 
@@ -64,6 +65,7 @@ CREATE TABLE ts_groupinfo (
     groups_id VARCHAR(64), 
     user_id INTEGER, 
     leader_flg INTEGER,
+    approval_flg INTEGER,
     create_date TIMESTAMP,
     update_date TIMESTAMP,
     PRIMARY KEY (id),
@@ -222,29 +224,29 @@ CREATE TABLE ts_communication (
 );
 
 -- 設定マスタへのデータ挿入
-INSERT INTO ms_setting (setting_key, setting_value)
+INSERT INTO ms_setting (setting_key, setting_value,setting_remarks)
 VALUES
-    ('account_lockout_count', '5'),
-    ('maintenance', '0'),
-    ('slack_report_send_flg', '0'),
-    ('slack_report_webhookurl', ''),
-    ('slack_send_test', '0'),
-    ('layout', '0'),
-    ('admin_userdata_view', '10'),
-    ('admin_notice_view', '5'),
-    ('admin_notice_initial_title', 'お知らせ'),
-    ('admin_notice_initial_content', 'XXXXX'),
-    ('user_input_history_view', '10'),
-    ('user_management_view', '20'),
-    ('user_analysis_graph_size_pc_width', '750'),
-    ('user_analysis_graph_size_pc_height', '200'),
-    ('user_analysis_graph_size_sp_width', '320'),
-    ('user_analysis_graph_size_sp_height', '200'),
-    ('user_analysis_graph_size_tb_width', '680'),
-    ('user_analysis_graph_size_tb_height', '200'),
-    ('user_communication_histry_view', '10'),
-    ('user_communication_list_view', '20'),
-    ('user_communication_view_conditions', '0');
+    ('login_failure_limit', '5','ログイン失敗許容回数'),
+    ('maintenance', '0','メンテナンス判定'),
+    ('slack_report_send_flg', '0','Slack: 通知フラグ'),
+    ('slack_report_webhookurl', '','Slack: Web hook URL'),
+    ('slack_send_test', '0','Slack: 通知テストフラグ'),
+    ('lording_layout', '0','ロード画面レイアウトパターン'),
+    ('admin_userdata_view', '10','管理者画面: ユーザーデータ表示数/1ページ'),
+    ('admin_notice_view', '5','管理者画面: お知らせデフォルト表示数'),
+    ('admin_notice_initial_title', 'お知らせ','管理者画面: お知らせタイトルデフォルト値'),
+    ('admin_notice_initial_content', 'XXXXX','管理者画面: お知らせ内容デフォルト値'),
+    ('user_input_history_view', '10','ユーザー画面： 購入データ入力 - 入力履歴表示数'),
+    ('user_management_view', '20','ユーザー画面： 購入データ管理 - データ表示数/1ページ'),
+    ('user_analysis_graph_size_pc_width', '750','ユーザー画面： 購入データ分析 - PC表示: グラフ幅'),
+    ('user_analysis_graph_size_pc_height', '200','ユーザー画面： 購入データ分析 - PC表示: グラフ高さ'),
+    ('user_analysis_graph_size_sp_width', '320','ユーザー画面： 購入データ分析 - スマホ表示: グラフ幅'),
+    ('user_analysis_graph_size_sp_height', '200','ユーザー画面： 購入データ分析 - スマホ表示: グラフ高さ'),
+    ('user_analysis_graph_size_tb_width', '680','ユーザー画面： 購入データ分析 - タブレット表示: グラフ幅'),
+    ('user_analysis_graph_size_tb_height', '200','ユーザー画面： 購入データ分析 - タブレット表示: グラフ高さ'),
+    ('user_communication_input_histry_view', '10','ユーザー画面： お付き合い帳入力 - 入力履歴表示数'),
+    ('user_communication_list_view', '20','ユーザー画面： お付き合い帳一覧 - データ表示数/1ページ'),
+    ('user_communication_list_view_conditions', '0','ユーザー画面： お付き合い帳一覧 - データ検索条件デフォルト設定');
 
 -- 選択肢マスタへのデータ挿入
 INSERT INTO ms_choices (item_type, item_no, item_name_pc, item_name_sp)

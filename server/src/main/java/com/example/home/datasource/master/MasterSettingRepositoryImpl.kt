@@ -3,6 +3,7 @@ package com.example.home.datasource.master
 import com.example.home.domain.entity.master.MasterSetting
 import com.example.home.domain.repository.master.MasterSettingRepository
 import com.example.home.domain.value_object.master.MasterSettingKey
+import com.example.home.domain.value_object.master.MasterSettingRemarks
 import com.example.home.domain.value_object.master.MasterSettingValue
 import com.example.home.infrastructure.persistence.exposed_tables.master.TbMsSetting
 import org.jetbrains.exposed.sql.*
@@ -24,26 +25,38 @@ class MasterSettingRepositoryImpl : MasterSettingRepository {
             }.map {
                 MasterSetting(
                     MasterSettingKey(it[TbMsSetting.settingKey]),
-                    MasterSettingValue(it[TbMsSetting.settingValue])
+                    MasterSettingValue(it[TbMsSetting.settingValue]),
+                    MasterSettingRemarks(it[TbMsSetting.settingValue])
+
                 )
             }
         }
     }
 
-    override fun save(masterSettingKey: MasterSettingKey, masterSettingValue: MasterSettingValue): MasterSetting {
+    override fun save(
+        masterSettingKey: MasterSettingKey,
+        masterSettingValue: MasterSettingValue,
+        masterSettingRemarks: MasterSettingRemarks
+    ): MasterSetting {
         return transaction {
             TbMsSetting.insert {
                 it[settingKey] = masterSettingKey.value
                 it[settingValue] = masterSettingValue.value
+                it[settingRemarks] = masterSettingRemarks.value
             }
-            return@transaction MasterSetting(masterSettingKey, masterSettingValue)
+            return@transaction MasterSetting(masterSettingKey, masterSettingValue, masterSettingRemarks)
         }
     }
 
-    override fun update(masterSettingKey: MasterSettingKey, masterSettingValue: MasterSettingValue): Int {
+    override fun update(
+        masterSettingKey: MasterSettingKey,
+        masterSettingValue: MasterSettingValue,
+        masterSettingRemarks: MasterSettingRemarks
+    ): Int {
         return transaction {
             val updateRows = TbMsSetting.update({ TbMsSetting.settingKey eq masterSettingKey.value }) {
                 it[settingValue] = masterSettingValue.value
+                it[settingRemarks] = masterSettingRemarks.value
             }
             return@transaction updateRows
         }

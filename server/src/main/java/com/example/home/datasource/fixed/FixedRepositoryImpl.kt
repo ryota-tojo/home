@@ -67,4 +67,12 @@ class FixedRepositoryImpl : FixedRepository {
         }
     }
 
+    override fun delete(
+        groupsId: GroupsId
+    ): Int {
+        return transaction {
+            val deleteRows = TbTsFixed.deleteWhere { TbTsFixed.groupsId eq groupsId.value }
+            deleteRows
+        }
+    }
 }
