@@ -12,6 +12,7 @@ import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.shopping.*
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsShopping
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -50,7 +51,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                             GroupsId(it[TbTsShopping.groupsId]),
                             UserId(it[TbTsShopping.userId]),
                             it[TbTsShopping.shoppingDate],
-                            MemberId(it[TbTsShopping.id]),
+                            MemberId(it[TbTsShopping.memberId]),
                             CategoryId(it[TbTsShopping.categoryId]),
                             ShoppingType(it[TbTsShopping.type]),
                             ShoppingPayment(it[TbTsShopping.payment]),
@@ -73,7 +74,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                             GroupsId(it[TbTsShopping.groupsId]),
                             UserId(it[TbTsShopping.userId]),
                             it[TbTsShopping.shoppingDate],
-                            MemberId(it[TbTsShopping.id]),
+                            MemberId(it[TbTsShopping.memberId]),
                             CategoryId(it[TbTsShopping.categoryId]),
                             ShoppingType(it[TbTsShopping.type]),
                             ShoppingPayment(it[TbTsShopping.payment]),
@@ -95,7 +96,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                         shoppingDateMM?.let {
                             condition = condition and (TbTsShopping.shoppingDate.month() eq it.value)
                         }
-                        memberId?.let { condition = condition and (TbTsShopping.id eq it.value) }
+                        memberId?.let { condition = condition and (TbTsShopping.memberId eq it.value) }
                         categoryId?.let { condition = condition and (TbTsShopping.categoryId eq it.value) }
                         type?.let { condition = condition and (TbTsShopping.type eq it.value) }
                         payment?.let { condition = condition and (TbTsShopping.payment eq it.value) }
@@ -114,7 +115,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                             GroupsId(it[TbTsShopping.groupsId]),
                             UserId(it[TbTsShopping.userId]),
                             it[TbTsShopping.shoppingDate],
-                            MemberId(it[TbTsShopping.id]),
+                            MemberId(it[TbTsShopping.memberId]),
                             CategoryId(it[TbTsShopping.categoryId]),
                             ShoppingType(it[TbTsShopping.type]),
                             ShoppingPayment(it[TbTsShopping.payment]),
@@ -128,7 +129,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         }
     }
 
-    override fun getOldCategories(
+    override fun getAllCategories(
         groupsId: GroupsId,
         shoppingDateYYYY: YYYY?,
         shoppingDateMM: MM?
@@ -158,12 +159,53 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                     CategoryId(it[TbTsShopping.categoryId])
                 }
                 .distinct()
-            println(shoppingCategoryList)
 
             val oldCategoryList = shoppingCategoryList.toMutableList()
             oldCategoryList.removeAll(categoryList)
 
-            return@transaction oldCategoryList
+            val newCategoryList = categoryList + oldCategoryList
+
+            return@transaction newCategoryList
+        }
+    }
+
+    override fun getAllMembers(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY?,
+        shoppingDateMM: MM?
+    ): List<MemberId> {
+        return transaction {
+            var memberCondition: Op<Boolean> = TbTsMembers.deletedFlg eq 0
+            groupsId.let { memberCondition = memberCondition and (TbTsMembers.groupsId eq it.value) }
+            val memberList = TbTsMembers
+                .select {
+                    memberCondition
+                }
+                .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
+                .map {
+                    MemberId(it[TbTsMembers.memberId])
+                }
+
+            var condition: Op<Boolean> = TbTsShopping.groupsId eq groupsId.value
+            shoppingDateYYYY?.let {
+                condition = condition and (TbTsShopping.shoppingDate.year() eq it.value)
+            }
+            shoppingDateMM?.let {
+                condition = condition and (TbTsShopping.shoppingDate.month() eq it.value)
+            }
+            val shoppingMemberList = TbTsShopping.select { condition }
+                .orderBy(TbTsShopping.memberId to SortOrder.ASC)
+                .map {
+                    MemberId(it[TbTsShopping.memberId])
+                }
+                .distinct()
+
+            val oldMemberList = shoppingMemberList.toMutableList()
+            oldMemberList.removeAll(memberList)
+
+            val newMemberList = memberList + oldMemberList
+
+            return@transaction newMemberList
         }
     }
 

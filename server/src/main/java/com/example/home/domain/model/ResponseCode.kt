@@ -26,6 +26,9 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
     存在しないカテゴリー("error", "CATEGORY_NOT_FOUND_ERROR", "存在しないカテゴリーが指定されています"),
     存在しない購入種別("error", "SHOPPING_TYPE_NOT_FOUND_ERROR", "存在しない購入種別が指定されています"),
     存在しない支払い方法("error", "SHOPPING_PAYMENT_NOT_FOUND_ERROR", "存在しない支払い方法が指定されています"),
-    存在しない精算状況("error", "SHOPPING_SETTLEMENT_NOT_FOUND_ERROR", "存在しない精算状況が指定されています");
+    存在しない精算状況("error", "SHOPPING_SETTLEMENT_NOT_FOUND_ERROR", "存在しない精算状況が指定されています"),
+
+    精算レポート生成失敗("error", "CREATE_SETTLEMENT_REPORT_FAILED", "精算レポートの生成に失敗しました"),
+    残高レポート生成失敗("error", "CREATE_BALANCE_REPORT_FAILED", "残高レポートの生成に失敗しました");
 
 }

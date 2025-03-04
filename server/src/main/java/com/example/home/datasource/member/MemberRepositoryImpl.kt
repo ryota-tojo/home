@@ -3,10 +3,10 @@ package com.example.home.datasource.member
 import com.example.home.domain.entity.member.Member
 import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.value_object.group.GroupsId
+import com.example.home.domain.value_object.member.MemberDeletedFlg
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
 import com.example.home.domain.value_object.member.MemberNo
-import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Repository
 class MemberRepositoryImpl : MemberRepository {
     override fun refer(memberId: MemberId?, groupsId: GroupsId?, memberNo: MemberNo?): List<Member> {
         return transaction {
-            var condition: Op<Boolean> = TbTsMembers.deletedFlg eq 0
+            var condition: Op<Boolean> = Op.TRUE
             if (memberId != null) {
                 memberId.let { condition = condition and (TbTsMembers.memberId eq memberId.value) }
             } else {
                 groupsId?.let { condition = condition and (TbTsMembers.groupsId eq it.value) }
                 memberNo?.let { condition = condition and (TbTsMembers.memberNo eq it.value) }
             }
-            TbTsCategorys
+            TbTsMembers
                 .select {
                     condition
                 }
@@ -34,7 +34,8 @@ class MemberRepositoryImpl : MemberRepository {
                         MemberId(it[TbTsMembers.memberId]),
                         GroupsId(it[TbTsMembers.groupsId]),
                         MemberNo(it[TbTsMembers.memberNo]),
-                        MemberName(it[TbTsMembers.memberName])
+                        MemberName(it[TbTsMembers.memberName]),
+                        MemberDeletedFlg(it[TbTsMembers.deletedFlg])
                     )
                 }
         }
@@ -63,7 +64,8 @@ class MemberRepositoryImpl : MemberRepository {
                     MemberId(it[TbTsMembers.memberId]),
                     GroupsId(it[TbTsMembers.groupsId]),
                     MemberNo(it[TbTsMembers.memberNo]),
-                    MemberName(it[TbTsMembers.memberName])
+                    MemberName(it[TbTsMembers.memberName]),
+                    MemberDeletedFlg(it[TbTsMembers.deletedFlg])
                 )
             } ?: throw IllegalStateException("Failed to save the Member")
         }

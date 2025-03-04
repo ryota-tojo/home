@@ -1,5 +1,7 @@
 package com.example.home.service.shopping
 
+import com.example.home.domain.entity.category.Category
+import com.example.home.domain.entity.member.Member
 import com.example.home.domain.entity.shopping.result.ShoppingDeleteResult
 import com.example.home.domain.entity.shopping.result.ShoppingReferResult
 import com.example.home.domain.entity.shopping.result.ShoppingSaveResult
@@ -67,13 +69,29 @@ class ShoppingService(
         )
     }
 
-    fun getOldCategories(
+    fun getAllCategories(
         groupsId: GroupsId,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null
-    ): List<CategoryId> {
-        val oldCategoryIdList = shoppingRepository.getOldCategories(groupsId, shoppingDateYYYY, shoppingDateMM)
-        return oldCategoryIdList
+    ): List<Category> {
+        val categoryIdList = shoppingRepository.getAllCategories(groupsId, shoppingDateYYYY, shoppingDateMM)
+        if (categoryIdList == null) return listOf()
+        val categoryList =
+            categoryIdList.map { categoryId -> categoryRepository.refer(categoryId = categoryId).firstOrNull() }
+                .filterNotNull()
+        return categoryList
+    }
+
+    fun getAllMembers(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY? = null,
+        shoppingDateMM: MM? = null
+    ): List<Member> {
+        val memberIdList = shoppingRepository.getAllMembers(groupsId, shoppingDateYYYY, shoppingDateMM)
+        if (memberIdList == null) return listOf()
+        val memberList =
+            memberIdList.map { memberId -> memberRepository.refer(memberId = memberId).firstOrNull() }.filterNotNull()
+        return memberList
     }
 
     fun save(

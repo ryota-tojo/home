@@ -66,7 +66,7 @@
 | target_year       | Int    | 対象年（yyyy）                       |
 | target_month      | Int    | 対象月（mm）                         |
 | settlement_report | Object | 後述の「settlement_reportオブジェクト」を参照 |
-| analysis_report   | Object | 後述の「analysis_reportオブジェクト」を参照   |
+| balance_report    | Object | 後述の「balance_reportオブジェクト」を参照    |
 
 #### settlement_reportオブジェクト
 
@@ -90,7 +90,7 @@
 | member_name          | String | メンバー名  |
 | un_settlement_amount | Int    | 未精算金額  |
 
-#### analysis_reportオブジェクト
+#### balance_reportオブジェクト
 
 | パラメータ名        | 属性          | 説明                          |
 |:--------------|:------------|:----------------------------|

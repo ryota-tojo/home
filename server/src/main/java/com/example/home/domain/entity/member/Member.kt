@@ -1,6 +1,7 @@
 package com.example.home.domain.entity.member
 
 import com.example.home.domain.value_object.group.GroupsId
+import com.example.home.domain.value_object.member.MemberDeletedFlg
 import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
 import com.example.home.domain.value_object.member.MemberNo
@@ -9,5 +10,6 @@ data class Member(
     val id: MemberId,
     val groupsId: GroupsId,
     val memberNo: MemberNo,
-    val memberName: MemberName
+    val memberName: MemberName,
+    val deleted: MemberDeletedFlg
 )

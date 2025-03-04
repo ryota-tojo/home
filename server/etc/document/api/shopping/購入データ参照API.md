@@ -24,7 +24,7 @@
 | shopping_date |    | String | 10   | 購入日（YYYY-MM-DD）     |
 | member_id     |    | Int    | -    | メンバーID              |
 | category_id   |    | Int    | -    | カテゴリーID             |
-| type          |    | Int    | -    | 種別                  |
+| type          |    | Int    | -    | 種別（0:収入, 1:出費）      |
 | payment       |    | Int    | -    | 支払い方法               |
 | settlement    |    | Int    | -    | 精算フラグ（0:未精算, 1:精算済） |
 | amount        |    | Int    | -    | 金額                  |

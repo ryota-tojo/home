@@ -2,6 +2,7 @@ package com.example.home.datasource.category
 
 import com.example.home.domain.entity.category.Category
 import com.example.home.domain.repository.category.CategoryRepository
+import com.example.home.domain.value_object.category.CategoryDeletedFlg
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Repository
 class CategoryRepositoryImpl : CategoryRepository {
     override fun refer(categoryId: CategoryId?, groupsId: GroupsId?, categoryNo: CategoryNo?): List<Category> {
         return transaction {
-            var condition: Op<Boolean> = TbTsCategorys.deletedFlg eq 0
+            var condition: Op<Boolean> = Op.TRUE
             if (categoryId != null) {
                 categoryId.let { condition = condition and (TbTsCategorys.categoryId eq categoryId.value) }
             } else {
@@ -33,7 +34,8 @@ class CategoryRepositoryImpl : CategoryRepository {
                         CategoryId(it[TbTsCategorys.categoryId]),
                         GroupsId(it[TbTsCategorys.groupsId]),
                         CategoryNo(it[TbTsCategorys.categoryNo]),
-                        CategoryName(it[TbTsCategorys.categoryName])
+                        CategoryName(it[TbTsCategorys.categoryName]),
+                        CategoryDeletedFlg(it[TbTsCategorys.deletedFlg])
                     )
                 }
         }
@@ -62,7 +64,8 @@ class CategoryRepositoryImpl : CategoryRepository {
                     CategoryId(it[TbTsCategorys.categoryId]),
                     GroupsId(it[TbTsCategorys.groupsId]),
                     CategoryNo(it[TbTsCategorys.categoryNo]),
-                    CategoryName(it[TbTsCategorys.categoryName])
+                    CategoryName(it[TbTsCategorys.categoryName]),
+                    CategoryDeletedFlg(it[TbTsCategorys.deletedFlg])
                 )
             } ?: throw IllegalStateException("Failed to save the Category")
         }

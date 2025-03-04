@@ -29,11 +29,17 @@ interface ShoppingRepository {
         remarks: ShoppingRemarks? = null
     ): List<Shopping>
 
-    fun getOldCategories(
+    fun getAllCategories(
         groupsId: GroupsId,
         shoppingDateYYYY: YYYY? = null,
         shoppingDateMM: MM? = null,
     ): List<CategoryId>
+
+    fun getAllMembers(
+        groupsId: GroupsId,
+        shoppingDateYYYY: YYYY? = null,
+        shoppingDateMM: MM? = null,
+    ): List<MemberId>
 
     fun save(
         groupsId: GroupsId,
