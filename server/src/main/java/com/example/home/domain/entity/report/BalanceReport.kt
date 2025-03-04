@@ -2,8 +2,7 @@ package com.example.home.domain.entity.report
 
 import com.example.home.domain.value_object.etc.Amount
 
-data class SettlementReport(
-    val dataCount: Int,
-    val memberAndAmountList: List<MemberAndAmount>,
+data class BalanceReport(
+    val categoryAndAmountList: List<CategoryAndAmount>,
     val totalAmount: Amount
 )

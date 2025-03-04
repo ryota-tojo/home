@@ -2,6 +2,7 @@ package com.example.home.data.category
 
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.domain.entity.category.Category
+import com.example.home.domain.value_object.category.CategoryDeletedFlg
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
@@ -23,12 +24,17 @@ class FixtureCategory {
         new CategoryName("category_,name")
     }
 
+    static 削除フラグ_未削除() {
+        new CategoryDeletedFlg(0)
+    }
+
     static カテゴリー_正常値() {
         return new Category(
                 カテゴリーID_正常(),
                 FixtureGroupList.所属グループID_正常(),
                 カテゴリー番号_正常(),
-                カテゴリー名_正常()
+                カテゴリー名_正常(),
+                削除フラグ_未削除()
         )
     }
 

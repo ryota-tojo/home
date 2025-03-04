@@ -60,25 +60,44 @@ class ShoppingServiceTest extends Specification {
         "正常_データなし"                      | new ShoppingReferResult(ResponseCode.成功.code, null)                                | null                                | FixtureShopping.購入ID_正常() | FixtureGroupList.所属グループID_正常() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureMember.メンバーID_正常() | FixtureCategory.カテゴリーID_正常() | FixtureShopping.購入種別_出費() | FixtureShopping.支払い方法_現金() | FixtureShopping.精算状態_未精算() | FixtureEtc.金額_正常() | FixtureEtc.金額_正常() | FixtureShopping.備考_正常()
     }
 
-    def "shopping_getOldCategories_#useCase"() {
+    def "shopping_getAllCategories_#useCase"() {
         setup:
         def groupsId = FixtureGroupList.所属グループID_正常()
 
         when:
-        def result = sut.getOldCategories(groupsId, yyyy, mm)
+        def result = sut.getAllCategories(groupsId, yyyy, mm)
         then:
-        1 * shoppingRepository.getOldCategories(groupsId, yyyy, mm) >> categogryIdList
+        1 * shoppingRepository.getAllCategories(groupsId, yyyy, mm) >> categogryIdList
+        referCnt * categoryRepository.refer(_, null, null) >> categoryList
         result == expected
 
         where:
-        useCase                | expected                                  | yyyy                 | mm                   | categogryIdList
-        "正常"                 | FixtureCategory.カテゴリーID一覧_正常値() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID一覧_正常値()
-        "正常_yyyyなし"        | FixtureCategory.カテゴリーID一覧_正常値() | null                 | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID一覧_正常値()
-        "正常_mmなし"          | FixtureCategory.カテゴリーID一覧_正常値() | FixtureEtc.年_正常() | null                 | FixtureCategory.カテゴリーID一覧_正常値()
-        "正常_yyyyなし_mmなし" | FixtureCategory.カテゴリーID一覧_正常値() | null                 | null                 | FixtureCategory.カテゴリーID一覧_正常値()
-        "正常_データなし"      | null                                      | FixtureEtc.年_正常() | FixtureEtc.月_正常() | null
+        useCase                | expected                              | yyyy                 | mm                   | categogryIdList                           | categoryList                          | referCnt
+        "正常"                 | [FixtureCategory.カテゴリー_正常値()] | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID一覧_正常値() | [FixtureCategory.カテゴリー_正常値()] | 1
+        "正常_yyyyなし"        | [FixtureCategory.カテゴリー_正常値()] | null                 | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID一覧_正常値() | [FixtureCategory.カテゴリー_正常値()] | 1
+        "正常_mmなし"          | [FixtureCategory.カテゴリー_正常値()] | FixtureEtc.年_正常() | null                 | FixtureCategory.カテゴリーID一覧_正常値() | [FixtureCategory.カテゴリー_正常値()] | 1
+        "正常_yyyyなし_mmなし" | [FixtureCategory.カテゴリー_正常値()] | null                 | null                 | FixtureCategory.カテゴリーID一覧_正常値() | [FixtureCategory.カテゴリー_正常値()] | 1
+        "正常_データなし"      | []                                    | FixtureEtc.年_正常() | FixtureEtc.月_正常() | null                                      | null                                  | 0
+    }
 
+    def "shopping_getAllMembers_#useCase"() {
+        setup:
+        def groupsId = FixtureGroupList.所属グループID_正常()
 
+        when:
+        def result = sut.getAllMembers(groupsId, yyyy, mm)
+        then:
+        1 * shoppingRepository.getAllMembers(groupsId, yyyy, mm) >> memberIdList
+        referCnt * memberRepository.refer(_, null, null) >> memberList
+        result == expected
+
+        where:
+        useCase                | expected                          | yyyy                 | mm                   | memberIdList                          | memberList                        | referCnt
+        "正常"                 | [FixtureMember.メンバー_正常値()] | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureMember.メンバーID一覧_正常値() | [FixtureMember.メンバー_正常値()] | 1
+        "正常_yyyyなし"        | [FixtureMember.メンバー_正常値()] | null                 | FixtureEtc.月_正常() | FixtureMember.メンバーID一覧_正常値() | [FixtureMember.メンバー_正常値()] | 1
+        "正常_mmなし"          | [FixtureMember.メンバー_正常値()] | FixtureEtc.年_正常() | null                 | FixtureMember.メンバーID一覧_正常値() | [FixtureMember.メンバー_正常値()] | 1
+        "正常_yyyyなし_mmなし" | [FixtureMember.メンバー_正常値()] | null                 | null                 | FixtureMember.メンバーID一覧_正常値() | [FixtureMember.メンバー_正常値()] | 1
+        "正常_データなし"      | []                                | FixtureEtc.年_正常() | FixtureEtc.月_正常() | null                                  | null                              | 0
     }
 
     def "shopping_save_#useCase"() {
