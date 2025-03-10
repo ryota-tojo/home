@@ -23,7 +23,7 @@ import confirmation.DbConnectConfirmation
 fun main() {
 
     // 実行フラグ
-    val execFlg = 1
+    val execFlg = 0
 
     if (execFlg == 1) {
         println("\n＊＊＊＊＊＊＊＊＊ 処理開始 ＊＊＊＊＊＊＊＊＊\n")
