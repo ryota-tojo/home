@@ -1,0 +1,8 @@
+{
+  "status": "error",
+  "message": "ログイン失敗",
+  "data": {
+    "parameter": "user_name,password",
+    "message": "ログイン情報の照合に失敗しました"
+  }
+}

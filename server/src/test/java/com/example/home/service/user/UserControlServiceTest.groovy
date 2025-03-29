@@ -11,7 +11,6 @@ import com.example.home.domain.entity.user.result.UserSaveResult
 import com.example.home.domain.entity.user.result.UserUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
-import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.user.UserInfoRepository
 import com.example.home.domain.repository.user.UserSettingRepository
 import spock.lang.Specification
@@ -44,7 +43,7 @@ class UserControlServiceTest extends Specification {
         "正常_idなし_groupsIdあり" | new UserReferResult(ResponseCode.成功.code, [FixtureUserRefer.ユーザー参照_正常()])                 | null                              | FixtureUserInfo.ユーザー名_正常() | [FixtureUserInfo.ユーザー情報_正常()] | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1      | 1      | 1
         "正常_idなし_groupsIdなし" | new UserReferResult(ResponseCode.成功.code, [FixtureUserRefer.ユーザー参照_正常()])                 | null                              | null                              | [FixtureUserInfo.ユーザー情報_正常()] | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1      | 1      | 1
         "正常_グループ情報なし"    | new UserReferResult(ResponseCode.成功.code, [FixtureUserRefer.ユーザー参照_所属グループ情報なし()]) | null                              | null                              | [FixtureUserInfo.ユーザー情報_正常()] | null                                   | null                                           | 1      | 1      | 1
-        "正常_ユーザーなし"        | new UserReferResult(sprintf(ResponseCode.成功_条件付き.code, ["USER_NOT_FOUND"]), null)             | null                              | null                              | []                                    | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 0      | 0      | 0
+        "正常_ユーザーなし" | new UserReferResult(ResponseCode.データ不在エラー.code, null) | null | null | [] | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 0 | 0 | 0
     }
 
     def "userInfo_save_#useCase"() {

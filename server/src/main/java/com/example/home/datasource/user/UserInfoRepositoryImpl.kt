@@ -3,7 +3,6 @@ package com.example.home.datasource.user
 import com.example.home.domain.entity.user.UserInfo
 import com.example.home.domain.repository.user.UserInfoRepository
 import com.example.home.domain.value_object.user.*
-import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsBudgets
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserInfo
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -128,7 +127,7 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                     it[TbTsUserInfo.deleteDate]
                 )
             }
-            return@transaction userInfo.isEmpty()
+            return@transaction userInfo.isNotEmpty()
         }
     }
 
@@ -156,11 +155,11 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                 }
                 if (approvalFlg != null) {
                     it[TbTsUserInfo.approvalFlg] = approvalFlg.value
-                    it[TbTsUserInfo.approvalDate] = LocalDateTime.now()
+                    it[approvalDate] = LocalDateTime.now()
                 }
                 if (deleteFlg != null) {
                     it[TbTsUserInfo.deleteFlg] = deleteFlg.value
-                    it[TbTsUserInfo.deleteDate] = LocalDateTime.now()
+                    it[deleteDate] = LocalDateTime.now()
                 }
                 it[updateDate] = LocalDateTime.now()
             }

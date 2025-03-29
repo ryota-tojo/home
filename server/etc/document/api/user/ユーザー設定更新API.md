@@ -8,11 +8,17 @@
 
 ユーザー設定の更新を行う。
 
+## HTTPメソッド
+
+| HTTPメソッド |
+|:---------|
+| POST     |
+
 ## APIパス
 
 | パス                      |
 |:------------------------|
-| api/user/setting/update |
+| api/user/update/setting |
 
 ## リクエストパラメータ
 
