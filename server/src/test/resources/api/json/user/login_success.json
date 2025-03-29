@@ -1,0 +1,7 @@
+{
+  "status": "success",
+  "message": "処理成功",
+  "data": {
+    "loginResult": true
+  }
+}

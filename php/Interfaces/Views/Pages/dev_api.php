@@ -12,12 +12,8 @@ $screen_title = "API実行ツール";
 
 // APIパス
 $resource_path_list = [
-    "api/group/refer",
-    "api/group/entry",
-    "api/group/update/list",
-    "api/group/update/setting",
-    "api/group/delete",
-    "test"
+    "api/login",
+    "api/user/refer"
 ];
 
 $request_item_no = 10;
@@ -206,7 +202,33 @@ if (isset($_POST['request-btn'])) {
                         <?php
                         if(isset($res)){
                             $data = json_decode($text, true);
-                            echo $data['message'];
+                            echo "ステータス：{$data['status']}<br>";
+                            echo "メッセージ：{$data['message']}<br>";
+// ユーザー情報をループで取得
+                            foreach ($data['data']['user'] as $user) {
+                                echo "ユーザーID: " . $user['user_info']['user_id'] . PHP_EOL;
+                                echo "ユーザー名: " . $user['user_info']['user_name'] . PHP_EOL;
+
+                                // 設定情報の取得
+                                if (!empty($user['user_setting'])) {
+                                    echo "ユーザー設定:" . PHP_EOL;
+                                    foreach ($user['user_setting'] as $setting) {
+                                        echo "- " . $setting['setting_key'] . ": " . $setting['setting_value'] . PHP_EOL;
+                                    }
+                                }
+
+                                // グループ情報の取得
+                                if (!empty($user['group_info'])) {
+                                    echo "グループ情報:" . PHP_EOL;
+                                    foreach ($user['group_info'] as $group) {
+                                        echo "- グループID: " . $group['groups_id'] . PHP_EOL;
+                                        echo "  リーダー: " . ($group['leader'] == "1" ? "はい" : "いいえ") . PHP_EOL;
+                                    }
+                                }
+
+                                echo "--------------------" . PHP_EOL;
+                            }
+
                         }
                         ?>
                     </div>
@@ -238,36 +260,22 @@ if (isset($_POST['request-btn'])) {
     // 初期値の設定
     document.getElementById('src-path').addEventListener('change', function () {
         var selectedValue = this.value;
-        if (selectedValue === 'api/group/refer') {
-            document.getElementById(`request-form-0`).hidden = false;
-            document.querySelector("input[name='key_0']").value = "groups_id";
-        }
-        if (selectedValue === 'api/group/entry') {
+        if (selectedValue === 'api/login') {
             document.getElementById(`request-form-0`).hidden = false;
             document.getElementById(`request-form-1`).hidden = false;
-            document.querySelector("input[name='key_0']").value = "groups_id";
-            document.querySelector("input[name='key_1']").value = "group_name";
-        }
-        if (selectedValue === 'api/group/update/list') {
-            document.getElementById(`request-form-0`).hidden = false;
-            document.getElementById(`request-form-1`).hidden = false;
-            document.querySelector("input[name='key_0']").value = "groups_id";
-            document.querySelector("input[name='key_1']").value = "group_name";
-        }
-        if (selectedValue === 'api/group/update/setting') {
-            document.getElementById(`request-form-0`).hidden = false;
-            document.getElementById(`request-form-1`).hidden = false;
-            document.getElementById(`request-form-2`).hidden = false;
-            document.querySelector("input[name='key_0']").value = "groups_id";
-            document.querySelector("input[name='key_1']").value = "group_setting_key";
-            document.querySelector("input[name='key_2']").value = "group_setting_value";
-        }
-        if (selectedValue === 'api/group/delete') {
-            document.getElementById(`request-form-0`).hidden = false;
-            document.querySelector("input[name='key_0']").value = "groups_id";
+            document.querySelector("input[name='key_0']").value = "user_name";
+            document.querySelector("input[name='key_1']").value = "password";
         }
     });
-
+    document.getElementById('src-path').addEventListener('change', function () {
+        var selectedValue = this.value;
+        if (selectedValue === 'api/user/refer') {
+            document.getElementById(`request-form-0`).hidden = false;
+            document.getElementById(`request-form-1`).hidden = false;
+            document.querySelector("input[name='key_0']").value = "user_id";
+            document.querySelector("input[name='key_1']").value = "user_name";
+        }
+    });
 </script>
 </body>
 </html>

@@ -7,15 +7,14 @@ import com.example.home.domain.entity.user.result.UserSaveResult
 import com.example.home.domain.entity.user.result.UserUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
-import com.example.home.domain.repository.group.GroupListRepository
 import com.example.home.domain.repository.user.UserInfoRepository
 import com.example.home.domain.repository.user.UserSettingRepository
 import com.example.home.domain.value_object.TsDefaultData
-import com.example.home.domain.value_object.group.GroupPassword
-import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.*
 import com.example.home.util.ValidationCheck
+import org.springframework.stereotype.Service
 
+@Service
 class UserControlService(
     val userInfoRepository: UserInfoRepository,
     val userSettingRepository: UserSettingRepository,
@@ -27,7 +26,7 @@ class UserControlService(
         val userInfoList = userInfoRepository.refer(userId = userId, userName = userName)
         if (userInfoList.isEmpty()) {
             return UserReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "USER_NOT_FOUND"),
+                String.format(ResponseCode.データ不在エラー.code, "USER_NOT_FOUND"),
                 null
             )
         }

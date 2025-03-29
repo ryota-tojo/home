@@ -10,7 +10,12 @@ class ApiService
     }
     public function httpRequest($http_method, $dictionary_data )
     {
-        $json_data = json_encode($dictionary_data);
+        if($dictionary_data != null){
+            $json_data = json_encode($dictionary_data);
+        }else{
+            $json_data = "{}";
+        }
+
         $ch = curl_init($this->url);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

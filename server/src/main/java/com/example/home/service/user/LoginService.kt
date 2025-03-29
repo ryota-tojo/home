@@ -7,7 +7,7 @@ import com.example.home.domain.repository.user.LoginRepository
 import org.springframework.stereotype.Service
 
 @Service
-class LoginService(
+open class LoginService(
     private val loginRepository: LoginRepository
 ) {
     fun login(loginInfo: LoginInfo): UserLoginResult {

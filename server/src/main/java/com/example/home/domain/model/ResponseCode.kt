@@ -12,7 +12,7 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
     グループ認証エラー("error", "GROUP_CERTIFICATION_ERROR", "グループの認証に失敗しました"),
 
     ユーザーエラー_グループリーダー削除("error", "USER_ERROR_LEADER_DELETED", "所属グループのリーダーは削除できません"),
-    ログインエラー_データ照合("error", "LOGIN_ERROR_COLLATION", "ユーザーの照合に失敗しました"),
+    ログインエラー_データ照合("error", "LOGIN_ERROR_COLLATION", "ログイン情報の照合に失敗しました"),
     ログインエラー_削除済ユーザー("error", "LOGIN_ERROR_DELETED_USER", "ログイン不可能なユーザーです"),
     ログインエラー_未承認ユーザー("error", "LOGIN_ERROR_UNAPPROVED_USER", "未承認ユーザーです"),
     ログインエラー_所属グループ不正("error", "LOGIN_ERROR_GROUP_FRAUD", "所属グループが間違っています"),

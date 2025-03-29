@@ -17,21 +17,25 @@ import java.time.LocalDateTime
 class GroupInfoRepositoryImpl : GroupInfoRepository {
     override fun refer(groupsId: GroupsId?, userId: UserId?): List<GroupInfo> {
         return transaction {
-            TbTsGroupInfo.select {
-                Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
-                    groupsId?.let { condition = TbTsGroupInfo.groupsId eq it.value }
-                    userId?.let { condition = TbTsGroupInfo.userId eq it.value }
-                    condition
-                }
-            }.map {
+            val conditions = mutableListOf<Op<Boolean>>()
+
+            groupsId?.let { conditions.add(TbTsGroupInfo.groupsId eq it.value) }
+            userId?.let { conditions.add(TbTsGroupInfo.userId eq it.value) }
+
+            val query = if (conditions.isNotEmpty()) {
+                TbTsGroupInfo.select { conditions.reduce { acc, op -> acc and op } }
+            } else {
+                TbTsGroupInfo.selectAll()
+            }
+
+            query.map {
                 GroupInfo(
                     GroupsId(it[TbTsGroupInfo.groupsId]),
                     UserId(it[TbTsGroupInfo.userId]),
                     UserLeaderFlg(it[TbTsGroupInfo.leaderFlg]),
                     GroupApprovalFlg(it[TbTsGroupInfo.approvalFlg]),
                     it[TbTsGroupInfo.createDate],
-                    it[TbTsGroupInfo.updateDate],
+                    it[TbTsGroupInfo.updateDate]
                 )
             }
         }
