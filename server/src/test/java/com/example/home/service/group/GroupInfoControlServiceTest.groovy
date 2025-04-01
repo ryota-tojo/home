@@ -9,12 +9,14 @@ import com.example.home.domain.entity.group.result.GroupInfoSaveResult
 import com.example.home.domain.entity.group.result.GroupInfoUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
+import com.example.home.domain.repository.user.UserInfoRepository
 import spock.lang.Specification
 
 class GroupInfoControlServiceTest extends Specification {
 
     private GroupInfoRepository groupInfoRepository = Mock()
-    private GroupInfoControlService sut = new GroupInfoControlService(groupInfoRepository)
+    private UserInfoRepository userInfoRepository = Mock()
+    private GroupInfoControlService sut = new GroupInfoControlService(groupInfoRepository, userInfoRepository)
 
     def "groupInfo_refer_#useCase"() {
         setup:
@@ -43,13 +45,17 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.save(groupsId, userId, leaderFlg)
 
         then:
-        1 * groupInfoRepository.save(groupsId, userId, leaderFlg) >> groupInfo
+        uiCnt * userInfoRepository.refer(userId, null) >> userInfo
+        grCnt * groupInfoRepository.refer(groupsId, null) >> groupInfoRefer
+        gsCnt * groupInfoRepository.save(groupsId, userId, leaderFlg) >> groupInfo
         result == expected
 
         where:
-        useCase         | expected                                                                                      | leaderFlg                                  | groupInfo
-        "正常_リーダー" | new GroupInfoSaveResult(ResponseCode.成功.code, FixtureGroupInfo.所属グループ情報_リーダー()) | FixtureGroupInfo.リーダーフラグ_リーダー() | FixtureGroupInfo.所属グループ情報_リーダー()
-        "正常_メンバー" | new GroupInfoSaveResult(ResponseCode.成功.code, FixtureGroupInfo.所属グループ情報_メンバー()) | FixtureGroupInfo.リーダーフラグ_メンバー() | FixtureGroupInfo.所属グループ情報_メンバー()
+        useCase                               | expected                                                                                      | leaderFlg                                  | userInfo                              | groupInfoRefer                                 | groupInfo                                    | uiCnt | grCnt | gsCnt
+        "正常_リーダー"                       | new GroupInfoSaveResult(ResponseCode.成功.code, FixtureGroupInfo.所属グループ情報_リーダー()) | FixtureGroupInfo.リーダーフラグ_リーダー() | [FixtureUserInfo.ユーザー情報_正常()] | []                                             | FixtureGroupInfo.所属グループ情報_リーダー() | 1     | _     | 1
+        "正常_メンバー"                       | new GroupInfoSaveResult(ResponseCode.成功.code, FixtureGroupInfo.所属グループ情報_メンバー()) | FixtureGroupInfo.リーダーフラグ_メンバー() | [FixtureUserInfo.ユーザー情報_正常()] | [FixtureGroupInfo.所属グループ情報_リーダー()] | FixtureGroupInfo.所属グループ情報_メンバー() | 1     | 0     | 1
+        "異常_存在しないユーザー"             | new GroupInfoSaveResult(ResponseCode.存在しないユーザー.code, null)                           | FixtureGroupInfo.リーダーフラグ_リーダー() | null                                  | [FixtureGroupInfo.所属グループ情報_リーダー()] | FixtureGroupInfo.所属グループ情報_リーダー() | 1     | 0     | 0
+        "異常_既にリーダーが存在するグループ" | new GroupInfoSaveResult(ResponseCode.既にリーダーが存在するグループ.code, null)               | FixtureGroupInfo.リーダーフラグ_リーダー() | [FixtureUserInfo.ユーザー情報_正常()] | [FixtureGroupInfo.所属グループ情報_リーダー()] | FixtureGroupInfo.所属グループ情報_リーダー() | 1     | _     | 0
     }
 
     def "groupInfo_update_#useCase"() {
@@ -69,7 +75,7 @@ class GroupInfoControlServiceTest extends Specification {
         where:
         useCase           | expected                                                         | updateRows
         "正常"            | new GroupInfoUpdateResult(ResponseCode.成功.code, 1)             | 1
-        "正常_データなし" | new GroupInfoUpdateResult(ResponseCode.データ不在エラー.code, 0) | 0
+        "異常_データなし" | new GroupInfoUpdateResult(ResponseCode.データ不在エラー.code, 0) | 0
     }
 
     def "groupInfo_delete_#useCase"() {
@@ -81,12 +87,14 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.delete(groupsId, userId)
 
         then:
-        1 * groupInfoRepository.delete(groupsId, userId) >> deleteRows
+        1 * groupInfoRepository.refer(groupsId, userId) >> groupInfoRefer
+        gdCnt * groupInfoRepository.delete(groupsId, userId) >> deleteRows
         result == expected
 
         where:
-        useCase           | expected                                                         | deleteRows
-        "正常"            | new GroupInfoDeleteResult(ResponseCode.成功.code, 1)             | 1
-        "正常_データなし" | new GroupInfoDeleteResult(ResponseCode.データ不在エラー.code, 0) | 0
+        useCase                               | expected                                                                       | groupInfoRefer                                 | deleteRows | gdCnt
+        "正常"                                | new GroupInfoDeleteResult(ResponseCode.成功.code, 1)                           | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1          | 1
+        "異常_データなし"                     | new GroupInfoDeleteResult(ResponseCode.データ不在エラー.code, 0)               | null                                           | 0          | 0
+        "異常_既にリーダーが存在するグループ" | new GroupInfoDeleteResult(ResponseCode.既にリーダーが存在するグループ.code, 0) | [FixtureGroupInfo.所属グループ情報_リーダー()] | 0          | 0
     }
 }

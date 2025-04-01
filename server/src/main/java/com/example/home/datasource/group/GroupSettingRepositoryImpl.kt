@@ -21,7 +21,9 @@ class GroupSettingRepositoryImpl : GroupSettingRepository {
                     groupsId?.let { condition = TbTsGroupSetting.groupsId eq it.value }
                     condition
                 }
-            }.map {
+            }
+                .orderBy(TbTsGroupSetting.groupSettingId to SortOrder.ASC)
+                .map {
                 GroupSetting(
                     it[TbTsGroupSetting.groupSettingId],
                     GroupsId(it[TbTsGroupSetting.groupsId]),

@@ -8,6 +8,8 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
     データ不在エラー("error", "DATA_NOT_FOUND_ERROR", "対象のデータが存在しません"),
     データ不正エラー("error", "DATA_ERROR", "不正データが存在します"),
     キー未設定エラー("error", "KEY_NOT_FOUND_ERROR", "キーが存在しません"),
+    存在しないユーザー("error", "USER_NOT_FOUND_ERROR", "ユーザーが存在しません"),
+    既にリーダーが存在するグループ("error", "LEADER_EXIST_GROUP_ERROR", "既にリーダーが存在するグループです"),
 
     グループ認証エラー("error", "GROUP_CERTIFICATION_ERROR", "グループの認証に失敗しました"),
 

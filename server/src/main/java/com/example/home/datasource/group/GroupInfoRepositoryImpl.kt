@@ -28,7 +28,9 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
                 TbTsGroupInfo.selectAll()
             }
 
-            query.map {
+            query
+                .orderBy(TbTsGroupInfo.groupInfoId to SortOrder.ASC)
+                .map {
                 GroupInfo(
                     GroupsId(it[TbTsGroupInfo.groupsId]),
                     UserId(it[TbTsGroupInfo.userId]),

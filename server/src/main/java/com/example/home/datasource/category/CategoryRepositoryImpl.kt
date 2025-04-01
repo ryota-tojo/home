@@ -51,6 +51,7 @@ class CategoryRepositoryImpl : CategoryRepository {
                 it[TbTsCategorys.groupsId] = groupsId.value
                 it[TbTsCategorys.categoryNo] = categoryNo.value
                 it[TbTsCategorys.categoryName] = categoryName.value
+                it[deletedFlg] = 0
             }
 
             val category = TbTsCategorys.select {

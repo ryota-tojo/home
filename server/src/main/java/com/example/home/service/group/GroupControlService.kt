@@ -18,7 +18,6 @@ import com.example.home.domain.repository.template.ShoppingEntryTemplateReposito
 import com.example.home.domain.repository.template.ShoppingInputTemplateRepository
 import com.example.home.domain.repository.template.ShoppingSearchTemplateRepository
 import com.example.home.domain.value_object.TsDefaultData
-import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.comment.Content
@@ -46,18 +45,26 @@ class GroupControlService(
     private val commentRepository: CommentRepository,
     private val communicationRepository: CommunicationRepository,
 ) {
-    fun refer(groupsId: GroupsId): GroupReferResult {
+    fun refer(groupsId: GroupsId? = null): GroupReferResult {
         val groupList = groupListRepository.refer(groupsId)
-        val groupSetting = groupSettingRepository.refer(groupsId)
-        if (groupList == null) {
+
+        if (groupList.isNullOrEmpty()) {
             return GroupReferResult(
-                String.format(ResponseCode.成功_条件付き.code, "GROUP_NOT_FOUND"),
+                ResponseCode.データ不在エラー.code,
                 null
             )
         }
+
+        val groupListAndSetting = groupList.map { group ->
+            GroupListAndSetting(
+                group,
+                groupSettingRepository.refer(group.groupsId)
+            )
+        }
+
         return GroupReferResult(
             ResponseCode.成功.code,
-            GroupListAndSetting(groupList, groupSetting)
+            groupListAndSetting
         )
     }
 
@@ -85,14 +92,15 @@ class GroupControlService(
         }
 
         val categoryDefaultSettings = mutableListOf<Pair<String, String>>()
-        for ((key, value) in TsDefaultData.CATEGORYS) {
+        for ((key, value) in TsDefaultData.CATEGORIES) {
             categoryDefaultSettings.add(Pair(key, value))
         }
-        categoryDefaultSettings.mapNotNull { (no, value) ->
+        println("-------------")
+        categoryDefaultSettings.mapNotNull { (key, value) ->
             try {
                 categoryRepository.save(
                     groupsId,
-                    CategoryNo(no.toInt()),
+                    CategoryNo(key.toInt()),
                     CategoryName(value),
                 )
             } catch (e: Exception) {
@@ -104,11 +112,11 @@ class GroupControlService(
         for ((key, value) in TsDefaultData.MEMBERS) {
             memberDefaultSettings.add(Pair(key, value))
         }
-        memberDefaultSettings.mapNotNull { (no, value) ->
+        memberDefaultSettings.mapNotNull { (key, value) ->
             try {
                 memberRepository.save(
                     groupsId,
-                    MemberNo(no.toInt()),
+                    MemberNo(key.toInt()),
                     MemberName(value),
                 )
             } catch (e: Exception) {

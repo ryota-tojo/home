@@ -51,6 +51,7 @@ class MemberRepositoryImpl : MemberRepository {
                 it[TbTsMembers.groupsId] = groupsId.value
                 it[TbTsMembers.memberNo] = memberNo.value
                 it[TbTsMembers.memberName] = memberName.value
+                it[deletedFlg] = 0
             }
 
             val member = TbTsMembers.select {
