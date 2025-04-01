@@ -4,11 +4,7 @@ import com.example.home.data.group.FixtureGroupDelete
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.group.FixtureGroupListAndSetting
 import com.example.home.data.group.FixtureGroupSetting
-import com.example.home.domain.entity.group.result.GroupDeleteResult
-import com.example.home.domain.entity.group.result.GroupListUpdateResult
-import com.example.home.domain.entity.group.result.GroupReferResult
-import com.example.home.domain.entity.group.result.GroupSaveResult
-import com.example.home.domain.entity.group.result.GroupSettingUpdateResult
+import com.example.home.domain.entity.group.result.*
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.repository.category.CategoryRepository
@@ -67,13 +63,13 @@ class GroupControlServiceTest extends Specification {
 
         then:
         1 * groupListRepository.refer(_) >> groupList
-        1 * groupSettingRepository.refer(_) >> groupSetting
+        gsCnt * groupSettingRepository.refer(_) >> groupSetting
         result == expected
 
         where:
-        useCase           | expected                                                                                               | groupList                                  | groupSetting
-        "正常"            | new GroupReferResult(ResponseCode.成功.code, FixtureGroupListAndSetting.所属グループ一覧と設定_正常()) | [FixtureGroupList.所属グループ一覧_正常()] | FixtureGroupSetting.所属グループ設定_正常()
-        "正常_データなし" | new GroupReferResult(sprintf(ResponseCode.成功_条件付き.code, ["GROUP_NOT_FOUND"]), null)              | null                                       | null
+        useCase           | expected                                                                                                 | groupList                                  | groupSetting                                | gsCnt
+        "正常"            | new GroupReferResult(ResponseCode.成功.code, [FixtureGroupListAndSetting.所属グループ一覧と設定_正常()]) | [FixtureGroupList.所属グループ一覧_正常()] | FixtureGroupSetting.所属グループ設定_正常() | 1
+        "正常_データなし" | new GroupReferResult(ResponseCode.データ不在エラー.code, null)                                           | null                                       | null                                        | 0
     }
 
     def "groupList_save_#useCase"() {

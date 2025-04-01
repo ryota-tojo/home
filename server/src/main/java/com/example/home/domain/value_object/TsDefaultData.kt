@@ -16,7 +16,7 @@ object TsDefaultData {
         "Setting1" to "0",
         "Setting2" to "1"
     )
-    val CATEGORYS = mapOf(
+    val CATEGORIES = mapOf(
         "1" to "分類１",
         "2" to "分類２",
         "3" to "分類３"

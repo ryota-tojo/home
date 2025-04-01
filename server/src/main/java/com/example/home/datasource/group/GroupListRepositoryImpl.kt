@@ -21,7 +21,9 @@ class GroupListRepositoryImpl : GroupListRepository {
                     groupsId?.let { condition = TbTsGroupList.groupsId eq it.value }
                     condition
                 }
-            }.map {
+            }
+                .orderBy(TbTsGroupList.groupListId to SortOrder.ASC)
+                .map {
                 GroupList(
                     it[TbTsGroupList.groupListId],
                     GroupsId(it[TbTsGroupList.groupsId]),

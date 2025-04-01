@@ -373,14 +373,16 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         shoppingDateYYYY: YYYY,
         shoppingDateMM: MM
     ): Int {
-        val updateRows = TbTsShopping.update({
-            (TbTsShopping.groupsId eq groupsId.value) and
-                    (TbTsShopping.shoppingDate.year() eq shoppingDateYYYY.value) and
-                    (TbTsShopping.shoppingDate.month() eq shoppingDateMM.value)
-        }) {
-            it[fixedFlg] = 1
+        return transaction {
+            val updateRows = TbTsShopping.update({
+                (TbTsShopping.groupsId eq groupsId.value) and
+                        (TbTsShopping.shoppingDate.year() eq shoppingDateYYYY.value) and
+                        (TbTsShopping.shoppingDate.month() eq shoppingDateMM.value)
+            }) {
+                it[fixedFlg] = 1
+            }
+            return@transaction updateRows
         }
-        return updateRows
     }
 
     override fun unFixed(
@@ -388,14 +390,16 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         shoppingDateYYYY: YYYY,
         shoppingDateMM: MM
     ): Int {
-        val updateRows = TbTsShopping.update({
-            (TbTsShopping.groupsId eq groupsId.value) and
-                    (TbTsShopping.shoppingDate.year() eq shoppingDateYYYY.value) and
-                    (TbTsShopping.shoppingDate.month() eq shoppingDateMM.value)
-        }) {
-            it[fixedFlg] = 0
+        return transaction {
+            val updateRows = TbTsShopping.update({
+                (TbTsShopping.groupsId eq groupsId.value) and
+                        (TbTsShopping.shoppingDate.year() eq shoppingDateYYYY.value) and
+                        (TbTsShopping.shoppingDate.month() eq shoppingDateMM.value)
+            }) {
+                it[fixedFlg] = 0
+            }
+            return@transaction updateRows
         }
-        return updateRows
     }
 
     override fun delete(
@@ -404,16 +408,19 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         shoppingDateYYYY: YYYY?,
         shoppingDateMM: MM?,
     ): Int {
-        val deleteRows = TbTsShopping.deleteWhere {
-            Op.build {
-                var condition: Op<Boolean> = Op.TRUE
-                shoppingId?.let { condition = condition and (id eq it.value) }
-                groupsId?.let { condition = condition and (TbTsShopping.groupsId eq it.value) }
-                shoppingDateYYYY?.let { condition = condition and (shoppingDate.year() eq it.value) }
-                shoppingDateMM?.let { condition = condition and (shoppingDate.month() eq it.value) }
-                condition
+        return transaction {
+            val deleteRows = TbTsShopping.deleteWhere {
+                Op.build {
+                    var condition: Op<Boolean> = Op.TRUE
+                    shoppingId?.let { condition = condition and (id eq it.value) }
+                    groupsId?.let { condition = condition and (TbTsShopping.groupsId eq it.value) }
+                    shoppingDateYYYY?.let { condition = condition and (shoppingDate.year() eq it.value) }
+                    shoppingDateMM?.let { condition = condition and (shoppingDate.month() eq it.value) }
+                    condition
+                }
             }
+            return@transaction deleteRows
         }
-        return deleteRows
+
     }
 }
