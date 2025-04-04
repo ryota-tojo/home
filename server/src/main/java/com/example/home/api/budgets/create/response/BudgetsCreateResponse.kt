@@ -1,0 +1,37 @@
+package com.example.home.api.budgets.create.response
+
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class BudgetsCreateResponse(
+    @JsonProperty("status")
+    val status: String,
+
+    @JsonProperty("message")
+    val message: String,
+
+    @JsonProperty("data")
+    val data: DataObject
+
+) {
+    data class DataObject(
+        @JsonProperty("budgets")
+        val group: BudgetsObject? = null
+    )
+
+    data class BudgetsObject(
+        @JsonProperty("groups_id")
+        val groupsId: String? = null,
+
+        @JsonProperty("yyyy")
+        val yyyy: String? = null,
+
+        @JsonProperty("mm")
+        val mm: String? = null,
+
+        @JsonProperty("category_id")
+        val categoryId: String? = null,
+
+        @JsonProperty("amount")
+        val amount: String? = null,
+    )
+}

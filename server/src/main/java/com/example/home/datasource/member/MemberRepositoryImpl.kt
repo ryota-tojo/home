@@ -79,8 +79,6 @@ class MemberRepositoryImpl : MemberRepository {
     ): Int {
         return transaction {
             var condition: Op<Boolean> = TbTsMembers.memberId eq memberId.value
-            memberNo?.let { condition = condition and (TbTsMembers.memberNo eq it.value) }
-            memberName?.let { condition = condition and (TbTsMembers.memberName eq it.value) }
             val updateRows = TbTsMembers.update({
                 condition
             }) {
