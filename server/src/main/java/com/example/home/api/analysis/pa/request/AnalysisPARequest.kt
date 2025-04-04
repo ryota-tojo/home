@@ -1,0 +1,21 @@
+package com.example.home.api.analysis.pa.request
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
+
+data class AnalysisPARequest(
+    @JsonProperty("groups_id")
+    @field:NotNull(message = "キー「groups_id」が存在しません")
+    @field:NotBlank(message = "キー「groups_id」が未入力です")
+    @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
+    val groupsId: String,
+
+    @JsonProperty("yyyy")
+    @field:NotNull(message = "キー「yyyy」が存在しません")
+    @field:NotBlank(message = "キー「yyyy」が未入力です")
+    @field:Size(max = 4, message = "キー「yyyy」は4桁以内で入力してください")
+    val yyyy: Int,
+
+    )

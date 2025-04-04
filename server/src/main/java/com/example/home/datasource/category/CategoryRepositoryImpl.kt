@@ -79,8 +79,6 @@ class CategoryRepositoryImpl : CategoryRepository {
     ): Int {
         return transaction {
             var condition: Op<Boolean> = TbTsCategorys.categoryId eq categoryId.value
-            categoryNo?.let { condition = condition and (TbTsCategorys.categoryNo eq it.value) }
-            categoryName?.let { condition = condition and (TbTsCategorys.categoryName eq it.value) }
             val updateRows = TbTsCategorys.update({
                 condition
             }) {

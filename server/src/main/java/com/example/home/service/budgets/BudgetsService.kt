@@ -33,7 +33,7 @@ class BudgetsService(
 
     fun save(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryId: CategoryId, amount: Amount): BudgetsSaveResult {
         val budgetsList = budgetsRepository.refer(groupsId, yyyy, mm, categoryId)
-        if (budgetsList != null) {
+        if (!budgetsList.isNullOrEmpty()) {
             return BudgetsSaveResult(
                 ResponseCode.重複エラー.code,
                 null

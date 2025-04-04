@@ -1,0 +1,91 @@
+package com.example.home.api.category.update
+
+
+import com.example.home.api.ErrorResponse
+import com.example.home.api.category.update.request.CategoryUpdateRequest
+import com.example.home.api.category.update.response.CategoryUpdateResponse
+import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.value_object.category.CategoryId
+import com.example.home.domain.value_object.category.CategoryName
+import com.example.home.domain.value_object.category.CategoryNo
+import com.example.home.service.category.CategoryService
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.Valid
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+class CategoryUpdateApi(
+    private val categoryService: CategoryService
+
+) {
+    companion object {
+        const val API_PATH = "api/category/update"
+    }
+
+    @PostMapping(value = [API_PATH])
+    fun update(
+        @RequestBody @Valid request: CategoryUpdateRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<Any> {
+
+        // リクエスト取得
+        val requestCategoryId = CategoryId(request.categoryId)
+        val requestCategoryNo = if (request.categoryNo == 0) null else request.categoryNo?.let { CategoryNo(it) }
+        val requestCategoryName =
+            if (request.categoryName == "") null else request.categoryName?.let { CategoryName(it) }
+
+        val serviceExecResult = categoryService.update(
+            requestCategoryId, requestCategoryNo, requestCategoryName
+        )
+
+        // エラー時のレスポンス
+        if (serviceExecResult.result != ResponseCode.成功.code) {
+
+            val status = "error"
+            val message = "カテゴリー更新失敗"
+            var parameter = "-"
+            var errorMessage = "想定外のエラー"
+
+            if (serviceExecResult.result == ResponseCode.バリデーションエラー.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.バリデーションエラー.message
+            }
+            if (serviceExecResult.result == ResponseCode.データ不在エラー.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.データ不在エラー.message
+            }
+
+            val errorResponse =
+                ErrorResponse(
+                    status,
+                    message,
+                    ErrorResponse.DataObject(
+                        parameter,
+                        errorMessage,
+                    )
+                )
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(errorResponse)
+        }
+
+        // 成功時のレスポンス
+        val status = "success"
+        val message = ResponseCode.成功.message
+        val dataObject = serviceExecResult.updateRows
+
+        val categoryUpdateResponse =
+            CategoryUpdateResponse(
+                status,
+                message,
+                CategoryUpdateResponse.DataObject(dataObject!!)
+            )
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(categoryUpdateResponse)
+    }
+}
