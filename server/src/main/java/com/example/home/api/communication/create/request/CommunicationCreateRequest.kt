@@ -3,6 +3,7 @@ package com.example.home.api.communication.create.request
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 data class CommunicationCreateRequest(
@@ -15,6 +16,7 @@ data class CommunicationCreateRequest(
     @JsonProperty("date")
     @field:NotNull(message = "「date」は必須項目です")
     @field:NotBlank(message = "「date」を入力してください")
+    @field:Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "「date」の形式は「yyyy-MM-dd」で入力してください")
     val date: String,
 
     @JsonProperty("from")
@@ -43,6 +45,7 @@ data class CommunicationCreateRequest(
 
     @JsonProperty("rtn_date")
     @field:NotNull(message = "「rtn_date」は必須項目です")
+    @field:Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "「date」の形式は「yyyy-MM-dd」で入力してください")
     val rtnDate: String,
 
     @JsonProperty("rtn_item")

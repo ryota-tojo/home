@@ -3,7 +3,7 @@ package com.example.home.domain.value_object.etc
 data class YYYY(val value: Int) {
     companion object {
         val MIN = 1901
-        val MAX = 2100
+        val MAX = 2999
     }
 
     init {

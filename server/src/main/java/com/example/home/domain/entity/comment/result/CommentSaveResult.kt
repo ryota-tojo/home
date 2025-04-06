@@ -4,5 +4,5 @@ import com.example.home.domain.entity.comment.Comment
 
 data class CommentSaveResult(
     val result: String,
-    val category: Comment? = null
+    val comment: Comment? = null
 )

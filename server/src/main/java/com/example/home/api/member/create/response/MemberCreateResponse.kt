@@ -15,10 +15,10 @@ data class MemberCreateResponse(
 ) {
     data class DataObject(
         @JsonProperty("member")
-        val member: CategoryObject? = null
+        val member: MemberObject? = null
     )
 
-    data class CategoryObject(
+    data class MemberObject(
         @JsonProperty("member_id")
         val memberId: Int? = null,
 

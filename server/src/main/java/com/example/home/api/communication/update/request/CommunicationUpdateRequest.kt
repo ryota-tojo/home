@@ -1,17 +1,17 @@
 package com.example.home.api.communication.update.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 data class CommunicationUpdateRequest(
     @JsonProperty("gift_id")
     @field:NotNull(message = "「gift_id」は必須項目です")
-    @field:NotBlank(message = "「gift_id」を入力してください")
     val giftId: Int,
 
     @JsonProperty("date")
+    @field:Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "「date」の形式は「yyyy-MM-dd」で入力してください")
     val date: String?,
 
     @JsonProperty("from")
@@ -33,6 +33,7 @@ data class CommunicationUpdateRequest(
     val remarks: String?,
 
     @JsonProperty("rtn_date")
+    @field:Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "「date」の形式は「yyyy-MM-dd」で入力してください")
     val rtnDate: String?,
 
     @JsonProperty("rtn_item")

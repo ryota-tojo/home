@@ -4,5 +4,5 @@ import com.example.home.domain.entity.communication.Communication
 
 data class CommunicationSaveResult(
     val result: String,
-    val category: Communication? = null
+    val communication: Communication? = null
 )
