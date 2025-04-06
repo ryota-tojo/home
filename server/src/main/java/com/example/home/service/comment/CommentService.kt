@@ -63,8 +63,8 @@ class CommentService(
 
     fun delete(
         groupsId: GroupsId,
-        yyyy: YYYY,
-        mm: MM
+        yyyy: YYYY? = null,
+        mm: MM? = null,
     ): CommentDeleteResult {
         val deleteRows = commentRepository.delete(groupsId, yyyy, mm)
         if (deleteRows == 0) {

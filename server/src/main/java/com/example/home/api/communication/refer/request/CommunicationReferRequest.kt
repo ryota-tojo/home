@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class CommunicationReferRequest(
     @JsonProperty("gift_id")
-    val groupsId: Int? = null,
+    val giftId: Int? = null,
 
     )

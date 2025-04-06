@@ -15,10 +15,10 @@ data class MemberReferResponse(
 ) {
     data class DataObject(
         @JsonProperty("member_list")
-        val memberList: List<CategoryObject>? = null
+        val memberList: List<MemberObject>? = null
     )
 
-    data class CategoryObject(
+    data class MemberObject(
         @JsonProperty("member_id")
         val memberId: Int? = null,
 
@@ -30,5 +30,9 @@ data class MemberReferResponse(
 
         @JsonProperty("member_name")
         val memberName: String? = null,
-    )
+
+        @JsonProperty("delete_flag")
+        val deleteFlag: Int? = null,
+
+        )
 }

@@ -20,7 +20,7 @@ data class CommentReferResponse(
 
     data class CommentObject(
         @JsonProperty("comment_id")
-        val categoryId: Int? = null,
+        val commentId: Int? = null,
 
         @JsonProperty("groups_id")
         val groupsId: String? = null,

@@ -14,11 +14,9 @@ data class CommentDeleteRequest(
 
     @JsonProperty("yyyy")
     @field:NotNull(message = "キー「yyyy」が存在しません")
-    @field:Size(max = 4, message = "キー「yyyy」は4桁以内で入力してください")
-    val yyyy: Int,
+    val yyyy: Int? = null,
 
     @JsonProperty("mm")
     @field:NotNull(message = "キー「mm」が存在しません")
-    @field:Size(max = 2, message = "キー「mm」は2桁以内で入力してください")
-    val mm: Int,
+    val mm: Int? = null,
 )

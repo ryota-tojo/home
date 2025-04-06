@@ -21,27 +21,22 @@ class CommentRepositoryImpl : CommentRepository {
         mm: MM?
     ): List<Comment> {
         return transaction {
-            if (groupsId == null) {
-                TbTsComment.selectAll()
-                    .map {
-                        Comment(
-                            it[TbTsComment.commentId],
-                            GroupsId(it[TbTsComment.groupsId]),
-                            YYYY(it[TbTsComment.yyyy]),
-                            MM(it[TbTsComment.mm]),
-                            Content(it[TbTsComment.content]),
-                            FixedFlg(it[TbTsComment.fixedFlg])
-                        )
-                    }
-            } else {
-                TbTsComment.select {
-                    Op.build {
-                        var condition: Op<Boolean> = TbTsComment.groupsId eq groupsId.value
-                        yyyy?.let { condition = condition and (TbTsComment.yyyy eq it.value) }
-                        mm?.let { condition = condition and (TbTsComment.mm eq it.value) }
-                        condition
-                    }
-                }.map {
+
+            var condition: Op<Boolean> = Op.TRUE
+            if (groupsId != null) {
+                condition = condition and (TbTsComment.groupsId eq groupsId.value)
+            }
+            if (yyyy != null) {
+                condition = condition and (TbTsComment.yyyy eq yyyy.value)
+            }
+            if (mm != null) {
+                condition = condition and (TbTsComment.mm eq mm.value)
+            }
+
+            TbTsComment.select {
+                condition
+            }.orderBy(TbTsComment.yyyy to SortOrder.ASC, TbTsComment.mm to SortOrder.ASC)
+                .map {
                     Comment(
                         it[TbTsComment.commentId],
                         GroupsId(it[TbTsComment.groupsId]),
@@ -51,7 +46,38 @@ class CommentRepositoryImpl : CommentRepository {
                         FixedFlg(it[TbTsComment.fixedFlg])
                     )
                 }
-            }
+
+//            if (groupsId == null) {
+//                TbTsComment.selectAll()
+//                    .map {
+//                        Comment(
+//                            it[TbTsComment.commentId],
+//                            GroupsId(it[TbTsComment.groupsId]),
+//                            YYYY(it[TbTsComment.yyyy]),
+//                            MM(it[TbTsComment.mm]),
+//                            Content(it[TbTsComment.content]),
+//                            FixedFlg(it[TbTsComment.fixedFlg])
+//                        )
+//                    }
+//            } else {
+//                TbTsComment.select {
+//                    Op.build {
+//                        var condition: Op<Boolean> = TbTsComment.groupsId eq groupsId.value
+//                        yyyy?.let { condition = condition and (TbTsComment.yyyy eq it.value) }
+//                        mm?.let { condition = condition and (TbTsComment.mm eq it.value) }
+//                        condition
+//                    }
+//                }.map {
+//                    Comment(
+//                        it[TbTsComment.commentId],
+//                        GroupsId(it[TbTsComment.groupsId]),
+//                        YYYY(it[TbTsComment.yyyy]),
+//                        MM(it[TbTsComment.mm]),
+//                        Content(it[TbTsComment.content]),
+//                        FixedFlg(it[TbTsComment.fixedFlg])
+//                    )
+//                }
+//            }
         }
     }
 

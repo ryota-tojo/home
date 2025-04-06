@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class CommunicationDeleteRequest(
     @JsonProperty("groups_id")
-    val groupsId: Int? = null,
+    val groupsId: String? = null,
 
     @JsonProperty("gift_id")
     val giftId: Int? = null,

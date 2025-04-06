@@ -4,5 +4,5 @@ import com.example.home.domain.entity.communication.Communication
 
 data class CommunicationReferResult(
     val result: String,
-    val category: List<Communication>? = null
+    val communication: List<Communication>? = null
 )
