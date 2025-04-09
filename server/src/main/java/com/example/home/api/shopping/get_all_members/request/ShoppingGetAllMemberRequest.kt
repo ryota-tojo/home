@@ -1,18 +1,14 @@
-package com.example.home.api.shopping.delete.request
+package com.example.home.api.shopping.get_all_categories.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Size
 
-data class ShoppingDeleteRequest(
-
-    @JsonProperty("shopping_id")
-    val shoppingId: Int? = null,
-
+data class ShoppingGetAllMemberRequest(
     @JsonProperty("groups_id")
     @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
-    val groupsId: String? = null,
+    val groupsId: String,
 
     @JsonProperty("yyyy")
     @field:Min(value = 1000, message = "キー「yyyy」は4桁の年を入力してください")

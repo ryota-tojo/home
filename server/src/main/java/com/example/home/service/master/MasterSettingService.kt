@@ -6,8 +6,8 @@ import com.example.home.domain.entity.master.result.MasterSettingSaveResult
 import com.example.home.domain.entity.master.result.MasterSettingUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.master.MasterSettingRepository
-import com.example.home.domain.value_object.master.MasterSettingRemarks
 import com.example.home.domain.value_object.master.MasterSettingKey
+import com.example.home.domain.value_object.master.MasterSettingRemarks
 import com.example.home.domain.value_object.master.MasterSettingValue
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
@@ -40,7 +40,7 @@ class MasterSettingService(
         }
 
         val masterSettingList = masterSettingRepository.refer(masterSettingKey)
-        if (masterSettingList != null) {
+        if (masterSettingList.isNotEmpty()) {
             return MasterSettingSaveResult(
                 ResponseCode.重複エラー.code,
                 null

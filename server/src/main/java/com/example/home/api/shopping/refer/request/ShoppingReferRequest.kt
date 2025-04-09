@@ -34,13 +34,14 @@ data class ShoppingReferRequest(
     @JsonProperty("settlement")
     val settlement: Int? = null,
 
-    @JsonProperty("amount")
-    val amount: Int? = null,
+    @JsonProperty("min_amount")
+    val minAmount: Int? = null,
+
+    @JsonProperty("max_amount")
+    val maxAmount: Int? = null,
 
     @JsonProperty("remarks")
     @field:Size(max = 1024, message = "キー「remarks」は1024桁以内で入力してください")
     val remarks: String? = null,
 
-    @JsonProperty("fixed")
-    val fixed: Int? = null
 )

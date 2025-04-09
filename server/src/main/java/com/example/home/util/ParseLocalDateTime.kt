@@ -14,19 +14,26 @@ object ParseLocalDateTime {
         }
 
         return try {
-            // Instant.parse() のために "Z" (UTC) が必要
-            val fixedDateTime = if (!localDateTimeString.endsWith("Z")) {
-                localDateTimeString + "Z"
-            } else {
-                localDateTimeString
+            // "Z" があって時間がない場合 → 時間補完
+            val fixedDateTime = when {
+                localDateTimeString.matches(Regex("""\d{4}-\d{2}-\d{2}Z""")) -> {
+                    localDateTimeString.replace("Z", "T00:00:00Z")
+                }
+
+                !localDateTimeString.endsWith("Z") -> {
+                    localDateTimeString + "Z"
+                }
+
+                else -> localDateTimeString
             }
 
-            val instant = Instant.parse(fixedDateTime) // 例外が出る可能性がある
+            val instant = Instant.parse(fixedDateTime)
             val formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.of("Asia/Tokyo"))
             formatter.format(instant)
         } catch (e: DateTimeParseException) {
             println("パースエラー: ${e.message}")
-            "" // エラー時は空文字を返す
+            ""
         }
     }
+
 }

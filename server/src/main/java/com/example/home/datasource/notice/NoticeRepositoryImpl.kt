@@ -17,13 +17,13 @@ class NoticeRepositoryImpl : NoticeRepository {
 
     override fun refer(noticeId: NoticeId?): List<Notice> {
         return transaction {
-            TbTsNotice.select {
-                Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
-                    noticeId?.let { condition = TbTsNotice.noticeId eq it.value }
-                    condition
-                }
-            }.map {
+            val query = if (noticeId != null) {
+                TbTsNotice.select { TbTsNotice.noticeId eq noticeId.value }
+            } else {
+                TbTsNotice.selectAll()
+            }
+
+            query.orderBy(TbTsNotice.noticeId to SortOrder.DESC).map {
                 Notice(
                     NoticeId(it[TbTsNotice.noticeId]),
                     NoticeTitle(it[TbTsNotice.title]),
@@ -48,7 +48,7 @@ class NoticeRepositoryImpl : NoticeRepository {
                 throw IllegalStateException("データの挿入に失敗しました")
             }
             val noticeList = refer(NoticeId(id))
-            noticeList.single()
+            noticeList.first()
         }
     }
 

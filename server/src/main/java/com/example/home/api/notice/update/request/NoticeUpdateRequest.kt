@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size
 data class NoticeUpdateRequest(
     @JsonProperty("notice_id")
     @field:NotNull(message = "キー「notice_id」が存在しません")
-    @field:NotBlank(message = "キー「notice_id」が未入力です")
     val noticeId: Int,
 
     @JsonProperty("title")
