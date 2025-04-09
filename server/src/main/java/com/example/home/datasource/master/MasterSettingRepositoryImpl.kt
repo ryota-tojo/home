@@ -26,7 +26,7 @@ class MasterSettingRepositoryImpl : MasterSettingRepository {
                 MasterSetting(
                     MasterSettingKey(it[TbMsSetting.settingKey]),
                     MasterSettingValue(it[TbMsSetting.settingValue]),
-                    MasterSettingRemarks(it[TbMsSetting.settingValue])
+                    MasterSettingRemarks(it[TbMsSetting.settingRemarks])
 
                 )
             }

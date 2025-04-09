@@ -8,37 +8,32 @@ data class ShoppingDuplicationCheckRequest(
 
     @JsonProperty("groups_id")
     @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
-    val groupsId: String? = null,
-
-    @JsonProperty("user_id")
-    val userId: Int? = null,
+    val groupsId: String,
 
     @JsonProperty("shopping_date")
     @field:Pattern(regexp = """\d{4}-\d{2}-\d{2}""", message = "キー「shopping_date」はYYYY-MM-DD形式で入力してください")
-    val shoppingDate: String? = null,
+    val shoppingDate: String,
 
     @JsonProperty("member_id")
-    val memberId: Int? = null,
+    val memberId: Int,
 
     @JsonProperty("category_id")
-    val categoryId: Int? = null,
+    val categoryId: Int,
 
     @JsonProperty("type")
-    val type: Int? = null,
+    val type: Int,
 
     @JsonProperty("payment")
-    val payment: Int? = null,
+    val payment: Int,
 
     @JsonProperty("settlement")
-    val settlement: Int? = null,
+    val settlement: Int,
 
     @JsonProperty("amount")
-    val amount: Int? = null,
+    val amount: Int,
 
     @JsonProperty("remarks")
     @field:Size(max = 1024, message = "キー「remarks」は1024桁以内で入力してください")
-    val remarks: String? = null,
+    val remarks: String,
 
-    @JsonProperty("fixed")
-    val fixed: Int? = null
 )

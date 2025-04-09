@@ -14,14 +14,10 @@ data class FixedRequest(
 
     @JsonProperty("yyyy")
     @field:NotNull(message = "キー「yyyy」が存在しません")
-    @field:NotBlank(message = "キー「yyyy」が未入力です")
-    @field:Size(max = 4, message = "キー「yyyy」は4桁以内で入力してください")
     val yyyy: Int,
 
     @JsonProperty("mm")
     @field:NotNull(message = "キー「mm」が存在しません")
-    @field:NotBlank(message = "キー「mm」が未入力です")
-    @field:Size(max = 2, message = "キー「mm」は2桁以内で入力してください")
     val mm: Int,
 
     )

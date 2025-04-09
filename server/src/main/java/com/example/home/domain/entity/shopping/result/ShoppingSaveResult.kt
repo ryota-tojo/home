@@ -4,5 +4,5 @@ import com.example.home.domain.entity.shopping.Shopping
 
 data class ShoppingSaveResult(
     val result: String,
-    val noticeList: Shopping? = null
+    val shopping: Shopping? = null
 )

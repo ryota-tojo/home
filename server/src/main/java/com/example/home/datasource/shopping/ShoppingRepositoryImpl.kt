@@ -44,7 +44,6 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                 TbTsShopping
                     .selectAll()
                     .orderBy(TbTsShopping.id to SortOrder.DESC)
-                    .limit(3000)
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -67,7 +66,6 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                     condition
                 }
                     .orderBy(TbTsShopping.id to SortOrder.DESC)
-                    .limit(3000)
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -108,7 +106,6 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                     }
                 }
                     .orderBy(TbTsShopping.id to SortOrder.DESC)
-                    .limit(3000)
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -311,7 +308,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                     FixedFlg(it[TbTsShopping.fixedFlg])
                 )
             }
-            return@transaction shoppingList.size > 1
+            return@transaction shoppingList.size > 0
         }
     }
 
