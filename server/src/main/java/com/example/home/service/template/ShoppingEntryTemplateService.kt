@@ -180,7 +180,7 @@ class ShoppingEntryTemplateService(
         groupsId: GroupsId,
         templateId: TemplateId
     ): ShoppingEntryTemplateUpdateResult {
-        val updateRows = shoppingEntryTemplateRepository.usage(groupsId, templateId)
+        val updateRows = shoppingEntryTemplateRepository.unUsage(groupsId, templateId)
         return ShoppingEntryTemplateUpdateResult(
             ResponseCode.成功.code,
             updateRows

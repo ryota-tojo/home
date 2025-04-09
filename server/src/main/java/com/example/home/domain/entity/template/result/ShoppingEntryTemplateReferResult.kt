@@ -4,5 +4,5 @@ import com.example.home.domain.entity.template.ShoppingEntryTemplate
 
 data class ShoppingEntryTemplateReferResult(
     val result: String,
-    val shoppingInputTemplateList: List<ShoppingEntryTemplate>? = null
+    val shoppingEntryTemplateList: List<ShoppingEntryTemplate>? = null
 )

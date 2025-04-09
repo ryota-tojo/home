@@ -71,6 +71,27 @@ class ShoppingUpdateApi(
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 
+            if (serviceExecResult.result == ResponseCode.存在しないメンバー.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.存在しないメンバー.message
+            }
+            if (serviceExecResult.result == ResponseCode.存在しないカテゴリー.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.存在しないカテゴリー.message
+            }
+            if (serviceExecResult.result == ResponseCode.存在しない購入種別.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.存在しない購入種別.message
+            }
+            if (serviceExecResult.result == ResponseCode.存在しない支払い方法.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.存在しない支払い方法.message
+            }
+            if (serviceExecResult.result == ResponseCode.存在しない精算状況.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.存在しない精算状況.message
+            }
+
             val errorResponse =
                 ErrorResponse(
                     status,

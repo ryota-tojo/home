@@ -6,10 +6,7 @@ import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.member.FixtureMember
 import com.example.home.data.shopping.FixtureShopping
 import com.example.home.domain.entity.template.ShoppingEntryTemplate
-import com.example.home.domain.value_object.template.TemplateId
-import com.example.home.domain.value_object.template.TemplateName
-import com.example.home.domain.value_object.template.TemplateUseFlg
-import com.example.home.domain.value_object.template.TmpId
+import com.example.home.domain.value_object.template.*
 
 class FixtureShoppingEntryTemplate {
     static ID_正常() {
@@ -36,6 +33,10 @@ class FixtureShoppingEntryTemplate {
         new TemplateUseFlg(1)
     }
 
+    static 削除フラグ_未削除() {
+        new TemplateDeleteFlg(0)
+    }
+
 
     static 購入データ入力テンプレート_正常() {
         return new ShoppingEntryTemplate(
@@ -50,7 +51,8 @@ class FixtureShoppingEntryTemplate {
                 FixtureShopping.精算状態_未精算(),
                 FixtureEtc.金額_正常(),
                 FixtureShopping.備考_正常(),
-                使用フラグ_使用()
+                使用フラグ_使用(),
+                削除フラグ_未削除()
         )
     }
 }
