@@ -8,10 +8,7 @@ import com.example.home.domain.value_object.shopping.ShoppingPayment
 import com.example.home.domain.value_object.shopping.ShoppingRemarks
 import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
-import com.example.home.domain.value_object.template.TemplateId
-import com.example.home.domain.value_object.template.TemplateName
-import com.example.home.domain.value_object.template.TemplateUseFlg
-import com.example.home.domain.value_object.template.TmpId
+import com.example.home.domain.value_object.template.*
 
 data class ShoppingSearchTemplate(
     val id: TmpId,
@@ -26,7 +23,8 @@ data class ShoppingSearchTemplate(
     val shoppingMinAmount: Amount,
     val shoppingMaxAmount: Amount,
     val shoppingRemarks: ShoppingRemarks,
-    val templateUseFlg: TemplateUseFlg
+    val templateUseFlg: TemplateUseFlg,
+    val templateDeletedFlg: TemplateDeleteFlg,
 )
 
 

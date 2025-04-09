@@ -41,9 +41,13 @@ data class ShoppingSearchCreateRequest(
     @field:NotNull(message = "キー「settlement」は必須です")
     val settlement: Int,
 
-    @JsonProperty("amount")
+    @JsonProperty("min_amount")
     @field:NotNull(message = "キー「amount」は必須です")
-    val amount: Int,
+    val minAmount: Int,
+
+    @JsonProperty("max_amount")
+    @field:NotNull(message = "キー「amount」は必須です")
+    val maxAmount: Int,
 
     @JsonProperty("remarks")
     @field:NotBlank(message = "キー「remarks」は必須です")

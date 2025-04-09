@@ -15,7 +15,7 @@ data class ShoppingEntryUpdateResponse(
 ) {
     data class DataObject(
         @JsonProperty("update_rows")
-        val updateRows: Int
+        val updateRows: Int? = null,
 
     )
 }

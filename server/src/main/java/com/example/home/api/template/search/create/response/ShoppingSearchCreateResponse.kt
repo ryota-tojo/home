@@ -46,8 +46,11 @@ data class ShoppingSearchCreateResponse(
         @JsonProperty("settlement")
         val settlement: Int? = null,
 
-        @JsonProperty("amount")
-        val amount: Int? = null,
+        @JsonProperty("min_amount")
+        val minAmount: Int? = null,
+
+        @JsonProperty("max_amount")
+        val maxAmount: Int? = null,
 
         @JsonProperty("remarks")
         val remarks: String? = null,

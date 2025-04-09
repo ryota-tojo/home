@@ -183,7 +183,7 @@ class ShoppingSearchTemplateService(
         groupsId: GroupsId,
         templateId: TemplateId
     ): ShoppingSearchTemplateUpdateResult {
-        val updateRows = shoppingSearchTemplateRepository.usage(groupsId, templateId)
+        val updateRows = shoppingSearchTemplateRepository.unUsage(groupsId, templateId)
         return ShoppingSearchTemplateUpdateResult(
             ResponseCode.成功.code,
             updateRows

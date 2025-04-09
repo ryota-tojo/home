@@ -15,7 +15,7 @@ data class ShoppingSearchDeleteResponse(
 ) {
     data class DataObject(
         @JsonProperty("delete_rows")
-        val deleteRows: Int
+        val deleteRows: Int? = null
 
     )
 }

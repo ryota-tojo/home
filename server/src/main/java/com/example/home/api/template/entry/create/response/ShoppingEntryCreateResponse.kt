@@ -56,7 +56,7 @@ data class ShoppingEntryCreateResponse(
         val use: Int? = null,
 
         @JsonProperty("deleted")
-        val deleted: Int? = null
+        val deleted: Int? = null,
     )
 
 }

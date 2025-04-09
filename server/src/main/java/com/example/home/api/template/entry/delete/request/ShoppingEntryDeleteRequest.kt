@@ -13,7 +13,7 @@ data class ShoppingEntryDeleteRequest(
     @JsonProperty("template_id")
     @field:NotBlank(message = "キー「template_id」は必須です")
     @field:Size(max = 64, message = "キー「template_id」は64桁以内で入力してください")
-    val templateId: String,
+    val templateId: String? = null,
 
     )
 

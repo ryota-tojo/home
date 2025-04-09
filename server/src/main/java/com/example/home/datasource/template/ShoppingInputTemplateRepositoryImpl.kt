@@ -10,10 +10,7 @@ import com.example.home.domain.value_object.shopping.ShoppingPayment
 import com.example.home.domain.value_object.shopping.ShoppingRemarks
 import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
-import com.example.home.domain.value_object.template.TemplateId
-import com.example.home.domain.value_object.template.TemplateName
-import com.example.home.domain.value_object.template.TemplateUseFlg
-import com.example.home.domain.value_object.template.TmpId
+import com.example.home.domain.value_object.template.*
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsTmpShoppingInput
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -48,7 +45,8 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
                         ShoppingSettlement(it[TbTsTmpShoppingInput.tmpiSettlement]),
                         Amount(it[TbTsTmpShoppingInput.tmpiAmount]),
                         ShoppingRemarks(it[TbTsTmpShoppingInput.tmpiRemarks]),
-                        TemplateUseFlg(it[TbTsTmpShoppingInput.tmpiUseFlg])
+                        TemplateUseFlg(it[TbTsTmpShoppingInput.tmpiUseFlg]),
+                        TemplateDeleteFlg(it[TbTsTmpShoppingInput.deletedFlg])
                     )
                 }
         }
@@ -80,6 +78,7 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
                 it[tmpiAmount] = shoppingAmount.value
                 it[tmpiRemarks] = shoppingRemarks.value
                 it[tmpiUseFlg] = templateUseFlg.value
+                it[deletedFlg] = 0
             }
 
             val shoppingInputTemplate = TbTsTmpShoppingInput.select {
@@ -109,7 +108,8 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
                     ShoppingSettlement(it[TbTsTmpShoppingInput.tmpiSettlement]),
                     Amount(it[TbTsTmpShoppingInput.tmpiAmount]),
                     ShoppingRemarks(it[TbTsTmpShoppingInput.tmpiRemarks]),
-                    TemplateUseFlg(it[TbTsTmpShoppingInput.tmpiUseFlg])
+                    TemplateUseFlg(it[TbTsTmpShoppingInput.tmpiUseFlg]),
+                    TemplateDeleteFlg(it[TbTsTmpShoppingInput.deletedFlg])
                 )
             } ?: throw IllegalStateException("Failed to save the ShoppingInputTemplate")
         }
