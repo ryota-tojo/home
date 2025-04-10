@@ -51,7 +51,7 @@ class ReportService(
 
         // レスポンス
         return ReportResult(
-            "成功",
+            ResponseCode.成功.code,
             report
         )
     }

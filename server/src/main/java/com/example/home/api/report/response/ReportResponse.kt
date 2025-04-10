@@ -62,7 +62,7 @@ data class ReportResponse(
     data class BalanceReportObject(
 
         @JsonProperty("category_list")
-        val categoryList: CategoryListObject? = null,
+        val categoryList: List<CategoryListObject>? = null,
 
         @JsonProperty("balance_total")
         val balanceTotal: Int? = null,
