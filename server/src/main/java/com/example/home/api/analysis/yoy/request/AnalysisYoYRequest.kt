@@ -14,8 +14,6 @@ data class AnalysisYoYRequest(
 
     @JsonProperty("yyyy")
     @field:NotNull(message = "キー「yyyy」が存在しません")
-    @field:NotBlank(message = "キー「yyyy」が未入力です")
-    @field:Size(max = 4, message = "キー「yyyy」は4桁以内で入力してください")
     val yyyy: Int,
 
     )
