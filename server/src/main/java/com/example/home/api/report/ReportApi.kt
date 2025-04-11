@@ -48,7 +48,7 @@ class ReportApi(
         if (serviceExecResult.result != ResponseCode.成功.code) {
 
             val status = "error"
-            val message = "確定データ参照失敗"
+            val message = "レポート取得失敗"
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 

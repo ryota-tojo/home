@@ -17,11 +17,18 @@ data class AnalysisYoYResponse(
         @JsonProperty("category_list")
         val categoryList: List<CategoryObject>? = null,
 
-        @JsonProperty("total_list")
-        val totalList: List<TotalObject>? = null
+        @JsonProperty("total")
+        val total: TotalObject? = null
     )
 
     data class CategoryObject(
+
+        @JsonProperty("category_id")
+        val categoryId: Int? = null,
+
+        @JsonProperty("category_name")
+        val categoryName: String? = null,
+
         @JsonProperty("month_01")
         val month1: MonthlyDataObject? = null,
 
@@ -70,13 +77,13 @@ data class AnalysisYoYResponse(
         val preExpenseAmount: Int? = null,
 
         @JsonProperty("expense_amount")
-        val expenseAmount: String? = null,
+        val expenseAmount: Int? = null,
 
         @JsonProperty("difference")
         val difference: Int? = null,
 
         @JsonProperty("yoy")
-        val yoy: Int? = null
+        val yoy: Double? = null
     )
 
     data class TotalObject(
@@ -128,13 +135,13 @@ data class AnalysisYoYResponse(
         val preExpenseAmount: Int? = null,
 
         @JsonProperty("expense_amount")
-        val expenseAmount: String? = null,
+        val expenseAmount: Int? = null,
 
         @JsonProperty("difference")
         val difference: Int? = null,
 
         @JsonProperty("yoy")
-        val yoy: Int? = null
+        val yoy: Double? = null
     )
 
 }

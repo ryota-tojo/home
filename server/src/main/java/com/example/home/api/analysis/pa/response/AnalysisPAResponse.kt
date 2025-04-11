@@ -17,8 +17,8 @@ data class AnalysisPAResponse(
         @JsonProperty("category_list")
         val categoryList: List<CategoryObject>? = null,
 
-        @JsonProperty("total_list")
-        val totalList: List<TotalObject>? = null
+        @JsonProperty("total")
+        val total: TotalObject? = null
     )
 
     data class CategoryObject(
@@ -32,7 +32,7 @@ data class AnalysisPAResponse(
         val monthData: List<MonthDataObject>? = null,
 
         @JsonProperty("year_data")
-        val yearData: List<YearDataObject>? = null,
+        val yearData: YearDataObject? = null,
     )
 
     data class MonthDataObject(
@@ -46,7 +46,7 @@ data class AnalysisPAResponse(
         val average: Int? = null,
 
         @JsonProperty("usage_rate")
-        val usageRate: Int? = null,
+        val usageRate: Double? = null,
 
         @JsonProperty("remnant")
         val remnant: Int? = null
@@ -64,7 +64,7 @@ data class AnalysisPAResponse(
         val yearAverage: Int? = null,
 
         @JsonProperty("year_usage_rate")
-        val yearUsageRate: Int? = null,
+        val yearUsageRate: Double? = null,
 
         @JsonProperty("year_remnant")
         val yearRemnant: Int? = null
@@ -82,7 +82,7 @@ data class AnalysisPAResponse(
         val totalAverage: Int? = null,
 
         @JsonProperty("total_usage_rate")
-        val totalUsageRate: Int? = null,
+        val totalUsageRate: Double? = null,
 
         @JsonProperty("total_remnant")
         val totalRemnant: Int? = null
