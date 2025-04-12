@@ -15,7 +15,11 @@ import org.springframework.stereotype.Service
 class NoticeService(
     private val noticeRepository: NoticeRepository
 ) {
-    fun refer(noticeId: NoticeId? = null): NoticeReferResult {
+    fun refer(
+        noticeId: NoticeId? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): NoticeReferResult {
         val noticeList = noticeRepository.refer(noticeId)
         return NoticeReferResult(
             ResponseCode.成功.code,

@@ -10,7 +10,9 @@ interface CategoryRepository {
     fun refer(
         categoryId: CategoryId? = null,
         groupsId: GroupsId? = null,
-        categoryNo: CategoryNo? = null
+        categoryNo: CategoryNo? = null,
+        offset: Long? = null,
+        limit: Int? = null,
     ): List<Category>
 
     fun save(

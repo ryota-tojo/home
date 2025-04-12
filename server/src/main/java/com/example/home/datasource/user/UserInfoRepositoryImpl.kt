@@ -12,11 +12,17 @@ import java.time.LocalDateTime
 
 @Repository
 class UserInfoRepositoryImpl : UserInfoRepository {
-    override fun refer(userId: UserId?, userName: UserName?): List<UserInfo> {
+    override fun refer(
+        userId: UserId?,
+        userName: UserName?,
+        offset: Long?,
+        limit: Int?
+    ): List<UserInfo> {
         return transaction {
 
             if (userId == null && userName == null) {
                 TbTsUserInfo.selectAll()
+                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                     .map {
                         UserInfo(
                             UserId(it[TbTsUserInfo.userId]),
@@ -38,7 +44,9 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                         userId.let { condition = TbTsUserInfo.userId eq it.value }
                         condition
                     }
-                }.map {
+                }
+                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
+                    .map {
                     UserInfo(
                         UserId(it[TbTsUserInfo.userId]),
                         UserName(it[TbTsUserInfo.userName]),
@@ -59,7 +67,9 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                         userName?.let { condition = condition and (TbTsUserInfo.userName eq it.value) }
                         condition
                     }
-                }.map {
+                }
+                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
+                    .map {
                     UserInfo(
                         UserId(it[TbTsUserInfo.userId]),
                         UserName(it[TbTsUserInfo.userName]),

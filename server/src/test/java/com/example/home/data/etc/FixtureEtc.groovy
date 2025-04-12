@@ -16,4 +16,12 @@ class FixtureEtc {
     static 金額_正常() {
         new Amount(10000)
     }
+
+    static OFFSET() {
+        0L
+    }
+
+    static LIMIT() {
+        10000
+    }
 }

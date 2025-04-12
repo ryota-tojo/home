@@ -15,7 +15,13 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class CategoryRepositoryImpl : CategoryRepository {
-    override fun refer(categoryId: CategoryId?, groupsId: GroupsId?, categoryNo: CategoryNo?): List<Category> {
+    override fun refer(
+        categoryId: CategoryId?,
+        groupsId: GroupsId?,
+        categoryNo: CategoryNo?,
+        offset: Long?,
+        limit: Int?
+    ): List<Category> {
         return transaction {
             var condition: Op<Boolean> = Op.TRUE
             if (categoryId != null) {
@@ -29,6 +35,7 @@ class CategoryRepositoryImpl : CategoryRepository {
                     condition
                 }
                 .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
+                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                 .map {
                     Category(
                         CategoryId(it[TbTsCategorys.categoryId]),

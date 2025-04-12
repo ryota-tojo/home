@@ -20,7 +20,12 @@ class UserControlService(
     val userSettingRepository: UserSettingRepository,
     val groupInfoRepository: GroupInfoRepository,
 ) {
-    fun refer(userId: UserId? = null, userName: UserName? = null): UserReferResult {
+    fun refer(
+        userId: UserId? = null,
+        userName: UserName? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): UserReferResult {
 
         // ユーザー情報を取得する
         val userInfoList = userInfoRepository.refer(userId = userId, userName = userName)

@@ -1,5 +1,6 @@
 package com.example.home.service.group
 
+import com.example.home.data.etc.FixtureEtc
 import com.example.home.data.group.FixtureGroupDelete
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.group.FixtureGroupListAndSetting
@@ -59,10 +60,10 @@ class GroupControlServiceTest extends Specification {
         def groupsId = FixtureGroupList.所属グループID_正常()
 
         when:
-        def result = sut.refer(groupsId)
+        def result = sut.refer(groupsId, null, null)
 
         then:
-        1 * groupListRepository.refer(_) >> groupList
+        1 * groupListRepository.refer(_, null, null) >> groupList
         gsCnt * groupSettingRepository.refer(_) >> groupSetting
         result == expected
 
@@ -80,7 +81,7 @@ class GroupControlServiceTest extends Specification {
         def result = sut.save(groupsId, groupName, groupPassword)
 
         then:
-        glrCnt * groupListRepository.refer(groupsId) >> groupList
+        glrCnt * groupListRepository.refer(groupsId, null, null) >> groupList
         glsCnt * groupListRepository.save(_, _, _) >> FixtureGroupList.所属グループ一覧_正常()
         etcCnt * groupSettingRepository.save(_, _, _)
         etcCnt * categoryRepository.save(_, _, _)
@@ -141,7 +142,7 @@ class GroupControlServiceTest extends Specification {
         def result = sut.delete(groupsId)
 
         then:
-        glrCnt * groupListRepository.refer(groupsId) >> groupList
+        glrCnt * groupListRepository.refer(groupsId, null, null) >> groupList
         gsrCnt * groupSettingRepository.refer(groupsId) >> GroupSettingList
         gsdCnt * groupSettingRepository.delete(groupsId) >> gsDeleteRows
         gldCnt * groupListRepository.delete(groupsId) >> glDeleteRows

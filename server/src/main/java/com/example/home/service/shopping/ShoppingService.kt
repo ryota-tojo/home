@@ -45,7 +45,9 @@ class ShoppingService(
         settlement: ShoppingSettlement? = null,
         minAmount: Amount? = null,
         maxAmount: Amount? = null,
-        remarks: ShoppingRemarks? = null
+        remarks: ShoppingRemarks? = null,
+        offset: Long? = null,
+        limit: Int? = null,
     ): ShoppingReferResult {
         val shoppingList = shoppingRepository.refer(
             id,
@@ -60,7 +62,9 @@ class ShoppingService(
             settlement,
             minAmount,
             maxAmount,
-            remarks
+            remarks,
+            offset,
+            limit
         )
 
         return ShoppingReferResult(

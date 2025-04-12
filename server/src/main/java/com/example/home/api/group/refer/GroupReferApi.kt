@@ -35,7 +35,10 @@ class GroupReferApi(
         // リクエスト取得
         val requestGroupsId = if (request.groupsId == "") null else request.groupsId?.let { GroupsId(it) }
 
-        val serviceExecResult = groupControlService.refer(requestGroupsId)
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
+        val serviceExecResult = groupControlService.refer(requestGroupsId, requestOffset, requestLimit)
 
         // エラー時のレスポンス
         if (serviceExecResult.result != ResponseCode.成功.code) {

@@ -6,7 +6,11 @@ import com.example.home.domain.value_object.group.GroupPassword
 import com.example.home.domain.value_object.group.GroupsId
 
 interface GroupListRepository {
-    fun refer(groupsId: GroupsId? = null): List<GroupList>
+    fun refer(
+        groupsId: GroupsId? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): List<GroupList>
     fun certification(groupsId: GroupsId, groupPassword: GroupPassword): Boolean
     fun save(
         groupsId: GroupsId,

@@ -15,7 +15,11 @@ import java.time.LocalDateTime
 @Repository
 class NoticeRepositoryImpl : NoticeRepository {
 
-    override fun refer(noticeId: NoticeId?): List<Notice> {
+    override fun refer(
+        noticeId: NoticeId?,
+        offset: Long?,
+        limit: Int?
+    ): List<Notice> {
         return transaction {
             val query = if (noticeId != null) {
                 TbTsNotice.select { TbTsNotice.noticeId eq noticeId.value }
@@ -23,7 +27,9 @@ class NoticeRepositoryImpl : NoticeRepository {
                 TbTsNotice.selectAll()
             }
 
-            query.orderBy(TbTsNotice.noticeId to SortOrder.DESC).map {
+            query
+                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
+                .orderBy(TbTsNotice.noticeId to SortOrder.DESC).map {
                 Notice(
                     NoticeId(it[TbTsNotice.noticeId]),
                     NoticeTitle(it[TbTsNotice.title]),

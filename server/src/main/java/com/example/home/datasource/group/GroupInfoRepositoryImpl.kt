@@ -15,7 +15,12 @@ import java.time.LocalDateTime
 
 @Repository
 class GroupInfoRepositoryImpl : GroupInfoRepository {
-    override fun refer(groupsId: GroupsId?, userId: UserId?): List<GroupInfo> {
+    override fun refer(
+        groupsId: GroupsId?,
+        userId: UserId?,
+        offset: Long?,
+        limit: Int?
+    ): List<GroupInfo> {
         return transaction {
             val conditions = mutableListOf<Op<Boolean>>()
 
@@ -30,6 +35,7 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
 
             query
                 .orderBy(TbTsGroupInfo.groupInfoId to SortOrder.ASC)
+                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                 .map {
                 GroupInfo(
                     GroupsId(it[TbTsGroupInfo.groupsId]),

@@ -19,10 +19,10 @@ class NoticeServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(key)
+        def result = sut.refer(key, null, null)
 
         then:
-        1 * noticeRepository.refer(key) >> noticeList
+        1 * noticeRepository.refer(key, null, null) >> noticeList
         result == expected
 
         where:

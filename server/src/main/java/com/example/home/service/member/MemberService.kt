@@ -17,7 +17,13 @@ import org.springframework.stereotype.Service
 class MemberService(
     private val memberRepository: MemberRepository
 ) {
-    fun refer(memberId: MemberId? = null, groupsId: GroupsId? = null, memberNo: MemberNo? = null): MemberReferResult {
+    fun refer(
+        memberId: MemberId? = null,
+        groupsId: GroupsId? = null,
+        memberNo: MemberNo? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): MemberReferResult {
         val MemberList = memberRepository.refer(memberId, groupsId, memberNo)
         return MemberReferResult(
             ResponseCode.成功.code,

@@ -26,7 +26,9 @@ interface ShoppingRepository {
         settlement: ShoppingSettlement? = null,
         minAmount: Amount? = null,
         maxAmount: Amount? = null,
-        remarks: ShoppingRemarks? = null
+        remarks: ShoppingRemarks? = null,
+        offset: Long? = null,
+        limit: Int? = null,
     ): List<Shopping>
 
     fun getAllCategories(

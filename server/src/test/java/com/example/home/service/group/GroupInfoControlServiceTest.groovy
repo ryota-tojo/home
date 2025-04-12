@@ -1,5 +1,6 @@
 package com.example.home.service.group
 
+import com.example.home.data.etc.FixtureEtc
 import com.example.home.data.group.FixtureGroupInfo
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.user.FixtureUserInfo
@@ -24,10 +25,10 @@ class GroupInfoControlServiceTest extends Specification {
         def userId = FixtureUserInfo.ユーザーID_正常()
 
         when:
-        def result = sut.refer(groupsId, userId)
+        def result = sut.refer(groupsId, userId, null, null)
 
         then:
-        1 * groupInfoRepository.refer(groupsId, userId) >> groupInfoList
+        1 * groupInfoRepository.refer(groupsId, userId, null, null) >> groupInfoList
         result == expected
 
         where:
@@ -45,8 +46,8 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.save(groupsId, userId, leaderFlg)
 
         then:
-        uiCnt * userInfoRepository.refer(userId, null) >> userInfo
-        grCnt * groupInfoRepository.refer(groupsId, null) >> groupInfoRefer
+        uiCnt * userInfoRepository.refer(userId, null, null, null) >> userInfo
+        grCnt * groupInfoRepository.refer(groupsId, null, null, null) >> groupInfoRefer
         gsCnt * groupInfoRepository.save(groupsId, userId, leaderFlg) >> groupInfo
         result == expected
 
@@ -87,7 +88,7 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.delete(groupsId, userId)
 
         then:
-        1 * groupInfoRepository.refer(groupsId, userId) >> groupInfoRefer
+        1 * groupInfoRepository.refer(groupsId, userId, null, null) >> groupInfoRefer
         gdCnt * groupInfoRepository.delete(groupsId, userId) >> deleteRows
         result == expected
 

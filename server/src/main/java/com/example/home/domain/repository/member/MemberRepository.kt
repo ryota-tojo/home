@@ -10,7 +10,9 @@ interface MemberRepository {
     fun refer(
         memberId: MemberId? = null,
         groupsId: GroupsId? = null,
-        memberNo: MemberNo? = null
+        memberNo: MemberNo? = null,
+        offset: Long? = null,
+        limit: Int? = null,
     ): List<Member>
 
     fun save(
