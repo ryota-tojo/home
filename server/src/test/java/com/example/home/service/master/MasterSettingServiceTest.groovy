@@ -30,7 +30,7 @@ class MasterSettingServiceTest extends Specification {
         where:
         useCase           | expected                                                                                         | key                                          | masterSettingList
         "正常_データあり" | new MasterSettingReferResult(ResponseCode.成功.code, [FixtureMasterSetting.マスター設定_正常()]) | FixtureMasterSetting.マスター設定キー_正常() | [FixtureMasterSetting.マスター設定_正常()]
-        "正常_データなし" | new MasterSettingReferResult(ResponseCode.成功.code, null)                                       | FixtureMasterSetting.マスター設定キー_正常() | null
+        "正常_データなし" | new MasterSettingReferResult(ResponseCode.データ不在エラー.code, null) | FixtureMasterSetting.マスター設定キー_正常() | null
         "正常_キーなし"   | new MasterSettingReferResult(ResponseCode.成功.code, [FixtureMasterSetting.マスター設定_正常()]) | null                                         | [FixtureMasterSetting.マスター設定_正常()]
     }
 

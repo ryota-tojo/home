@@ -28,7 +28,7 @@ class NoticeServiceTest extends Specification {
         where:
         useCase             | expected                                                                         | key                             | noticeList
         "正常"              | new NoticeReferResult(ResponseCode.成功.code, [FixtureNotice.お知らせ_正常値()]) | FixtureNotice.お知らせID_正常() | [FixtureNotice.お知らせ_正常値()]
-        "正常_お知らせなし" | new NoticeReferResult(ResponseCode.成功.code, null)                              | FixtureNotice.お知らせID_正常() | null
+        "正常_お知らせなし" | new NoticeReferResult(ResponseCode.データ不在エラー.code, null) | FixtureNotice.お知らせID_正常() | null
         "正常_キーなし"     | new NoticeReferResult(ResponseCode.成功.code, [FixtureNotice.お知らせ_正常値()]) | null                            | [FixtureNotice.お知らせ_正常値()]
     }
 

@@ -34,7 +34,7 @@ class CategoryServiceTest extends Specification {
         "正常_idあり_groupsIdあり" | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()] | FixtureCategory.カテゴリーID_正常() | FixtureGroupList.所属グループID_正常()
         "正常_idなし_groupsIdあり" | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()] | null                                | FixtureGroupList.所属グループID_正常()
         "正常_idなし_groupsIdなし" | new CategoryReferResult(ResponseCode.成功.code, [FixtureCategory.カテゴリー_正常値()]) | [FixtureCategory.カテゴリー_正常値()] | null                                | null
-        "正常_データなし"          | new CategoryReferResult(ResponseCode.成功.code, null)                                  | null                                  | FixtureCategory.カテゴリーID_正常() | FixtureGroupList.所属グループID_正常()
+        "正常_データなし" | new CategoryReferResult(ResponseCode.データ不在エラー.code, null) | null | FixtureCategory.カテゴリーID_正常() | FixtureGroupList.所属グループID_正常()
     }
 
     def "category_save_#useCase"() {

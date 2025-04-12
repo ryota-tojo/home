@@ -4,6 +4,7 @@ import com.example.home.domain.entity.budgets.result.BudgetsDeleteResult
 import com.example.home.domain.entity.budgets.result.BudgetsReferResult
 import com.example.home.domain.entity.budgets.result.BudgetsSaveResult
 import com.example.home.domain.entity.budgets.result.BudgetsUpdateResult
+import com.example.home.domain.entity.communication.result.CommunicationReferResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.value_object.category.CategoryId
@@ -25,6 +26,12 @@ class BudgetsService(
         categoryId: CategoryId? = null
     ): BudgetsReferResult {
         val budgetsList = budgetsRepository.refer(groupsId, yyyy, mm, categoryId)
+        if (budgetsList.isNullOrEmpty()) {
+            return BudgetsReferResult(
+                ResponseCode.データ不在エラー.code,
+                budgetsList
+            )
+        }
         return BudgetsReferResult(
             ResponseCode.成功.code,
             budgetsList

@@ -31,7 +31,7 @@ class CommunicationServiceTest extends Specification {
         where:
         useCase           | expected                                                                                   | giftId                               | communicationList
         "正常"            | new CommunicationReferResult(ResponseCode.成功.code, [FixtureCommunication.ギフト_正常()]) | FixtureCommunication.ギフトID_正常() | [FixtureCommunication.ギフト_正常()]
-        "正常_データなし" | new CommunicationReferResult(ResponseCode.成功.code, null)                                 | FixtureCommunication.ギフトID_正常() | null
+        "正常_データなし" | new CommunicationReferResult(ResponseCode.データ不在エラー.code, null) | FixtureCommunication.ギフトID_正常() | null
         "正常_キーなし"   | new CommunicationReferResult(ResponseCode.成功.code, [FixtureCommunication.ギフト_正常()]) | null                                 | [FixtureCommunication.ギフト_正常()]
     }
 

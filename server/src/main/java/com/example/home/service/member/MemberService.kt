@@ -24,7 +24,13 @@ class MemberService(
         offset: Long? = null,
         limit: Int? = null,
     ): MemberReferResult {
-        val MemberList = memberRepository.refer(memberId, groupsId, memberNo)
+        val MemberList = memberRepository.refer(memberId, groupsId, memberNo, offset, limit)
+        if (MemberList.isNullOrEmpty()) {
+            return MemberReferResult(
+                ResponseCode.データ不在エラー.code,
+                MemberList
+            )
+        }
         return MemberReferResult(
             ResponseCode.成功.code,
             MemberList

@@ -47,6 +47,11 @@ class TemplateEntryReferApi(
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 
+            if (serviceExecResult.result == ResponseCode.データ不在エラー.code) {
+                parameter = "-"
+                errorMessage = ResponseCode.データ不在エラー.message
+            }
+
             val errorResponse =
                 ErrorResponse(
                     status,

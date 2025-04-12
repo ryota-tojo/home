@@ -33,7 +33,7 @@ class CommentServiceTest extends Specification {
         where:
         useCase           | expected                                                                         | commentList
         "正常"            | new CommentReferResult(ResponseCode.成功.code, [FixtureComment.コメント_正常()]) | [FixtureComment.コメント_正常()]
-        "正常_データなし" | new CommentReferResult(ResponseCode.成功.code, [])                               | []
+        "正常_データなし" | new CommentReferResult(ResponseCode.データ不在エラー.code, []) | []
     }
 
     def "comment_save_#useCase"() {
