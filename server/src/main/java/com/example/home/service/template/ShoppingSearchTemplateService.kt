@@ -36,6 +36,12 @@ class ShoppingSearchTemplateService(
 
     fun refer(groupsId: GroupsId? = null, templateId: TemplateId? = null): ShoppingSearchTemplateReferResult {
         val shoppingSearchTemplateList = shoppingSearchTemplateRepository.refer(groupsId, templateId)
+        if (shoppingSearchTemplateList.isNullOrEmpty()) {
+            return ShoppingSearchTemplateReferResult(
+                ResponseCode.データ不在エラー.code,
+                shoppingSearchTemplateList
+            )
+        }
         return ShoppingSearchTemplateReferResult(
             ResponseCode.成功.code,
             shoppingSearchTemplateList

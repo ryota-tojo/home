@@ -33,7 +33,7 @@ class BudgetsServiceTest extends Specification {
         "正常_全条件"     | new BudgetsReferResult(ResponseCode.成功.code, [FixtureBudgets.予算_正常値()]) | FixtureGroupList.所属グループID_正常() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID_正常() | [FixtureBudgets.予算_正常値()]
         "正常_グループIDのみ"  | new BudgetsReferResult(ResponseCode.成功.code, [FixtureBudgets.予算_正常値()]) | FixtureGroupList.所属グループID_正常() | null                 | null                 | null                                  | [FixtureBudgets.予算_正常値()]
         "正常_グループID＋年月" | new BudgetsReferResult(ResponseCode.成功.code, [FixtureBudgets.予算_正常値()]) | FixtureGroupList.所属グループID_正常() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | null                                  | [FixtureBudgets.予算_正常値()]
-        "正常_データなし" | new BudgetsReferResult(ResponseCode.成功.code, null)                           | FixtureGroupList.所属グループID_正常() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID_正常() | null
+        "正常_データなし" | new BudgetsReferResult(ResponseCode.データ不在エラー.code, null) | FixtureGroupList.所属グループID_正常() | FixtureEtc.年_正常() | FixtureEtc.月_正常() | FixtureCategory.カテゴリーID_正常() | null
     }
 
     def "budgets_save_#useCase"() {

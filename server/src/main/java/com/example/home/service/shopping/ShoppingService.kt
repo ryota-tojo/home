@@ -66,7 +66,12 @@ class ShoppingService(
             offset,
             limit
         )
-
+        if (shoppingList.isNullOrEmpty()) {
+            return ShoppingReferResult(
+                ResponseCode.データ不在エラー.code,
+                shoppingList
+            )
+        }
         return ShoppingReferResult(
             ResponseCode.成功.code,
             shoppingList

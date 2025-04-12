@@ -18,6 +18,12 @@ class CommunicationService(
 ) {
     fun refer(giftId: GiftId? = null): CommunicationReferResult {
         val communicationList = communicationRepository.refer(giftId)
+        if (communicationList.isNullOrEmpty()) {
+            return CommunicationReferResult(
+                ResponseCode.データ不在エラー.code,
+                communicationList
+            )
+        }
         return CommunicationReferResult(
             ResponseCode.成功.code,
             communicationList

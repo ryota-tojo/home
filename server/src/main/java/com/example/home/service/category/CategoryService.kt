@@ -24,7 +24,13 @@ class CategoryService(
         offset: Long? = null,
         limit: Int? = null,
     ): CategoryReferResult {
-        val CategoryList = categoryRepository.refer(categoryId, groupsId, categoryNo)
+        val CategoryList = categoryRepository.refer(categoryId, groupsId, categoryNo, offset, limit)
+        if (CategoryList.isNullOrEmpty()) {
+            return CategoryReferResult(
+                ResponseCode.データ不在エラー.code,
+                CategoryList
+            )
+        }
         return CategoryReferResult(
             ResponseCode.成功.code,
             CategoryList

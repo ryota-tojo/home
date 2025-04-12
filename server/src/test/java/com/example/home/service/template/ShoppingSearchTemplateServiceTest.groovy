@@ -43,7 +43,7 @@ class ShoppingSearchTemplateServiceTest extends Specification {
         where:
         useCase           | expected                                                                                                                         | templateList
         "正常"            | new ShoppingSearchTemplateReferResult(ResponseCode.成功.code, [FixtureShoppingSearchTemplate.購入データ入力テンプレート_正常()]) | [FixtureShoppingSearchTemplate.購入データ入力テンプレート_正常()]
-        "正常_データなし" | new ShoppingSearchTemplateReferResult(ResponseCode.成功.code, null)                                                              | null
+        "正常_データなし" | new ShoppingSearchTemplateReferResult(ResponseCode.データ不在エラー.code, null) | null
     }
 
     def "shoppingSearchTemplate_save_#useCase"() {

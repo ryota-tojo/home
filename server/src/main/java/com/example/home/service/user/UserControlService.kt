@@ -29,9 +29,9 @@ class UserControlService(
 
         // ユーザー情報を取得する
         val userInfoList = userInfoRepository.refer(userId = userId, userName = userName)
-        if (userInfoList.isEmpty()) {
+        if (userInfoList.isNullOrEmpty()) {
             return UserReferResult(
-                String.format(ResponseCode.データ不在エラー.code, "USER_NOT_FOUND"),
+                ResponseCode.データ不在エラー.code,
                 null
             )
         }

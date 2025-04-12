@@ -20,7 +20,13 @@ class NoticeService(
         offset: Long? = null,
         limit: Int? = null,
     ): NoticeReferResult {
-        val noticeList = noticeRepository.refer(noticeId)
+        val noticeList = noticeRepository.refer(noticeId, offset, limit)
+        if (noticeList.isNullOrEmpty()) {
+            return NoticeReferResult(
+                ResponseCode.データ不在エラー.code,
+                noticeList
+            )
+        }
         return NoticeReferResult(
             ResponseCode.成功.code,
             noticeList

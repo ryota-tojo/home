@@ -34,7 +34,7 @@ class GroupInfoControlServiceTest extends Specification {
         where:
         useCase           | expected                                                                                         | groupInfoList
         "正常"            | new GroupInfoReferResult(ResponseCode.成功.code, [FixtureGroupInfo.所属グループ情報_メンバー()]) | [FixtureGroupInfo.所属グループ情報_メンバー()]
-        "正常_データなし" | new GroupInfoReferResult(ResponseCode.成功.code, null)                                           | null
+        "正常_データなし" | new GroupInfoReferResult(ResponseCode.データ不在エラー.code, null) | null
     }
 
     def "groupInfo_save_#useCase"() {

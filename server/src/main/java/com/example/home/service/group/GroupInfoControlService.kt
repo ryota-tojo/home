@@ -24,7 +24,13 @@ class GroupInfoControlService(
         offset: Long? = null,
         limit: Int? = null,
     ): GroupInfoReferResult {
-        val groupInfoList = groupInfoRepository.refer(groupsId, userId)
+        val groupInfoList = groupInfoRepository.refer(groupsId, userId, offset, limit)
+        if (groupInfoList.isNullOrEmpty()) {
+            return GroupInfoReferResult(
+                ResponseCode.データ不在エラー.code,
+                groupInfoList
+            )
+        }
         return GroupInfoReferResult(
             ResponseCode.成功.code,
             groupInfoList

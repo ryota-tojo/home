@@ -34,7 +34,7 @@ class MemberServiceTest extends Specification {
         "正常_idあり_groupsIdあり" | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()] | FixtureMember.メンバーID_正常() | FixtureGroupList.所属グループID_正常()
         "正常_idなし_groupsIdあり" | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()] | null                            | FixtureGroupList.所属グループID_正常()
         "正常_idなし_groupsIdなし" | new MemberReferResult(ResponseCode.成功.code, [FixtureMember.メンバー_正常値()]) | [FixtureMember.メンバー_正常値()] | null                            | null
-        "正常_データなし"          | new MemberReferResult(ResponseCode.成功.code, null)                              | null                              | FixtureMember.メンバーID_正常() | FixtureGroupList.所属グループID_正常()
+        "正常_データなし" | new MemberReferResult(ResponseCode.データ不在エラー.code, null) | null | FixtureMember.メンバーID_正常() | FixtureGroupList.所属グループID_正常()
     }
 
     def "member_save_#useCase"() {

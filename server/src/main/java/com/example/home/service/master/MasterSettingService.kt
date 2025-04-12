@@ -18,6 +18,12 @@ class MasterSettingService(
 ) {
     fun refer(masterSettingKey: MasterSettingKey? = null): MasterSettingReferResult {
         val masterSettingList = masterSettingRepository.refer(masterSettingKey)
+        if (masterSettingList.isNullOrEmpty()) {
+            return MasterSettingReferResult(
+                ResponseCode.データ不在エラー.code,
+                masterSettingList
+            )
+        }
         return MasterSettingReferResult(
             ResponseCode.成功.code,
             masterSettingList

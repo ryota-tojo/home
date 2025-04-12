@@ -23,6 +23,12 @@ class CommentService(
         mm: MM? = null
     ): CommentReferResult {
         val commentList = commentRepository.refer(groupsId, yyyy, mm)
+        if (commentList.isNullOrEmpty()) {
+            return CommentReferResult(
+                ResponseCode.データ不在エラー.code,
+                commentList
+            )
+        }
         return CommentReferResult(
             ResponseCode.成功.code,
             commentList
