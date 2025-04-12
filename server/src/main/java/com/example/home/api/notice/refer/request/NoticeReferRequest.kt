@@ -6,4 +6,9 @@ data class NoticeReferRequest(
     @JsonProperty("notice_id")
     val noticeId: Int,
 
+    @JsonProperty("offset")
+    val offSet: Long? = null,
+
+    @JsonProperty("limit")
+    val limit: Int? = null,
     )

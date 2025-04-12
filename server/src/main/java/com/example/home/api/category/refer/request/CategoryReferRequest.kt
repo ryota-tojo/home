@@ -14,4 +14,9 @@ data class CategoryReferRequest(
     @JsonProperty("category_no")
     val categoryNo: Int? = null,
 
+    @JsonProperty("offset")
+    val offSet: Long? = null,
+
+    @JsonProperty("limit")
+    val limit: Int? = null,
     )

@@ -37,7 +37,10 @@ class UserReferApi(
         val requestUserId = if (request.userId == 0) null else request.userId?.let { UserId(it) }
         val requestUserName = if (request.userName == "") null else request.userName?.let { UserName(it) }
 
-        val serviceExecResult = userControlService.refer(requestUserId, requestUserName)
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
+        val serviceExecResult = userControlService.refer(requestUserId, requestUserName, requestOffset, requestLimit)
 
         // エラー時のレスポンス
         if (serviceExecResult.result != ResponseCode.成功.code) {

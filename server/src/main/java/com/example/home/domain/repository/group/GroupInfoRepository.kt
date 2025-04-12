@@ -7,7 +7,12 @@ import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserLeaderFlg
 
 interface GroupInfoRepository {
-    fun refer(groupsId: GroupsId? = null, userId: UserId? = null): List<GroupInfo>
+    fun refer(
+        groupsId: GroupsId? = null,
+        userId: UserId? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): List<GroupInfo>
     fun getGroupsId(userId: UserId): GroupsId?
     fun save(
         groupsId: GroupsId,

@@ -18,7 +18,12 @@ class GroupInfoControlService(
     private val groupInfoRepository: GroupInfoRepository,
     val userInfoRepository: UserInfoRepository,
 ) {
-    fun refer(groupsId: GroupsId? = null, userId: UserId? = null): GroupInfoReferResult {
+    fun refer(
+        groupsId: GroupsId? = null,
+        userId: UserId? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): GroupInfoReferResult {
         val groupInfoList = groupInfoRepository.refer(groupsId, userId)
         return GroupInfoReferResult(
             ResponseCode.成功.code,

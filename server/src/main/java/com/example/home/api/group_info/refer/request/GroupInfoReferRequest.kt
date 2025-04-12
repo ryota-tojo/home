@@ -10,4 +10,10 @@ data class GroupInfoReferRequest(
 
     @JsonProperty("user_id")
     val userId: Int? = null,
+
+    @JsonProperty("offset")
+    val offSet: Long? = null,
+
+    @JsonProperty("limit")
+    val limit: Int? = null,
 )

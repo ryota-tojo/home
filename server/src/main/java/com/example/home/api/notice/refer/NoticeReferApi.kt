@@ -34,8 +34,11 @@ class NoticeReferApi(
         // リクエスト取得
         val requestId = if (request.noticeId == 0) null else request.noticeId.let { NoticeId(it) }
 
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
         val serviceExecResult = noticeService.refer(
-            requestId
+            requestId, requestOffset, requestLimit
         )
 
         // エラー時のレスポンス

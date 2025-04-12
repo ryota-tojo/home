@@ -34,11 +34,24 @@ class ShoppingServiceTest extends Specification {
         def userId = FixtureUserInfo.ユーザーID_正常()
 
         when:
-        def result = sut.refer(id, groupsId, userId, shoppingDateYYYY, shoppingDateMM, memberId, categoryId, type, payment, settlement, minAmount, maxAmount, remarks
+        def result = sut.refer(
+                id,
+                groupsId,
+                userId,
+                shoppingDateYYYY,
+                shoppingDateMM,
+                memberId,
+                categoryId,
+                type,
+                payment,
+                settlement,
+                minAmount,
+                maxAmount,
+                remarks, null, null
         )
 
         then:
-        1 * shoppingRepository.refer(id, groupsId, userId, shoppingDateYYYY, shoppingDateMM, memberId, categoryId, type, payment, settlement, minAmount, maxAmount, remarks
+        1 * shoppingRepository.refer(id, groupsId, userId, shoppingDateYYYY, shoppingDateMM, memberId, categoryId, type, payment, settlement, minAmount, maxAmount, remarks, null, null
         ) >> shoppingList
         result == expected
 
@@ -68,7 +81,7 @@ class ShoppingServiceTest extends Specification {
         def result = sut.getAllCategories(groupsId, yyyy, mm)
         then:
         1 * shoppingRepository.getAllCategories(groupsId, yyyy, mm) >> categogryIdList
-        referCnt * categoryRepository.refer(_, null, null) >> categoryList
+        referCnt * categoryRepository.refer(_, null, null, null, null) >> categoryList
         result == expected
 
         where:
@@ -88,7 +101,7 @@ class ShoppingServiceTest extends Specification {
         def result = sut.getAllMembers(groupsId, yyyy, mm)
         then:
         1 * shoppingRepository.getAllMembers(groupsId, yyyy, mm) >> memberIdList
-        referCnt * memberRepository.refer(_, null, null) >> memberList
+        referCnt * memberRepository.refer(_, null, null, null, null) >> memberList
         result == expected
 
         where:
@@ -119,8 +132,8 @@ class ShoppingServiceTest extends Specification {
         )
 
         then:
-        1 * memberRepository.refer(null, groupsId, null) >> memberList
-        categoryCnt * categoryRepository.refer(null, groupsId, null) >> categoryList
+        1 * memberRepository.refer(null, groupsId, null, null, null) >> memberList
+        categoryCnt * categoryRepository.refer(null, groupsId, null, null, null) >> categoryList
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3
@@ -187,8 +200,8 @@ class ShoppingServiceTest extends Specification {
         )
 
         then:
-        1 * memberRepository.refer(null, groupsId, null) >> memberList
-        categoryCnt * categoryRepository.refer(null, groupsId, null) >> categoryList
+        1 * memberRepository.refer(null, groupsId, null, null, null) >> memberList
+        categoryCnt * categoryRepository.refer(null, groupsId, null, null, null) >> categoryList
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3

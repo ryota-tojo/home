@@ -1,6 +1,7 @@
 package com.example.home.service.category
 
 import com.example.home.data.category.FixtureCategory
+import com.example.home.data.etc.FixtureEtc
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.domain.entity.category.result.CategoryDeleteResult
 import com.example.home.domain.entity.category.result.CategoryReferResult
@@ -22,10 +23,10 @@ class CategoryServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(categoryId, GroupsId, FixtureCategory.カテゴリー番号_正常())
+        def result = sut.refer(categoryId, GroupsId, FixtureCategory.カテゴリー番号_正常(), null, null)
 
         then:
-        1 * categoryRepository.refer(categoryId, GroupsId, FixtureCategory.カテゴリー番号_正常()) >> categoryList
+        1 * categoryRepository.refer(categoryId, GroupsId, FixtureCategory.カテゴリー番号_正常(), null, null) >> categoryList
         result == expected
 
         where:

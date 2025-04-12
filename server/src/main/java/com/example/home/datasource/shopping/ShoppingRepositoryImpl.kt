@@ -37,13 +37,17 @@ class ShoppingRepositoryImpl : ShoppingRepository {
         settlement: ShoppingSettlement?,
         minAmount: Amount?,
         maxAmount: Amount?,
-        remarks: ShoppingRemarks?
+        remarks: ShoppingRemarks?,
+        offset: Long?,
+        limit: Int?
     ): List<Shopping> {
         return transaction {
+
             if (id == null && groupsId == null) {
                 TbTsShopping
                     .selectAll()
                     .orderBy(TbTsShopping.id to SortOrder.DESC)
+                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -66,6 +70,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                     condition
                 }
                     .orderBy(TbTsShopping.id to SortOrder.DESC)
+                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),
@@ -106,6 +111,7 @@ class ShoppingRepositoryImpl : ShoppingRepository {
                     }
                 }
                     .orderBy(TbTsShopping.id to SortOrder.DESC)
+                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                     .map {
                         Shopping(
                             ShoppingId(it[TbTsShopping.id]),

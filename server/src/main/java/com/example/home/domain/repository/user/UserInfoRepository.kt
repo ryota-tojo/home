@@ -4,7 +4,12 @@ import com.example.home.domain.entity.user.UserInfo
 import com.example.home.domain.value_object.user.*
 
 interface UserInfoRepository {
-    fun refer(userId: UserId? = null, userName: UserName? = null): List<UserInfo>
+    fun refer(
+        userId: UserId? = null,
+        userName: UserName? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): List<UserInfo>
     fun save(
         userName: UserName,
         password: UserPassword,

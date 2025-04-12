@@ -37,8 +37,11 @@ class CategoryReferApi(
         val requestGroupsId = if (request.groupsId == "") null else request.groupsId?.let { GroupsId(it) }
         val requestCategoryNo = if (request.categoryNo == 0) null else request.categoryNo?.let { CategoryNo(it) }
 
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
         val serviceExecResult = categoryService.refer(
-            requestCategoryId, requestGroupsId, requestCategoryNo
+            requestCategoryId, requestGroupsId, requestCategoryNo, requestOffset, requestLimit
         )
 
         // エラー時のレスポンス

@@ -28,13 +28,13 @@ class UserControlServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(userId, userName)
+        def result = sut.refer(userId, userName, null, null)
 
         then:
-        1 * userInfoRepository.refer(_, _) >> userList
+        1 * userInfoRepository.refer(_, _, null, null) >> userList
         usrCnt * userSettingRepository.refer(_, null) >> FixtureUserSetting.ユーザー設定_正常()
         gigCnt * groupInfoRepository.getGroupsId(_) >> groupsId
-        girCnt * groupInfoRepository.refer(_, _) >> groupInfo
+        girCnt * groupInfoRepository.refer(_, _, null, null) >> groupInfo
         result == expected
 
         where:
@@ -129,7 +129,7 @@ class UserControlServiceTest extends Specification {
 
         then:
         1 * groupInfoRepository.getGroupsId(userId) >> groupsId
-        girCnt * groupInfoRepository.refer(groupsId, userId) >> groupInfoList
+        girCnt * groupInfoRepository.refer(groupsId, userId, null, null) >> groupInfoList
         gidCnt * groupInfoRepository.delete(null, userId) >> giDelete
         usdCnt * userSettingRepository.delete(userId) >> usDelete
         uidCnt * userInfoRepository.delete(userId) >> uiDelete

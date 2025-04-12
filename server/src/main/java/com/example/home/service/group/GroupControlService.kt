@@ -45,7 +45,11 @@ class GroupControlService(
     private val commentRepository: CommentRepository,
     private val communicationRepository: CommunicationRepository,
 ) {
-    fun refer(groupsId: GroupsId? = null): GroupReferResult {
+    fun refer(
+        groupsId: GroupsId? = null,
+        offset: Long? = null,
+        limit: Int? = null,
+    ): GroupReferResult {
         val groupList = groupListRepository.refer(groupsId)
 
         if (groupList.isNullOrEmpty()) {

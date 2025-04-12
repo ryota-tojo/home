@@ -36,7 +36,11 @@ class GroupInfoReferApi(
         val requestGroupsId = if (request.groupsId == "") null else request.groupsId?.let { GroupsId(it) }
         val requestUserId = if (request.userId == null) null else UserId(request.userId)
 
-        val serviceExecResult = groupInfoControlService.refer(requestGroupsId, requestUserId)
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
+        val serviceExecResult =
+            groupInfoControlService.refer(requestGroupsId, requestUserId, requestOffset, requestLimit)
 
         // エラー時のレスポンス
         if (serviceExecResult.result != ResponseCode.成功.code) {

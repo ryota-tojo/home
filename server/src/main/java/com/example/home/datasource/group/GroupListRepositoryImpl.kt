@@ -13,7 +13,11 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class GroupListRepositoryImpl : GroupListRepository {
-    override fun refer(groupsId: GroupsId?): List<GroupList> {
+    override fun refer(
+        groupsId: GroupsId?,
+        offset: Long?,
+        limit: Int?
+    ): List<GroupList> {
         return transaction {
             TbTsGroupList.select {
                 Op.build {
@@ -23,6 +27,7 @@ class GroupListRepositoryImpl : GroupListRepository {
                 }
             }
                 .orderBy(TbTsGroupList.groupListId to SortOrder.ASC)
+                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                 .map {
                 GroupList(
                     it[TbTsGroupList.groupListId],

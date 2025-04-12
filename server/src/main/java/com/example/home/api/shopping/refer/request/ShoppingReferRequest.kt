@@ -44,4 +44,9 @@ data class ShoppingReferRequest(
     @field:Size(max = 1024, message = "キー「remarks」は1024桁以内で入力してください")
     val remarks: String? = null,
 
+    @JsonProperty("offset")
+    val offSet: Long? = null,
+
+    @JsonProperty("limit")
+    val limit: Int? = null,
 )

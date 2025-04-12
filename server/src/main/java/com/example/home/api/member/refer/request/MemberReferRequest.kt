@@ -14,4 +14,10 @@ data class MemberReferRequest(
     @JsonProperty("member_no")
     val memberNo: Int,
 
+    @JsonProperty("offset")
+    val offSet: Long? = null,
+
+    @JsonProperty("limit")
+    val limit: Int? = null,
+
     )

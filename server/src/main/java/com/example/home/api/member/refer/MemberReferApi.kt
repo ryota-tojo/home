@@ -37,8 +37,11 @@ class MemberReferApi(
         val requestGroupsId = if (request.groupsId == "") null else request.groupsId.let { GroupsId(it) }
         val requestMemberNo = if (request.memberNo == 0) null else request.memberNo.let { MemberNo(it) }
 
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
         val serviceExecResult = memberService.refer(
-            requestMemberId, requestGroupsId, requestMemberNo
+            requestMemberId, requestGroupsId, requestMemberNo, requestOffset, requestLimit
         )
 
         // エラー時のレスポンス

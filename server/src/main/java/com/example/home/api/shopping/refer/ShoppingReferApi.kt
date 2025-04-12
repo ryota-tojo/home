@@ -54,6 +54,9 @@ class ShoppingReferApi(
         val requestMaxAmount = request.maxAmount?.let { Amount(it) }
         val requestRemarks = request.remarks?.takeIf { it.isNotBlank() }?.let { ShoppingRemarks(it) }
 
+        val requestOffset = request.offSet
+        val requestLimit = request.limit
+
         val serviceExecResult = shoppingService.refer(
             requestShoppingId,
             requestGroupsId,
@@ -68,6 +71,8 @@ class ShoppingReferApi(
             requestMinAmount,
             requestMaxAmount,
             requestRemarks,
+            requestOffset,
+            requestLimit
         )
 
         // エラー時のレスポンス

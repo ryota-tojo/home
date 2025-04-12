@@ -23,10 +23,10 @@ class MemberServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(null, FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常())
+        def result = sut.refer(null, FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常(), null, null)
 
         then:
-        1 * memberRepository.refer(null, FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常()) >> memberList
+        1 * memberRepository.refer(null, FixtureGroupList.所属グループID_正常(), FixtureMember.メンバー番号_正常(), null, null) >> memberList
         result == expected
 
         where:

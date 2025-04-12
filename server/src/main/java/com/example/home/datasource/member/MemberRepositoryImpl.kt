@@ -15,7 +15,13 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MemberRepositoryImpl : MemberRepository {
-    override fun refer(memberId: MemberId?, groupsId: GroupsId?, memberNo: MemberNo?): List<Member> {
+    override fun refer(
+        memberId: MemberId?,
+        groupsId: GroupsId?,
+        memberNo: MemberNo?,
+        offset: Long?,
+        limit: Int?
+    ): List<Member> {
         return transaction {
             var condition: Op<Boolean> = Op.TRUE
             if (memberId != null) {
@@ -28,6 +34,7 @@ class MemberRepositoryImpl : MemberRepository {
                 .select {
                     condition
                 }
+                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                 .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
                 .map {
                     Member(
