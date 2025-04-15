@@ -1,8 +1,8 @@
-package com.example.home.api
+package com.example.home.api.master.choices.delete.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ErrorResponse(
+data class MasterChoicesDeleteResponse(
     @JsonProperty("status")
     val status: String,
 
@@ -14,10 +14,8 @@ data class ErrorResponse(
 
 ) {
     data class DataObject(
-        @JsonProperty("parameter")
-        val parameter: String,
-
-        @JsonProperty("message")
-        val message: String
+        @JsonProperty("delete_rows")
+        val deleteRows: Int? = null
     )
+
 }

@@ -6,7 +6,8 @@ import com.example.home.domain.value_object.master.ChoicesItemNo
 import com.example.home.domain.value_object.master.ChoicesItemType
 
 data class MasterChoices(
-    val choicesItemType : ChoicesItemType,
+    val id: Int,
+    val choicesItemType: ChoicesItemType,
     val choicesItemNo: ChoicesItemNo,
     val choicesItemNamePC: ChoicesItemNamePC,
     val choicesItemNameSP: ChoicesItemNameSP

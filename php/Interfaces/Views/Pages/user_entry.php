@@ -1,29 +1,17 @@
 <?php
 
-use Application\Services\UserManagementService;
-use Infrastructure\Persistence\Database;
-
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/Persistence/Database.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/UserManagementService.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Domain/Models/UserRepository.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 session_start();
 
 $screen_title = "ユーザー新規登録申請";
 
-//DB接続
-$db_config = new Database(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME);
-$db_config->connect();
-
 // 変数初期化
 $entry = False;
 $entry_error = False;
-$group_id_invalid_err = False;
-$group_id_exist_err = False;
-$user_name_invalid_err = False;
-$user_name_duplication_err = False;
-$password_mismatch_err = False;
+$error_msg = "";
 $password_details = "※パスワードは以下の条件を満たす必要があります
                     ・8文字以上
                     ・小文字の英字（a～z）を1文字以上含む
@@ -37,33 +25,22 @@ if (isset($_POST['back-btn'])) {
 }
 if (isset($_POST['application-btn'])) {
 
-    $groups_id = $_POST['groups-id'] ?? '';
     $user_name = $_POST['user-name'] ?? '';
     $password = $_POST['password'] ?? '';
     $re_password = $_POST['re-password'] ?? '';
 
-    $user_management_repository = new UserManagementService($db_config, $groups_id, $user_name, $password, $re_password);
+    if($password == $re_password){
+        $user_create_api_result = apiCallUserCreate($user_name,$password);
+        $user_create_result = $user_create_api_result['status'];
 
-    $certification_result = $user_management_repository->certification();
-    if($certification_result == "unavailable group id"){
-        $group_id_invalid_err = True;
-    }else if($certification_result == "groupid not found"){
-        $group_id_exist_err = True;
-    }else if($certification_result == "unavailable user name"){
-        $user_name_invalid_err = True;
-    }else if($certification_result == "user name is duplication"){
-        $user_name_duplication_err = True;
-    }else if($certification_result == "password mismatch"){
-        $password_mismatch_err = True;
+        if($user_create_result=='success'){
+            $entry = True;
+        }else{
+            $error_msg = str_replace("データ","ユーザー",$user_create_api_result['data']['message']);
+            $entry_error = True;
+        }
     }else{
-
-        $user_id = $user_management_repository->creation();
-
-        echo $user_id;
-
-        $entry = True;
-    }
-    if($group_id_invalid_err or $group_id_exist_err or $user_name_invalid_err or $user_name_duplication_err or $password_mismatch_err){
+        $error_msg = "入力したパスワードが一致しません";
         $entry_error = True;
     }
 }
@@ -100,19 +77,6 @@ if (isset($_POST['application-btn'])) {
                             <div class="entry-form">
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        所属グループ名ID
-                                    </div>
-                                    <div class="login-form-input">
-                                        <input type="text" required class="form-control" name="groups-id"
-                                               placeholder="所属グループIDを入力してください"
-                                            <?php $groups_id = $_POST['groups-id'] ?? '';
-                                            echo "value='{$groups_id}'"; ?>
-                                        >
-                                    </div>
-                                </div>
-
-                                <div class="form-area">
-                                    <div class="login-form-label">
                                         ユーザー名
                                     </div>
                                     <div class="login-form-input">
@@ -129,7 +93,7 @@ if (isset($_POST['application-btn'])) {
                                         パスワード
                                     </div>
                                     <div class="login-form-input">
-                                        <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="password"
+                                        <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="password" id="password"
                                                placeholder="パスワードを入力してください" title="<?php echo $password_details; ?>"
                                             <?php $password = $_POST['password'] ?? '';
                                             echo "value='{$password}'"; ?>
@@ -142,7 +106,7 @@ if (isset($_POST['application-btn'])) {
                                         確認用パスワード
                                     </div>
                                     <div class="login-form-input">
-                                        <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="re-password"
+                                        <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="re-password" id="re-password"
                                                placeholder="確認用パスワードを入力してください"
                                             <?php $re_password = $_POST['re-password'] ?? '';
                                             echo "value='{$re_password}'"; ?>
@@ -153,22 +117,7 @@ if (isset($_POST['application-btn'])) {
                                 <div class="login-msg">
                                     <?php
                                     if($entry_error == True){
-
-                                        if($group_id_invalid_err){
-                                            echo "<div class='msg err_msg'>入力した所属グループIDは使用できません。</div>";
-                                        }
-                                        if($group_id_exist_err){
-                                            echo "<div class='msg err_msg'>入力した所属グループIDは存在しません。</div>";
-                                        }
-                                        if($user_name_invalid_err){
-                                            echo "<div class='msg err_msg'>入力したユーザー名は使用できません。</div>";
-                                        }
-                                        if($user_name_duplication_err){
-                                            echo "<div class='msg err_msg'>入力したユーザー名は使用できません。</div>";
-                                        }
-                                        if($password_mismatch_err){
-                                            echo "<div class='msg err_msg'>パスワードが一致しません。</div>";
-                                        }
+                                        echo "<div class='msg err_msg'>{$error_msg}</div>";
                                     }
                                     if ($entry == True) {
                                         echo "<div class='msg suc_msg'>ユーザーを登録しました。<br>承認されるまでお待ちください。</div>";
@@ -207,9 +156,8 @@ if (isset($_POST['application-btn'])) {
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
 <script>
-    $('#sample1').datepicker();
+
 </script>
 </body>
 </html>

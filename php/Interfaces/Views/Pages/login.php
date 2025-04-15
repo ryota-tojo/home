@@ -1,28 +1,26 @@
 <?php
 
-use Application\Services\LoginCheckService;
-use Domain\Models\SettingMaster;
-use Domain\Models\UserInfo;
-use Infrastructure\Persistence\Database;
-
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/Persistence/Database.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/LoginCheckService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/base64Service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Domain/Models/UserInfo.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Domain/Models/SettingMaster.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 session_start();
 
 //画面名
 $screen_title = "ログイン";
 
-//DB接続
-$db_config = new Database(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME);
-$db_config->connect();
+// 初期設定
+initialization();
 
 // マスター設定
-$setting_master = new SettingMaster($db_config);
+$master_setting_api_result = apiCallMasterSettingRefer();
+$login_failure_limit = null;
+foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
+    if ($setting['setting_key'] == 'login_failure_limit') {
+        $login_failure_limit = $setting['setting_value'];
+    }
+}
 
 // セッション初期設定
 $_SESSION['error_cnt'] = $_SESSION['error_cnt'] ?? 0;
@@ -31,16 +29,10 @@ $_SESSION['account_lockout'] = $_SESSION['account_lockout'] ?? False;
 // 変数初期化
 $login_error = False;
 $lockout = False;
-$unapproved = False;
-
-// http://localhost:8080/src/View/login.php?groups_id=bWFpbnRlbmFuY2U=&user_name=YWRtaW4=&password=YWRtaW5hZG1pbg==
+$login_check_message = '';
 
 // ボタン押下時の処理
-if(isset($_GET['groups_id']) and isset($_GET['user_name']) and isset($_GET['password'])){
-    $groups_id = $_GET['groups_id'];
-    if(isBase64($_GET['groups_id'])){
-        $groups_id = base64_decode($_GET['groups_id']);
-    }
+if (isset($_GET['user_name']) and isset($_GET['password'])) {
     $user_name = $_GET['user_name'];
     if (isBase64($_GET['user_name'])) {
         $user_name = base64_decode($_GET['user_name']);
@@ -50,59 +42,102 @@ if(isset($_GET['groups_id']) and isset($_GET['user_name']) and isset($_GET['pass
         $password = base64_decode($_GET['password']);
     }
 
-    $login_info = new LoginCheckService($db_config, $groups_id,$user_name,$password);
-    $certification_results = $login_info->certification();
+    $login_check_api_result = apiCallLoginCheck($user_name, $password);
+    $login_check_result = $login_check_api_result['status'];
 
-    if ($certification_results == -1) {
-        $login_error = True;
+    if ($login_check_result != 'success') {
+        $login_check_message = $login_check_api_result['data']['message'];
         $_SESSION['error_cnt'] += 1;
-    }elseif ($certification_results == 0) {
-        $unapproved = True;
         $login_error = True;
-        $_SESSION['error_cnt'] += 1;
-    }else{
+    } else {
         unset($_SESSION['error_cnt']);
-        $user_info = new UserInfo($db_config, $certification_results);
-        $_SESSION['user_id'] = $user_info->getUserId();
-        $_SESSION['user_name'] = $user_info->getUserName();
-        $_SESSION['password'] = $user_info->getPassword();
-        $_SESSION['permission'] = $user_info->getPermission();
-        $_SESSION['approval_flg'] = $user_info->getApprovalFlg();
-        $_SESSION['delete_flg'] = $user_info->getDeleteFlg();
-        $_SESSION['create_date'] = $user_info->getCreateDate();
-        $_SESSION['update_date'] = $user_info->getUpdateDate();
-        $_SESSION['approval_date'] = $user_info->getApprovalDate();
-        $_SESSION['delete_date'] = $user_info->getDeleteDate();
+        $user_refer_api_result = apiCallUserRefer(null, $user_name);
+
+        $_SESSION['user_id'] = null;
+        $_SESSION['user_name'] = null;
+        $_SESSION['user_password'] = null;
+        $_SESSION['user_permission'] = null;
+        $_SESSION['user_approval_flg'] = null;
+        $_SESSION['user_delete_flg'] = null;
+
+        $_SESSION['user_settings'] = null;
+        $_SESSION['user_groups_id'] = null;
+        $_SESSION['user_group_leader'] = null;
+        $_SESSION['user_group_approval_flg'] = null;
+
+        foreach ($user_refer_api_result['data']['user'] as $user) {
+            $userInfo = $user['user_info'];
+            $userSettings = $user['user_setting'];
+            $groupInfoList = $user['group_info'];
+
+            $_SESSION['user_id'] = $userInfo['user_id'];
+            $_SESSION['user_name'] = $userInfo['user_name'];
+            $_SESSION['user_password'] = $userInfo['password'];
+            $_SESSION['user_permission'] = $userInfo['permission'];
+            $_SESSION['user_approval_flg'] = $userInfo['approval_flg'];
+            $_SESSION['user_delete_flg'] = $userInfo['delete_flg'];
+
+            $_SESSION['user_setting'] = $userSettings;
+
+            foreach ($groupInfoList as $groupInfo) {
+                $_SESSION['user_groups_id'] = $groupInfo['groups_id'];
+                $_SESSION['user_group_leader'] = $groupInfo['leader'];
+                $_SESSION['user_group_approval_flg'] = $groupInfo['approval'];
+            }
+        }
+
         echo "<script>window.location.href = 'home_input_tmp.php';</script>";
     }
 }
 if (isset($_POST['login-btn'])) {
-    $groups_id = $_POST['groups-id'] ?? '';
+
     $user_name = $_POST['user-name'] ?? '';
     $password = $_POST['password'] ?? '';
-    $login_info = new LoginCheckService($db_config, $groups_id,$user_name,$password);
-    $certification_results = $login_info->certification();
 
-    if ($certification_results == -1) {
-        $login_error = True;
+    $login_check_api_result = apiCallLoginCheck($user_name, $password);
+    $login_check_result = $login_check_api_result['status'];
+
+    if ($login_check_result != 'success') {
+        $login_check_message = $login_check_api_result['data']['message'];
         $_SESSION['error_cnt'] += 1;
-    }elseif ($certification_results == 0) {
-        $unapproved = True;
         $login_error = True;
-        $_SESSION['error_cnt'] += 1;
-    }else{
+    } else {
         unset($_SESSION['error_cnt']);
-        $user_info = new UserInfo($db_config, $certification_results);
-        $_SESSION['user_id'] = $user_info->getUserId();
-        $_SESSION['user_name'] = $user_info->getUserName();
-        $_SESSION['password'] = $user_info->getPassword();
-        $_SESSION['permission'] = $user_info->getPermission();
-        $_SESSION['approval_flg'] = $user_info->getApprovalFlg();
-        $_SESSION['delete_flg'] = $user_info->getDeleteFlg();
-        $_SESSION['create_date'] = $user_info->getCreateDate();
-        $_SESSION['update_date'] = $user_info->getUpdateDate();
-        $_SESSION['approval_date'] = $user_info->getApprovalDate();
-        $_SESSION['delete_date'] = $user_info->getDeleteDate();
+        $user_refer_api_result = apiCallUserRefer(null, $user_name);
+
+        $_SESSION['user_id'] = null;
+        $_SESSION['user_name'] = null;
+        $_SESSION['user_password'] = null;
+        $_SESSION['user_permission'] = null;
+        $_SESSION['user_approval_flg'] = null;
+        $_SESSION['user_delete_flg'] = null;
+
+        $_SESSION['user_settings'] = null;
+        $_SESSION['user_groups_id'] = null;
+        $_SESSION['user_group_leader'] = null;
+        $_SESSION['user_group_approval_flg'] = null;
+
+        foreach ($user_refer_api_result['data']['user'] as $user) {
+            $userInfo = $user['user_info'];
+            $userSettings = $user['user_setting'];
+            $groupInfoList = $user['group_info'];
+
+            $_SESSION['user_id'] = $userInfo['user_id'];
+            $_SESSION['user_name'] = $userInfo['user_name'];
+            $_SESSION['user_password'] = $userInfo['password'];
+            $_SESSION['user_permission'] = $userInfo['permission'];
+            $_SESSION['user_approval_flg'] = $userInfo['approval_flg'];
+            $_SESSION['user_delete_flg'] = $userInfo['delete_flg'];
+
+            $_SESSION['user_setting'] = $userSettings;
+
+            foreach ($groupInfoList as $groupInfo) {
+                $_SESSION['user_groups_id'] = $groupInfo['groups_id'];
+                $_SESSION['user_group_leader'] = $groupInfo['leader'];
+                $_SESSION['user_group_approval_flg'] = $groupInfo['approval'];
+            }
+        }
+
         echo "<script>window.location.href = 'home_input_tmp.php';</script>";
     }
 }
@@ -115,7 +150,7 @@ if (isset($_POST['user-entry-btn'])) {
 
 // アカウントロック判定
 $disabled = "";
-if ($_SESSION['error_cnt'] >= $setting_master->getAccountLockoutCount()) {
+if ($_SESSION['error_cnt'] >= $login_failure_limit) {
     $_SESSION['account_lockout'] = True;
     $disabled = "disabled";
 }
@@ -149,20 +184,6 @@ if ($_SESSION['error_cnt'] >= $setting_master->getAccountLockoutCount()) {
                             <div class="login-form">
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        所属グループID
-                                    </div>
-                                    <div class="login-form-input">
-                                        <input type="text" required <?php echo $disabled; ?> maxlength="64"
-                                               class="form-control" name="groups-id"
-                                               placeholder="所属グループIDを入力してください"
-                                            <?php $groups_id = $_POST['groups-id'] ?? '';
-                                            echo "value='{$groups_id}'"; ?>
-                                        >
-                                    </div>
-                                </div>
-
-                                <div class="form-area">
-                                    <div class="login-form-label">
                                         ユーザー名
                                     </div>
                                     <div class="login-form-input">
@@ -189,15 +210,11 @@ if ($_SESSION['error_cnt'] >= $setting_master->getAccountLockoutCount()) {
 
                                 <div class="login-msg err_msg">
                                     <?php
-                                    if ($_SESSION['account_lockout']) {
-                                        echo "<div class='msg'>ログインの試行回数が許容値({$setting_master->getAccountLockoutCount()}回)を超えました。<br>ブラウザを閉じて再度最初からお試しください。</div>";
-                                    } else {
-                                        if($unapproved){
-                                            echo "<div class='msg'>ログインに失敗しました。({$_SESSION['error_cnt']}回目)<br>承認されていないユーザーです。</div>";
-                                        }else{
-                                            if ($login_error) {
-                                                echo "<div class='msg'>ログインに失敗しました。({$_SESSION['error_cnt']}回目)<br>入力内容をご確認ください。</div>";
-                                            }
+                                    if ($login_error == True) {
+                                        if ($_SESSION['account_lockout']) {
+                                            echo "<div class='msg'>ログインの試行回数が許容値({$login_failure_limit}回)を超えました。<br>ブラウザを閉じて再度最初からお試しください。</div>";
+                                        } else {
+                                            echo "<div class='msg'>ログインに失敗しました。({$_SESSION['error_cnt']}回目)<br>{$login_check_message}</div>";
                                         }
                                     }
                                     ?>
@@ -227,19 +244,11 @@ if ($_SESSION['error_cnt'] >= $setting_master->getAccountLockoutCount()) {
                                 <div class="login-form-btn">
                                     <p class="login-form-summary">
                                         ユーザーはグループに所属する必要があります。<br>
-                                        はじめての方は所属グループと、そのグループに紐づくユーザーを登録してください。<br>
+                                        はじめての方はログイン後、グループに所属してください。<br>
                                     </p>
                                 </div>
                             </div>
 
-                            <div class="form-area">
-                                <div class="login-form-btn">
-                                    <button type="submit" <?php echo $disabled; ?> class="btn btn-primary date-btn-item"
-                                            name="group-entry-btn">
-                                        グループ新規登録
-                                    </button>
-                                </div>
-                            </div>
                             <div class="form-area">
                                 <div class="login-form-btn">
                                     <button type="submit" <?php echo $disabled; ?> class="btn btn-primary date-btn-item"
@@ -268,12 +277,9 @@ if ($_SESSION['error_cnt'] >= $setting_master->getAccountLockoutCount()) {
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
 <script>
-    $('#sample1').datepicker();
+
 </script>
 </body>
 </html>
 
-<?php
-$db_config->close();
-?>
 

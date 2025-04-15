@@ -10,16 +10,16 @@ $admin_flag = 1
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ページタイトル</title>
-    <link rel="stylesheet" href="/新しいフォルダー/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/新しいフォルダー/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/新しいフォルダー/Interfaces/Assets/CSS/input_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/input_form.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
 <header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/includes/nav.php'; ?>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
 </header>
 
 
@@ -46,7 +46,7 @@ $admin_flag = 1
 </main>
 
 <footer>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/includes/footer.php'; ?>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
 <!-- bootstrap-datepickerのjavascriptコード -->
 <script>

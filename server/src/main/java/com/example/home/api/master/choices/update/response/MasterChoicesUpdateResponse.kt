@@ -1,8 +1,8 @@
-package com.example.home.api
+package com.example.home.api.master.choices.update.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ErrorResponse(
+data class MasterChoicesUpdateResponse(
     @JsonProperty("status")
     val status: String,
 
@@ -14,10 +14,8 @@ data class ErrorResponse(
 
 ) {
     data class DataObject(
-        @JsonProperty("parameter")
-        val parameter: String,
-
-        @JsonProperty("message")
-        val message: String
+        @JsonProperty("update_rows")
+        val updateRows: Int? = null
     )
+
 }
