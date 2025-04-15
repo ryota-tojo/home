@@ -6,7 +6,7 @@ import com.example.home.api.master.setting.delete.request.MasterSettingDeleteReq
 import com.example.home.api.master.setting.delete.response.MasterSettingDeleteResponse
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.master.MasterSettingKey
-import com.example.home.service.master.MasterSettingService
+import com.example.home.service.master.setting.MasterSettingService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.MediaType

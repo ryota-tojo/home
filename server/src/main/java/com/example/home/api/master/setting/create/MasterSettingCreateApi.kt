@@ -8,7 +8,7 @@ import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.master.MasterSettingKey
 import com.example.home.domain.value_object.master.MasterSettingRemarks
 import com.example.home.domain.value_object.master.MasterSettingValue
-import com.example.home.service.master.MasterSettingService
+import com.example.home.service.master.setting.MasterSettingService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.MediaType

@@ -7,9 +7,8 @@ import com.example.home.domain.value_object.master.ChoicesItemNameSP
 import com.example.home.domain.value_object.master.ChoicesItemNo
 import com.example.home.domain.value_object.master.ChoicesItemType
 import com.example.home.infrastructure.persistence.exposed_tables.master.TbMsChoices
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 
@@ -19,6 +18,7 @@ class ChoicesRepositoryImpl : ChoicesRepository {
         return transaction {
             TbMsChoices.selectAll().map {
                 MasterChoices(
+                    it[TbMsChoices.id],
                     ChoicesItemType(it[TbMsChoices.itemType]),
                     ChoicesItemNo(it[TbMsChoices.itemNo]),
                     ChoicesItemNamePC(it[TbMsChoices.itemNamePC]),
@@ -39,12 +39,69 @@ class ChoicesRepositoryImpl : ChoicesRepository {
                 }
             }.map {
                 MasterChoices(
+                    it[TbMsChoices.id],
                     ChoicesItemType(it[TbMsChoices.itemType]),
                     ChoicesItemNo(it[TbMsChoices.itemNo]),
                     ChoicesItemNamePC(it[TbMsChoices.itemNamePC]),
                     ChoicesItemNameSP(it[TbMsChoices.itemNameSP])
                 )
             }.firstOrNull()
+        }
+    }
+
+    override fun save(
+        itemType: ChoicesItemType,
+        itemNo: ChoicesItemNo,
+        itemNamePC: ChoicesItemNamePC,
+        itemNameSP: ChoicesItemNameSP
+    ): MasterChoices {
+        return transaction {
+            TbMsChoices.insert {
+                it[TbMsChoices.itemType] = itemType.value
+                it[TbMsChoices.itemNo] = itemNo.value
+                it[TbMsChoices.itemNamePC] = itemNamePC.value
+                it[TbMsChoices.itemNameSP] = itemNameSP.value
+            }
+            val choices = TbMsChoices.select {
+                (TbMsChoices.itemType eq itemType.value) and
+                        (TbMsChoices.itemNo eq itemNo.value) and
+                        (TbMsChoices.itemNamePC eq itemNamePC.value) and
+                        (TbMsChoices.itemNameSP eq itemNameSP.value)
+            }.singleOrNull()
+            return@transaction choices?.let {
+                MasterChoices(
+                    it[TbMsChoices.id],
+                    ChoicesItemType(it[TbMsChoices.itemType]),
+                    ChoicesItemNo(it[TbMsChoices.itemNo]),
+                    ChoicesItemNamePC(it[TbMsChoices.itemNamePC]),
+                    ChoicesItemNameSP(it[TbMsChoices.itemNameSP])
+                )
+            } ?: throw IllegalStateException("Failed to save the Choices")
+        }
+    }
+
+    override fun update(
+        id: Int,
+        itemType: ChoicesItemType,
+        itemNo: ChoicesItemNo,
+        itemNamePC: ChoicesItemNamePC,
+        itemNameSP: ChoicesItemNameSP
+    ): Int {
+        return transaction {
+            val updateRows = TbMsChoices.update({ TbMsChoices.id eq id }) {
+                it[TbMsChoices.itemType] = itemType.value
+                it[TbMsChoices.itemNo] = itemNo.value
+                it[TbMsChoices.itemNamePC] = itemNamePC.value
+                it[TbMsChoices.itemNameSP] = itemNameSP.value
+            }
+            return@transaction updateRows
+        }
+    }
+
+    override fun delete(id: Int): Int {
+        return transaction {
+            val deleteRows = TbMsChoices.deleteWhere { TbMsChoices.id eq id }
+            return@transaction deleteRows
         }
     }
 }

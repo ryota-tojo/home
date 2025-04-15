@@ -8,6 +8,7 @@ import com.example.home.domain.entity.master.result.MasterSettingSaveResult
 import com.example.home.domain.entity.master.result.MasterSettingUpdateResult
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.master.MasterSettingRepository
+import com.example.home.service.master.setting.MasterSettingService
 import spock.lang.Specification
 import spock.lang.Unroll
 

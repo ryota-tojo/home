@@ -1,4 +1,4 @@
-package com.example.home.service.master
+package com.example.home.service.master.setting
 
 import com.example.home.domain.entity.master.result.MasterSettingDeleteResult
 import com.example.home.domain.entity.master.result.MasterSettingReferResult

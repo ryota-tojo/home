@@ -1,7 +1,7 @@
 <?php $admin = True ?>
 
 <!-- 共通 -->
-<link rel="stylesheet" href="/新しいフォルダー/Interfaces/Assets/CSS/nav.css">
+<link rel="stylesheet" href="<?php echo $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/nav.css';?>">
 
 <!-- 管理者メニュー -->
 <?php if($admin == True){ ?>

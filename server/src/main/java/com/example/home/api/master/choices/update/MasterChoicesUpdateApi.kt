@@ -1,14 +1,15 @@
-package com.example.home.api.fixed.unfixed
+package com.example.home.api.master.choices.update
 
 
 import com.example.home.api.ErrorResponse
-import com.example.home.api.fixed.fixed.request.FixedRequest
-import com.example.home.api.fixed.unfixed.response.UnFixedResponse
+import com.example.home.api.master.choices.update.request.MasterChoicesUpdateRequest
+import com.example.home.api.master.choices.update.response.MasterChoicesUpdateResponse
 import com.example.home.domain.model.ResponseCode
-import com.example.home.domain.value_object.etc.MM
-import com.example.home.domain.value_object.etc.YYYY
-import com.example.home.domain.value_object.group.GroupsId
-import com.example.home.service.fixed.FixedService
+import com.example.home.domain.value_object.master.ChoicesItemNamePC
+import com.example.home.domain.value_object.master.ChoicesItemNameSP
+import com.example.home.domain.value_object.master.ChoicesItemNo
+import com.example.home.domain.value_object.master.ChoicesItemType
+import com.example.home.service.master.choices.MasterChoicesService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
@@ -18,34 +19,40 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class UnFixedApi(
-    private val fixedService: FixedService
+class MasterChoicesUpdateApi(
+    private val masterChoicesService: MasterChoicesService
 
 ) {
     companion object {
-        const val API_PATH = "api/fixed/un_fixed"
+        const val API_PATH = "api/master/choices/update"
     }
 
     @PostMapping(value = [API_PATH])
     fun refer(
-        @RequestBody @Valid request: FixedRequest,
+        @RequestBody @Valid request: MasterChoicesUpdateRequest,
         response: HttpServletResponse
     ): ResponseEntity<Any> {
 
         // リクエスト取得
-        val requestGroupsId = GroupsId(request.groupsId)
-        val requestYYYY = YYYY(request.yyyy)
-        val requestMM = MM(request.mm)
+        val requestId = request.id
+        val requestItemType = ChoicesItemType(request.itemType)
+        val requestItemNo = ChoicesItemNo(request.itemNo)
+        val requestItemNamePC = ChoicesItemNamePC(request.itemNamePC)
+        val requestItemNameSP = ChoicesItemNameSP(request.itemNameSP)
 
-        val serviceExecResult = fixedService.unFixed(
-            requestGroupsId, requestYYYY, requestMM
+        val serviceExecResult = masterChoicesService.update(
+            requestId,
+            requestItemType,
+            requestItemNo,
+            requestItemNamePC,
+            requestItemNameSP,
         )
 
         // エラー時のレスポンス
         if (serviceExecResult.result != ResponseCode.成功.code) {
 
             val status = "error"
-            val message = "データ確定解除失敗"
+            val message = "選択肢マスター更新失敗"
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 
@@ -66,21 +73,16 @@ class UnFixedApi(
         // 成功時のレスポンス
         val status = "success"
         val message = ResponseCode.成功.message
-        val dataObject =
-            UnFixedResponse.UnFixedRowsObject(
-                serviceExecResult.budgetsFixedRows,
-                serviceExecResult.shoppingFixedRows,
-                serviceExecResult.commentFixedRows
-            )
+        val dataObject = serviceExecResult.updateRows
 
-        val unfixedResponse =
-            UnFixedResponse(
+        val masterChoicesUpdateResponse =
+            MasterChoicesUpdateResponse(
                 status,
                 message,
-                UnFixedResponse.DataObject(dataObject)
+                MasterChoicesUpdateResponse.DataObject(dataObject)
             )
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_JSON)
-            .body(unfixedResponse)
+            .body(masterChoicesUpdateResponse)
     }
 }
