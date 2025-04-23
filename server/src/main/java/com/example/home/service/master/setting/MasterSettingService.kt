@@ -62,8 +62,8 @@ class MasterSettingService(
 
     fun update(
         masterSettingKey: MasterSettingKey,
-        masterSettingValue: MasterSettingValue,
-        masterSettingRemarks: MasterSettingRemarks
+        masterSettingValue: MasterSettingValue?,
+        masterSettingRemarks: MasterSettingRemarks?
     ): MasterSettingUpdateResult {
 
         if (!ValidationCheck.symbol(masterSettingKey.toString()).result ||

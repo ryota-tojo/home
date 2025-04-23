@@ -19,7 +19,20 @@ $password_details = "※パスワードは以下の条件を満たす必要が�
                     ・数字（0～9）を1文字以上含む
                     ・特殊文字（@, $, !, %, *, ?, &）を1文字以上含む
                     ・空白文字（スペース、タブ、改行）は含めないでください";
+$master_setting_maintenance = 0;
 
+// マスター設定
+$master_setting_api_result = apiCallMasterSettingRefer();
+foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
+    if ($setting['setting_key'] == 'maintenance') {
+        $master_setting_maintenance = $setting['setting_value'];
+    }
+}
+if($master_setting_maintenance == "1"){
+    echo "<script>window.location.href = 'maintenance.php';</script>";
+}
+
+// ボタン押下時の処理
 if (isset($_POST['back-btn'])) {
     echo "<script>window.location.href = 'login.php';</script>";
 }

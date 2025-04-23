@@ -5,6 +5,8 @@ require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/base64Service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/initialization.php';
+
 session_start();
 
 //画面名
@@ -12,15 +14,6 @@ $screen_title = "ログイン";
 
 // 初期設定
 initialization();
-
-// マスター設定
-$master_setting_api_result = apiCallMasterSettingRefer();
-$login_failure_limit = null;
-foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
-    if ($setting['setting_key'] == 'login_failure_limit') {
-        $login_failure_limit = $setting['setting_value'];
-    }
-}
 
 // セッション初期設定
 $_SESSION['error_cnt'] = $_SESSION['error_cnt'] ?? 0;
@@ -30,8 +23,21 @@ $_SESSION['account_lockout'] = $_SESSION['account_lockout'] ?? False;
 $login_error = False;
 $lockout = False;
 $login_check_message = '';
+$master_setting_login_failure_limit = null;
+$master_setting_maintenance = 0;
 
-// ボタン押下時の処理
+// マスター設定
+$master_setting_api_result = apiCallMasterSettingRefer();
+foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
+    if ($setting['setting_key'] == 'login_failure_limit') {
+        $master_setting_login_failure_limit = $setting['setting_value'];
+    }
+    if ($setting['setting_key'] == 'maintenance') {
+        $master_setting_maintenance = $setting['setting_value'];
+    }
+}
+
+// URLパラメータによる処理
 if (isset($_GET['user_name']) and isset($_GET['password'])) {
     $user_name = $_GET['user_name'];
     if (isBase64($_GET['user_name'])) {
@@ -51,6 +57,7 @@ if (isset($_GET['user_name']) and isset($_GET['password'])) {
         $login_error = True;
     } else {
         unset($_SESSION['error_cnt']);
+        unset($_SESSION['account_lockout']);
         $user_refer_api_result = apiCallUserRefer(null, $user_name);
 
         $_SESSION['user_id'] = null;
@@ -74,8 +81,8 @@ if (isset($_GET['user_name']) and isset($_GET['password'])) {
             $_SESSION['user_name'] = $userInfo['user_name'];
             $_SESSION['user_password'] = $userInfo['password'];
             $_SESSION['user_permission'] = $userInfo['permission'];
-            $_SESSION['user_approval_flg'] = $userInfo['approval_flg'];
-            $_SESSION['user_delete_flg'] = $userInfo['delete_flg'];
+            $_SESSION['user_approval_flg'] = $userInfo['approval'];
+            $_SESSION['user_delete_flg'] = $userInfo['delete'];
 
             $_SESSION['user_setting'] = $userSettings;
 
@@ -86,9 +93,17 @@ if (isset($_GET['user_name']) and isset($_GET['password'])) {
             }
         }
 
-        echo "<script>window.location.href = 'home_input_tmp.php';</script>";
+        if($master_setting_maintenance == "1"){
+            if($_SESSION['user_permission'] != 2){
+                echo "<script>window.location.href = 'maintenance.php';</script>";
+            }
+        }
+
+        echo "<script>window.location.href = 'home.php';</script>";
     }
 }
+
+// ボタン押下時の処理
 if (isset($_POST['login-btn'])) {
 
     $user_name = $_POST['user-name'] ?? '';
@@ -103,6 +118,7 @@ if (isset($_POST['login-btn'])) {
         $login_error = True;
     } else {
         unset($_SESSION['error_cnt']);
+        unset($_SESSION['account_lockout']);
         $user_refer_api_result = apiCallUserRefer(null, $user_name);
 
         $_SESSION['user_id'] = null;
@@ -126,8 +142,8 @@ if (isset($_POST['login-btn'])) {
             $_SESSION['user_name'] = $userInfo['user_name'];
             $_SESSION['user_password'] = $userInfo['password'];
             $_SESSION['user_permission'] = $userInfo['permission'];
-            $_SESSION['user_approval_flg'] = $userInfo['approval_flg'];
-            $_SESSION['user_delete_flg'] = $userInfo['delete_flg'];
+            $_SESSION['user_approval_flg'] = $userInfo['approval'];
+            $_SESSION['user_delete_flg'] = $userInfo['delete'];
 
             $_SESSION['user_setting'] = $userSettings;
 
@@ -138,11 +154,14 @@ if (isset($_POST['login-btn'])) {
             }
         }
 
-        echo "<script>window.location.href = 'home_input_tmp.php';</script>";
+        if($master_setting_maintenance == "1"){
+            if($_SESSION['user_permission'] != 2){
+                echo "<script>window.location.href = 'maintenance.php';</script>";
+            }
+        }
+
+        echo "<script>window.location.href = 'home.php';</script>";
     }
-}
-if (isset($_POST['group-entry-btn'])) {
-    echo "<script>window.location.href = 'group_entry.php';</script>";
 }
 if (isset($_POST['user-entry-btn'])) {
     echo "<script>window.location.href = 'user_entry.php';</script>";
@@ -150,7 +169,7 @@ if (isset($_POST['user-entry-btn'])) {
 
 // アカウントロック判定
 $disabled = "";
-if ($_SESSION['error_cnt'] >= $login_failure_limit) {
+if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
     $_SESSION['account_lockout'] = True;
     $disabled = "disabled";
 }
@@ -211,8 +230,8 @@ if ($_SESSION['error_cnt'] >= $login_failure_limit) {
                                 <div class="login-msg err_msg">
                                     <?php
                                     if ($login_error == True) {
-                                        if ($_SESSION['account_lockout']) {
-                                            echo "<div class='msg'>ログインの試行回数が許容値({$login_failure_limit}回)を超えました。<br>ブラウザを閉じて再度最初からお試しください。</div>";
+                                        if ($_SESSION['account_lockout'] == True) {
+                                            echo "<div class='msg'>ログインの試行回数が許容値({$master_setting_login_failure_limit}回)を超えました。<br>ブラウザを閉じて再度最初からお試しください。</div>";
                                         } else {
                                             echo "<div class='msg'>ログインに失敗しました。({$_SESSION['error_cnt']}回目)<br>{$login_check_message}</div>";
                                         }

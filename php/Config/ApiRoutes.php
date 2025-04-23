@@ -6,6 +6,12 @@ const API_MASTER_SETTING_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/m
 const API_MASTER_SETTING_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/setting/update"];
 const API_MASTER_SETTING_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/setting/delete"];
 
+// 選択肢マスタAPI
+const API_MASTER_CHOICES_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/master/choices/refer"];
+const API_MASTER_CHOICES_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/choices/create"];
+const API_MASTER_CHOICES_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/choices/update"];
+const API_MASTER_CHOICES_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/choices/delete"];
+
 // お知らせAPI
 const API_NOTICE_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/notice/refer"];
 const API_NOTICE_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/notice/count"];

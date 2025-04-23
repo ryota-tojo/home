@@ -1,0 +1,36 @@
+.message-fields {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: double 4px white;
+    border-bottom: double 4px white;
+    font-size: 150%;
+    animation: fadeOut 6s forwards;
+    margin-bottom: 10px;
+}
+
+.success-message {
+    background-color: #b5df89;
+    color: #2b5d56;
+}
+.error-message{
+    background-color: #fac4c8;
+    color: #721c24;
+}
+.warning-message{
+    background-color: #fdeeb3;
+    color: #856404;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
