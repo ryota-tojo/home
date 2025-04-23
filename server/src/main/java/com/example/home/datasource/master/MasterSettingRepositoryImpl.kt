@@ -50,13 +50,17 @@ class MasterSettingRepositoryImpl : MasterSettingRepository {
 
     override fun update(
         masterSettingKey: MasterSettingKey,
-        masterSettingValue: MasterSettingValue,
-        masterSettingRemarks: MasterSettingRemarks
+        masterSettingValue: MasterSettingValue?,
+        masterSettingRemarks: MasterSettingRemarks?
     ): Int {
         return transaction {
             val updateRows = TbMsSetting.update({ TbMsSetting.settingKey eq masterSettingKey.value }) {
-                it[settingValue] = masterSettingValue.value
-                it[settingRemarks] = masterSettingRemarks.value
+                if (masterSettingValue != null) {
+                    it[settingValue] = masterSettingValue.value
+                }
+                if (masterSettingRemarks != null) {
+                    it[settingRemarks] = masterSettingRemarks.value
+                }
             }
             return@transaction updateRows
         }

@@ -18,7 +18,6 @@ data class UserSettingUpdateRequest(
 
     @JsonProperty("setting_value")
     @field:NotNull(message = "キー「setting_value」が存在しません")
-    @field:NotBlank(message = "キー「setting_value」が未入力です")
     @field:Size(max = 256, message = "キー「setting_value」は256桁以内で入力してください")
     val settingValue: String,
 )

@@ -1,10 +1,37 @@
+/* あんずいろ */
 @font-face {
     font-family: 'anzuiro';/*フォント名日本語OK*/
-    src: url('fontPJapanesefont.ttf');/*フォントファイルパス*/
+    src: url('/Interfaces/Assets/CSS/font/APJapanesefont.ttf');/*フォントファイルパス*/
 }
+
+/* こはるいろサンレイ */
+@font-face {
+    font-family: 'koharuiro';/*フォント名日本語OK*/
+    src: url('/Interfaces/Assets/CSS/font/GN-Koharuiro_Sunray.ttf');
+}
+
+/* コーポレート */
+@font-face {
+    font-family: 'corporate';/*フォント名日本語OK*/
+    src: url('/Interfaces/Assets/CSS/font/Corporate-Logo-Rounded-Bold-ver3.otf');
+}
+
+/* きよすな */
+@font-face {
+    font-family: 'kiyosuna';/*フォント名日本語OK*/
+    src: url('/Interfaces/Assets/CSS/font/KiyosunaSans-B-1.0.1.otf');
+}
+
+/* とよまーる */
+@font-face {
+    font-family: 'toyomare';/*フォント名日本語OK*/
+    src: url('/Interfaces/Assets/CSS/font/Toyomare-Medium.ttf');
+}
+
 .main-font{
-    font-family: anzuiro;
+    font-family: toyomare;
 }
+
 .title-font{
     font-size: 1.6rem;
 }
@@ -28,4 +55,12 @@
 }
 .navbar{
     box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    top: 0; /* 画面の上に固定 */
+    left: 0; /* 画面の左端に固定 */
+    right: 0; /* 画面の右端に固定 */
+    z-index: 1000;
+}
+.maintenance-nav{
+    background-color: #ff7777 !important;
 }

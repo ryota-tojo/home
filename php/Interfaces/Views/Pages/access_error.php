@@ -1,7 +1,13 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // 管理者判定
-$admin_flag = 1
+$admin_flag = 0;
+if ($_SESSION['user_permission'] == 2) {
+    $admin_flag = 1;
+}
 
 ?>
 <!DOCTYPE html>
@@ -12,7 +18,8 @@ $admin_flag = 1
     <title>ページタイトル</title>
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/input_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </head>

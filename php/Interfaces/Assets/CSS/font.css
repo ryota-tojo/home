@@ -1,13 +1,31 @@
 /* あんずいろ */
 @font-face {
   font-family: 'anzuiro';/*フォント名日本語OK*/
-  src: url('fontPJapanesefont.ttf');/*フォントファイルパス*/
+  src: url('/Interfaces/Assets/CSS/font/APJapanesefont.ttf');/*フォントファイルパス*/
 }
 
 /* こはるいろサンレイ */
 @font-face {
   font-family: 'koharuiro';/*フォント名日本語OK*/
-  src: url('fontN-Koharuiro_Sunray.ttf');/*フォントファイルパス*/
+  src: url('/Interfaces/Assets/CSS/font/GN-Koharuiro_Sunray.ttf');
+}
+
+/* コーポレート */
+@font-face {
+  font-family: 'corporate';/*フォント名日本語OK*/
+  src: url('/Interfaces/Assets/CSS/font/Corporate-Logo-Rounded-Bold-ver3.otf');
+}
+
+/* きよすな */
+@font-face {
+  font-family: 'corporate';/*フォント名日本語OK*/
+  src: url('/Interfaces/Assets/CSS/font/KiyosunaSans-B-1.0.1.otf');
+}
+
+/* とよまーる */
+@font-face {
+  font-family: 'toyomare';/*フォント名日本語OK*/
+  src: url('/Interfaces/Assets/CSS/font/Toyomare-Medium.ttf');
 }
 
 .err_msg{

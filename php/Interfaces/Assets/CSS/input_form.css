@@ -66,4 +66,14 @@
         margin-left: 10px; /* 左余白 */
     }
 
+    .title-item {
+        width: calc(100% - 10px);
+        margin-left: 10px; /* 左余白 */
+    }
+
+    .content-item {
+        width: calc(100% - 10px);
+        margin-left: 10px; /* 左余白 */
+    }
+
 }

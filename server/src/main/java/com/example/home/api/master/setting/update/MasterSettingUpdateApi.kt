@@ -34,8 +34,8 @@ class MasterSettingUpdateApi(
 
         // リクエスト取得
         val requestKey = MasterSettingKey(request.settingKey)
-        val requestValue = MasterSettingValue(request.settingValue)
-        val requestRemarks = MasterSettingRemarks(request.remarks)
+        val requestValue: MasterSettingValue? = request.settingValue?.let { MasterSettingValue(it) }
+        val requestRemarks: MasterSettingRemarks? = request.remarks?.let { MasterSettingRemarks(it) }
 
         val serviceExecResult = masterSettingService.update(
             requestKey, requestValue, requestRemarks
