@@ -38,10 +38,53 @@
 .settings-input-large{
     width: 100%;
 }
+.form-check{
+    margin-left: 10px;
+}
+.required-comment {
+    margin-left: 5px;
+    color: #f4091e;
+    font-size: 60%;
+    margin-top: 0.5em; /* ← ここで位置を微調整 */
+}
+.optional-comment {
+    margin-left: 5px;
+    color: #616161;
+    font-size: 60%;
+    margin-top: 0.5em; /* ← ここで位置を微調整 */
+}
+.disabled-comment {
+    margin-left: 5px;
+    color: #616161;
+    font-size: 60%;
+    margin-top: 0.5em; /* ← ここで位置を微調整 */
+}
 
 @media (max-width: 1024px){
-
+    .header-btn-area{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .header-btn{
+        display: flex;
+        justify-content: center;
+        width: 80%;
+    }
 }
 @media (min-width: 1024px) {
-
+    .header-btn-area{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .header-btn{
+        display: flex;
+        justify-content: left;
+        width: 90%;
+    }
 }

@@ -1,9 +1,6 @@
 package com.example.home.service.group
 
-import com.example.home.domain.entity.group.result.GroupInfoDeleteResult
-import com.example.home.domain.entity.group.result.GroupInfoReferResult
-import com.example.home.domain.entity.group.result.GroupInfoSaveResult
-import com.example.home.domain.entity.group.result.GroupInfoUpdateResult
+import com.example.home.domain.entity.group.result.*
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.user.UserInfoRepository
@@ -21,10 +18,11 @@ class GroupInfoControlService(
     fun refer(
         groupsId: GroupsId? = null,
         userId: UserId? = null,
+        leader: UserLeaderFlg? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): GroupInfoReferResult {
-        val groupInfoList = groupInfoRepository.refer(groupsId, userId, offset, limit)
+        val groupInfoList = groupInfoRepository.refer(groupsId, userId, leader, offset, limit)
         if (groupInfoList.isNullOrEmpty()) {
             return GroupInfoReferResult(
                 ResponseCode.データ不在エラー.code,
@@ -88,6 +86,85 @@ class GroupInfoControlService(
         return GroupInfoUpdateResult(
             ResponseCode.成功.code,
             updateRows
+        )
+    }
+    fun leaderChange(
+        groupsId: GroupsId,
+        leaderUserId: UserId,
+        newLeaderUserId: UserId,
+    ): GroupInfoLeaderChangeResult {
+        val leaderUser = refer(groupsId,leaderUserId).groupInfoList
+        val newLeaderUser = refer(groupsId,newLeaderUserId).groupInfoList
+
+        // リーダー存在チェック
+        if(leaderUser.isNullOrEmpty()) {
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.存在しないユーザー.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        // 新リーダー存在チェック
+        if(newLeaderUser.isNullOrEmpty()) {
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.存在しないユーザー.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        // リーダー：リーダーフラグチェック
+        if(leaderUser.first().userLeaderFlg.value!=1){
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.リーダー以外のユーザー.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        // リーダー：承認フラグチェック
+        if(leaderUser.first().groupApprovalFlg.value==0){
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.未承認のユーザー.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        // 新リーダー：リーダーフラグチェック
+        if(newLeaderUser.first().userLeaderFlg.value!=0){
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.メンバー以外のユーザー.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        // 新リーダー：承認フラグチェック
+        if(newLeaderUser.first().groupApprovalFlg.value==0){
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.未承認のユーザー.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        val updateResultLeader = update(groupsId,leaderUserId, UserLeaderFlg(0))
+        if(updateResultLeader.updateRows == 0){
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.グループ情報の更新に失敗.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        val updateResultNewLeader = update(groupsId,newLeaderUserId,UserLeaderFlg(1))
+        if(updateResultNewLeader.updateRows == 0){
+            update(groupsId,leaderUserId, UserLeaderFlg(1))
+            return GroupInfoLeaderChangeResult(
+                ResponseCode.グループ情報の更新に失敗.code,
+                leaderUserId,
+                newLeaderUserId
+            )
+        }
+        return GroupInfoLeaderChangeResult(
+            ResponseCode.成功.code,
+            leaderUserId,
+            newLeaderUserId
         )
     }
 

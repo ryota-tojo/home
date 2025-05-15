@@ -29,7 +29,7 @@ class NoticeRepositoryImpl : NoticeRepository {
 
             query
                 .apply { limit?.let { limit(it, offset = offset ?: 0) } }
-                .orderBy(TbTsNotice.noticeId to SortOrder.DESC).map {
+                .orderBy(TbTsNotice.updateDate to SortOrder.DESC).map {
                 Notice(
                     NoticeId(it[TbTsNotice.noticeId]),
                     NoticeTitle(it[TbTsNotice.title]),

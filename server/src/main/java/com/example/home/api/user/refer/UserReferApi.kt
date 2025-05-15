@@ -6,8 +6,7 @@ import com.example.home.api.user.refer.request.UserReferRequest
 import com.example.home.api.user.refer.response.UserReferResponse
 import com.example.home.api.user.refer.response.UserReferResponse.UserInfoObject
 import com.example.home.domain.model.ResponseCode
-import com.example.home.domain.value_object.user.UserId
-import com.example.home.domain.value_object.user.UserName
+import com.example.home.domain.value_object.user.*
 import com.example.home.service.user.UserControlService
 import com.example.home.util.ParseLocalDateTime.parseLocalDateTime
 import jakarta.servlet.http.HttpServletResponse
@@ -36,11 +35,22 @@ class UserReferApi(
         // リクエスト取得
         val requestUserId = if (request.userId == 0) null else request.userId?.let { UserId(it) }
         val requestUserName = if (request.userName == "") null else request.userName?.let { UserName(it) }
+        val requestPermission = if (request.permission == 0) null else request.permission?.let { UserPermission(it) }
+        val requestApproval = if (request.approval == 0) null else request.approval?.let { UserApprovalFlg(it) }
+        val requestDeleted = if (request.deleted == 0) null else request.deleted?.let { UserDeleteFlg(it) }
 
         val requestOffset = request.offSet
         val requestLimit = request.limit
 
-        val serviceExecResult = userControlService.refer(requestUserId, requestUserName, requestOffset, requestLimit)
+        val serviceExecResult = userControlService.refer(
+            requestUserId,
+            requestUserName,
+            requestPermission,
+            requestApproval,
+            requestDeleted,
+            requestOffset,
+            requestLimit
+        )
 
         // エラー時のレスポンス
         if (serviceExecResult.result != ResponseCode.成功.code) {

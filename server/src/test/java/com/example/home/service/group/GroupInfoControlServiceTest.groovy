@@ -1,6 +1,6 @@
 package com.example.home.service.group
 
-import com.example.home.data.etc.FixtureEtc
+
 import com.example.home.data.group.FixtureGroupInfo
 import com.example.home.data.group.FixtureGroupList
 import com.example.home.data.user.FixtureUserInfo
@@ -23,18 +23,19 @@ class GroupInfoControlServiceTest extends Specification {
         setup:
         def groupsId = FixtureGroupList.所属グループID_正常()
         def userId = FixtureUserInfo.ユーザーID_正常()
+        def leaderFlg = FixtureGroupInfo.リーダーフラグ_リーダー()
 
         when:
-        def result = sut.refer(groupsId, userId, null, null)
+        def result = sut.refer(groupsId, userId, leaderFlg, null, null)
 
         then:
-        1 * groupInfoRepository.refer(groupsId, userId, null, null) >> groupInfoList
+        1 * groupInfoRepository.refer(groupsId, userId, leaderFlg, null, null) >> groupInfoList
         result == expected
 
         where:
         useCase           | expected                                                                                         | groupInfoList
         "正常"            | new GroupInfoReferResult(ResponseCode.成功.code, [FixtureGroupInfo.所属グループ情報_メンバー()]) | [FixtureGroupInfo.所属グループ情報_メンバー()]
-        "正常_データなし" | new GroupInfoReferResult(ResponseCode.データ不在エラー.code, null) | null
+        "正常_データなし" | new GroupInfoReferResult(ResponseCode.データ不在エラー.code, null)                               | null
     }
 
     def "groupInfo_save_#useCase"() {
@@ -46,8 +47,8 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.save(groupsId, userId, leaderFlg)
 
         then:
-        uiCnt * userInfoRepository.refer(userId, null, null, null) >> userInfo
-        grCnt * groupInfoRepository.refer(groupsId, null, null, null) >> groupInfoRefer
+        uiCnt * userInfoRepository.refer(userId, null, null, null, null, null, null) >> userInfo
+        grCnt * groupInfoRepository.refer(groupsId, null, _, null, null) >> groupInfoRefer
         gsCnt * groupInfoRepository.save(groupsId, userId, leaderFlg) >> groupInfo
         result == expected
 
@@ -88,7 +89,7 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.delete(groupsId, userId)
 
         then:
-        1 * groupInfoRepository.refer(groupsId, userId, null, null) >> groupInfoRefer
+        1 * groupInfoRepository.refer(groupsId, userId, _, null, null) >> groupInfoRefer
         gdCnt * groupInfoRepository.delete(groupsId, userId) >> deleteRows
         result == expected
 

@@ -10,6 +10,10 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
     キー未設定エラー("error", "KEY_NOT_FOUND_ERROR", "キーが存在しません"),
     存在しないユーザー("error", "USER_NOT_FOUND_ERROR", "ユーザーが存在しません"),
     既にリーダーが存在するグループ("error", "LEADER_EXIST_GROUP_ERROR", "既にリーダーが存在するグループです"),
+    リーダー以外のユーザー("error", "NOT_LEADER_USER_ERROR", "リーダーではないユーザーが指定されています"),
+    メンバー以外のユーザー("error", "NOT_MEMBER_USER_ERROR", "メンバーではないユーザーが指定されています"),
+    未承認のユーザー("error", "NOT_APPROVAL_USER_ERROR", "承認されていないユーザーが指定されています"),
+    グループ情報の更新に失敗("error", "GROUP_INFO_UPDATE_ERROR", "グループ情報の更新に失敗しました"),
 
     グループ認証エラー("error", "GROUP_CERTIFICATION_ERROR", "グループの認証に失敗しました"),
 

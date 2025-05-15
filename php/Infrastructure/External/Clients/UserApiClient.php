@@ -31,7 +31,7 @@ function apiCallLoginCheck($user_name, $password)
 
 }
 
-function apiCallUserRefer($user_id = null, $user_name = null, $offset = 0, $limit = 100)
+function apiCallUserRefer($user_id = null, $user_name = null, $permission = null, $approval = null, $deleted = null, $offset = 0, $limit = 100)
 {
 
     $http_method = API_USER_REFER['HTTP_METHOD'];
@@ -39,9 +39,13 @@ function apiCallUserRefer($user_id = null, $user_name = null, $offset = 0, $limi
     $request_parameter = [
         "user_id" => $user_id,
         "user_name" => $user_name,
+        "permission" => $permission,
+        "approval" => $approval,
+        "deleted" => $deleted,
         "offset" => $offset,
         "limit" => $limit
     ];
+
 
     $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
@@ -59,14 +63,17 @@ function apiCallUserRefer($user_id = null, $user_name = null, $offset = 0, $limi
     ];
 }
 
-function apiCallUserCount($user_id = null, $user_name = null)
+function apiCallUserCount($user_id = null, $user_name = null, $permission = null, $approval = null, $deleted = null)
 {
 
     $http_method = API_USER_COUNT['HTTP_METHOD'];
     $api_path = API_USER_COUNT['API_PATH'];
     $request_parameter = [
         "user_id" => $user_id,
-        "user_name" => $user_name
+        "user_name" => $user_name,
+        "permission" => $permission,
+        "approval" => $approval,
+        "deleted" => $deleted
     ];
 
     $api_service = new ApiService($api_path);

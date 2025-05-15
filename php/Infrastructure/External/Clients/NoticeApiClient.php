@@ -4,13 +4,15 @@ use Application\Services\ApiService;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/ApiRoutes.php';
 
-function apiCallNoticeRefer($id = null)
+function apiCallNoticeRefer($id = null,$offset = null,$limit=null)
 {
 
     $http_method = API_NOTICE_REFER['HTTP_METHOD'];
     $api_path = API_NOTICE_REFER['API_PATH'];
     $request_parameter = [
-        "notice_id" => $id
+        "notice_id" => $id,
+        "offset" => $offset,
+        "limit" => $limit
     ];
 
     $api_service = new ApiService($api_path);

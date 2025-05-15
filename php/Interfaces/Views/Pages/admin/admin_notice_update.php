@@ -7,14 +7,14 @@ require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
-$screen_title = "お知らせ登録";
+$screen_title = "お知らせ更新";
 
 // 管理者判定
 $admin_flag = 0;
 if ($_SESSION['user_permission'] == 2) {
     $admin_flag = 1;
 }
-if($admin_flag == 0){
+if ($admin_flag == 0) {
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = 'access_error.php';</script>";
 }
@@ -23,35 +23,50 @@ if($admin_flag == 0){
 $entry_button_click_flg = False;
 $message = "";
 $entry_error = False;
-$notice_title_default = '';
-$notice_content_default = '';
 
 // マスター設定
-$master_setting_api_result = apiCallMasterSettingRefer();
-foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
-    if ($setting['setting_key'] == 'admin_notice_default_title') {
-        $notice_title_default = $setting['setting_value'];
-    }
-    if ($setting['setting_key'] == 'admin_notice_default_content') {
-        $notice_content_default = $setting['setting_value'];
-    }
+$master_setting_api_refer_result = apiCallMasterSettingRefer();
+$master_settings = [];
+foreach ($master_setting_api_refer_result['data']['setting_list'] as $setting) {
+    $master_settings[$setting['setting_key']] = $setting['setting_value'];
 }
+$notice_title_default = $master_settings['admin_notice_default_title'] ?? null;
+$notice_content_default = $master_settings['admin_notice_default_content'] ?? null;
+
+// お知らせ情報取得
+$notice_id = $_GET['id'] ?? null;
+if ($notice_id == null) {
+    $_SESSION['access_error'] = 1;
+    echo "<script>window.location.href = 'access_error.php';</script>";
+}
+$notice_refer_api_result = apiCallNoticeRefer($notice_id);
+if ($notice_refer_api_result['status'] == "error") {
+    $_SESSION['access_error'] = 1;
+    echo "<script>window.location.href = 'access_error.php';</script>";
+}
+$notice_title = $notice_refer_api_result['data']['notice_list'][0]['title'];
+$notice_content = $notice_refer_api_result['data']['notice_list'][0]['content'];
 
 // ボタン押下時の処理
+if (isset($_POST['back'])) {
+    echo "<script>window.location.href = '/Interfaces/Views/Pages/home.php';</script>";
+}
 if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $notice_title = $_POST['title'] ?? '';
     $notice_content = $_POST['content'] ?? '';
 
-    $notice_create_api_result = apiCallNoticeCreate($notice_title,$notice_content);
-    $status = $notice_create_api_result['status'];
-    if($status != "success"){
+    $notice_update_api_result = apiCallNoticeUpdate($notice_id, $notice_title, $notice_content);
+    $status = $notice_update_api_result['status'];
+    if ($status != "success") {
 
         $entry_error = True;
-        $message = "お知らせの登録に失敗しました";
-    }else{
-        $message = "お知らせを登録しました";
+        $notice_title_default = $notice_title;
+        $notice_content_default = $notice_content;
+        $message = "お知らせの更新に失敗しました";
+    } else {
+        $message = "お知らせを更新しました";
     }
 }
 
@@ -64,7 +79,7 @@ if (isset($_POST['entry'])) {
     <title><?php echo $screen_title; ?></title>
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/input_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/shopping_input_form.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -85,15 +100,21 @@ if (isset($_POST['entry'])) {
     </div>
     <div class="summary-area">
         <div class="summary">
-            新規のお知らせを登録します。<br>
+            新規のお知らせを更新します。<br>
         </div>
     </div>
 
+    <form action="" method="post">
+        <div class="header-btn-area">
+            <div class="header-btn"><button type="submit" class="btn btn-primary" name="back">戻る</button></div>
+        </div>
+    </form>
+
     <?php
-    if($entry_button_click_flg == True){
-        if($entry_error == True){
+    if ($entry_button_click_flg == True) {
+        if ($entry_error == True) {
             echo "<div class='message-fields error-message'>$message</div>";
-        }else{
+        } else {
             echo "<div class='message-fields success-message'>$message</div>";
         }
     }
@@ -119,8 +140,8 @@ if (isset($_POST['entry'])) {
                                 </div>
                                 <div class="input-group form-item">
                                     <input required type="text" class="form-control" name="title"
-                                        <?php $notice_title = $_POST['title'] ?? '';
-                                        if($entry_error == True){ echo "value='{$notice_title}'";} ?>
+                                        <?php $init_notice_title = $notice_title ?? $notice_title_default;
+                                        echo "value='{$init_notice_title}'"; ?>
                                     >
                                 </div>
                             </div>
@@ -133,7 +154,9 @@ if (isset($_POST['entry'])) {
                                     <label class="item-label">内容</label>
                                 </div>
                                 <div class="input-group form-item">
-                                    <textarea required class="form-control" name="content" rows="10"><?php $notice_content = $_POST['content'] ?? ''; if($entry_error == True){ echo "{$notice_content}";} ?></textarea>
+                                    <textarea required class="form-control" name="content"
+                                              rows="10"><?php $init_notice_content = $notice_content ?? $notice_content_default;
+                                        echo "{$init_notice_content}"; ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +165,7 @@ if (isset($_POST['entry'])) {
                     <!-- 登録ボタン -->
                     <div class="form-item">
                         <div class="submit-area">
-                            <button type="submit" class="btn btn-primary" name="entry">登録</button>
+                            <button type="submit" class="btn btn-primary" name="entry">更新</button>
                         </div>
                     </div>
                 </form>

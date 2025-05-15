@@ -7,10 +7,11 @@ import java.time.LocalDate
  */
 object TsDefaultData {
     val GROUP_SETTING = mapOf(
-        "display_yyyy" to LocalDate.now().year.toString(),
+        "display_year" to LocalDate.now().year.toString(),
         "graph_type" to "1",
-        "slack_basic_webhook_url" to "",
-        "slack_basic_send_flg" to ""
+        "notification_send_flg" to "0",
+        "notification_url" to "https://default",
+        "notification_token" to ""
     )
     val USER_SETTING = mapOf(
         "Setting1" to "0",

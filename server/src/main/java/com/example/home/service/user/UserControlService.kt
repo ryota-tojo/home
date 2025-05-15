@@ -23,12 +23,23 @@ class UserControlService(
     fun refer(
         userId: UserId? = null,
         userName: UserName? = null,
+        userPermission: UserPermission? = null,
+        userApprovalFlg: UserApprovalFlg? = null,
+        userDeleteFlg: UserDeleteFlg? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): UserReferResult {
 
         // ユーザー情報を取得する
-        val userInfoList = userInfoRepository.refer(userId = userId, userName = userName)
+        val userInfoList = userInfoRepository.refer(
+            userId = userId,
+            userName = userName,
+            userPermission = userPermission,
+            userApprovalFlg = userApprovalFlg,
+            userDeleteFlg = userDeleteFlg,
+            offset = offset,
+            limit = limit,
+        )
         if (userInfoList.isNullOrEmpty()) {
             return UserReferResult(
                 ResponseCode.データ不在エラー.code,

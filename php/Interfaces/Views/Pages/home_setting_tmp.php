@@ -23,9 +23,6 @@ if($admin_flag == 0){
 $entry_button_click_flg = False;
 $message = "";
 $entry_error = False;
-$master_setting_001 = "";
-$master_setting_002 = "";
-$master_setting_003 = "";
 
 // ボタン押下時の処理
 if (isset($_POST['entry'])) {
@@ -43,20 +40,16 @@ if (isset($_POST['entry'])) {
 }
 
 // マスター設定
-if ($entry_error == False) {
-    $master_setting_api_result = apiCallMasterSettingRefer();
-    foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
-        if ($setting['setting_key'] == 'XXXXXXXXXX') {
-            $master_setting_001 = $setting['setting_value'];
-        }
-        if ($setting['setting_key'] == 'XXXXXXXXXX') {
-            $master_setting_002 = $setting['setting_value'];
-        }
-        if ($setting['setting_key'] == 'XXXXXXXXXX') {
-            $master_setting_003 = $setting['setting_value'];
-        }
-    }
+$master_setting_api_refer_result = apiCallMasterSettingRefer();
+$master_settings = [];
+foreach ($master_setting_api_refer_result['data']['setting_list'] as $setting) {
+    $master_settings[$setting['setting_key']] = $setting['setting_value'];
 }
+$master_setting_001 = $master_settings['XXXXXX'] ?? null;
+$master_setting_002 = $master_settings['XXXXXX'] ?? null;
+$master_setting_003 = $master_settings['XXXXXX'] ?? null;
+
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">

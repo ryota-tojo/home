@@ -10,9 +10,11 @@ interface GroupInfoRepository {
     fun refer(
         groupsId: GroupsId? = null,
         userId: UserId? = null,
+        leader: UserLeaderFlg? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): List<GroupInfo>
+
     fun getGroupsId(userId: UserId): GroupsId?
     fun save(
         groupsId: GroupsId,

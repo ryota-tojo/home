@@ -1,0 +1,135 @@
+.form-area {
+    padding: 20px 10px;
+    background: #fcfcfc;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-top: double 5px #4ec4d3;
+    border-bottom: double 5px #4ec4d3;
+}
+.form-title{
+    font-size: 1rem;
+}
+.form-item{
+    padding: 5px 0 5px 0;
+}
+.item{
+    display: grid;
+}
+.button-items {
+    display: flex;  /* 横並びにする */
+    flex-wrap: wrap;  /* 折り返しを許可 */
+    gap: 10px;  /* ボタン間の隙間を調整 */
+}
+.button-items .btn {
+    flex: 0 1 auto;  /* ボタンの幅を自動に調整 */
+    margin-bottom: 10px;  /* ボタンの下に少し隙間を追加 */
+}
+.submit-area{
+    display: grid;
+    justify-content: center;
+}
+.notice-update{
+    display: flex;
+    justify-content: right;
+    margin-top: 20px;
+}
+.next-btn{
+
+}
+.reset-btn{
+    margin-top: 10px;
+}
+
+@media (max-width: 1024px){
+    .notice-header{
+        display: grid;
+        width:100%
+    }
+    .notice-no{
+        width:100%;
+        text-align: left;
+    }
+    .notice-date{
+        width:100%;
+        text-align: left;
+        font-size: 90%;
+    }
+    .notice-title{
+        display: flex;
+        justify-content: center;
+        font-size: 100%;
+        margin-top: 20px;
+
+    }
+    .notice-content{
+        font-size: 100%;
+    }
+
+}
+@media (min-width: 1024px) {
+    .notice-header{
+        display: flex;
+        width:100%
+    }
+    .notice-no{
+        width:50%;
+        text-align: left;
+    }
+    .notice-date{
+        width:50%;
+        text-align: right;
+    }
+    .notice-title{
+        display: flex;
+        justify-content: center;
+        font-size: 100%;
+        margin-top: 20px;
+    }
+    .notice-content{
+        font-size: 90%;
+    }
+
+    .date-form{
+        width: calc((100% - 30px) / 4);
+    }
+    .date-btn-item{
+        margin-left: 10px;
+    }
+    .pc-form{
+        display: flex;
+    }
+    .member-item{
+        width: calc((100% - 30px) / 4);
+    }
+
+    .category-item,
+    .type-item,
+    .payment-item,
+    .settlement-item {
+        width: calc((100% - 30px) / 4); /* 余白を引いた後で4分割 */
+        margin-left: 10px; /* 左余白 */
+    }
+    .category-item {
+        margin-left: 0; /* 最初の要素だけ余白をなくす */
+    }
+    .amount-item {
+        width: calc((100% - 30px) / 4); /* 全体の1/4の幅 */
+    }
+
+    .remarks-item {
+        width: calc(100% - (100% - 30px) / 4 - 10px); /* 残りの幅 */
+        margin-left: 10px; /* 左余白 */
+    }
+
+    .title-item {
+        width: calc(100% - 10px);
+        margin-left: 10px; /* 左余白 */
+    }
+
+    .content-item {
+        width: calc(100% - 10px);
+        margin-left: 10px; /* 左余白 */
+    }
+
+}
