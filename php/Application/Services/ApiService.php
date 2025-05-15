@@ -6,13 +6,16 @@ class ApiService
 {
     public function __construct($path)
     {
-        $this->url = API_BASE_URL .$path ;
+        $this->url = API_BASE_URL . $path;
     }
-    public function httpRequest($http_method, $dictionary_data )
+
+    public function httpRequest($http_method, $dictionary_data)
     {
-        if($dictionary_data != null){
+        $debug_mode = 0;
+
+        if ($dictionary_data != null) {
             $json_data = json_encode($dictionary_data);
-        }else{
+        } else {
             $json_data = "{}";
         }
 
@@ -31,6 +34,15 @@ class ApiService
             echo 'Error:' . curl_error($ch);
         }
         curl_close($ch);
+
+        if ($debug_mode == 1) {
+            echo "<br><br>";
+            echo "---------------------";
+            echo "<h2 style='font-weight: bold;'>{$this->url}</h2>";
+            echo "<pre>{$json_data}</pre>";
+            echo "<pre>{$response}</pre>";
+            echo "---------------------";
+        }
 
         return $response;
 

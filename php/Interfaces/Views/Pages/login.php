@@ -93,8 +93,8 @@ if (isset($_GET['user_name']) and isset($_GET['password'])) {
             }
         }
 
-        if($master_setting_maintenance == "1"){
-            if($_SESSION['user_permission'] != 2){
+        if ($master_setting_maintenance == "1") {
+            if ($_SESSION['user_permission'] != 2) {
                 echo "<script>window.location.href = 'maintenance.php';</script>";
             }
         }
@@ -154,8 +154,8 @@ if (isset($_POST['login-btn'])) {
             }
         }
 
-        if($master_setting_maintenance == "1"){
-            if($_SESSION['user_permission'] != 2){
+        if ($master_setting_maintenance == "1") {
+            if ($_SESSION['user_permission'] != 2) {
                 echo "<script>window.location.href = 'maintenance.php';</script>";
             }
         }
@@ -207,7 +207,7 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                                     </div>
                                     <div class="login-form-input">
                                         <input type="text" required <?php echo $disabled; ?> maxlength="64"
-                                               class="form-control" name="user-name"
+                                               class="form-control" name="user-name" id="user-name"
                                                placeholder="ユーザー名を入力してください"
                                             <?php $user_name = $_POST['user-name'] ?? '';
                                             echo "value='{$user_name}'"; ?>
@@ -223,6 +223,7 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                                         <input type="password" required <?php echo $disabled; ?> maxlength="64"
                                                class="form-control"
                                                name="password"
+                                               id="password"
                                                placeholder="パスワードを入力してください">
                                     </div>
                                 </div>
@@ -290,13 +291,25 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
             </div>
         </div>
     </div>
+    <form action="" method="POST">
+        <button type="button" name="admin-btn" id="admin-btn">admin入力</button>
+        <button type="button" name="user-btn" id="user-btn">user入力</button>
+    </form>
 </main>
 
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
 <script>
+    document.getElementById('admin-btn').addEventListener('click', function () {
+        document.getElementById('user-name').value = 'admin';
+        document.getElementById('password').value = 'adminadmin';
+    });
 
+    document.getElementById('user-btn').addEventListener('click', function () {
+        document.getElementById('user-name').value = 'user';
+        document.getElementById('password').value = '1234567890';
+    });
 </script>
 </body>
 </html>

@@ -18,6 +18,7 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
     override fun refer(
         groupsId: GroupsId?,
         userId: UserId?,
+        leader: UserLeaderFlg?,
         offset: Long?,
         limit: Int?
     ): List<GroupInfo> {
@@ -26,6 +27,7 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
 
             groupsId?.let { conditions.add(TbTsGroupInfo.groupsId eq it.value) }
             userId?.let { conditions.add(TbTsGroupInfo.userId eq it.value) }
+            leader?.let { conditions.add(TbTsGroupInfo.leaderFlg eq it.value) }
 
             val query = if (conditions.isNotEmpty()) {
                 TbTsGroupInfo.select { conditions.reduce { acc, op -> acc and op } }
@@ -109,10 +111,17 @@ class GroupInfoRepositoryImpl : GroupInfoRepository {
                 (TbTsGroupInfo.groupsId eq groupsId.value) and
                         (TbTsGroupInfo.userId eq userId.value)
             }) {
+                var shouldUpdateDate = false
+
                 if (userLeaderFlg != null) {
                     it[leaderFlg] = userLeaderFlg.value
+                    shouldUpdateDate = true
                 }
-                if (groupApprovalFlg != null) {
+                groupApprovalFlg?.value?.let { value ->
+                    it[approvalFlg] = value
+                    shouldUpdateDate = true
+                }
+                if (shouldUpdateDate) {
                     it[updateDate] = LocalDateTime.now()
                 }
             }

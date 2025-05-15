@@ -50,7 +50,7 @@ class GroupControlService(
         offset: Long? = null,
         limit: Int? = null,
     ): GroupReferResult {
-        val groupList = groupListRepository.refer(groupsId)
+        val groupList = groupListRepository.refer(groupsId,offset,limit)
 
         if (groupList.isNullOrEmpty()) {
             return GroupReferResult(

@@ -25,53 +25,62 @@
     flex: 0 1 auto;  /* ボタンの幅を自動に調整 */
     margin-bottom: 10px;  /* ボタンの下に少し隙間を追加 */
 }
+.input-group.form-item {
+    display: flex;
+    gap: 10px; /* これでラジオ同士に隙間ができる */
+}
+
+.form-check {
+    padding: 5px 10px;
+    border-radius: 5px;
+}
 .submit-area{
     display: flex;
-    justify-content: center;
+    justify-content: right;
+}
+.reset-btn{
+    margin-left: 10px;
 }
 
 @media (max-width: 1024px){
-
+    .header-btn-area{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    .header-btn{
+        display: flex;
+        justify-content: center;
+        width: 80%;
+    }
 }
 @media (min-width: 1024px) {
-    .date-form{
-        width: calc((100% - 30px) / 4);
-    }
-    .date-btn-item{
-        margin-left: 10px;
-    }
-    .pc-form{
+    .header-btn-area{
         display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
-    .member-item{
-        width: calc((100% - 30px) / 4);
+    .header-btn{
+        display: flex;
+        justify-content: left;
+        width: 90%;
     }
 
-    .category-item,
-    .type-item,
-    .payment-item,
-    .settlement-item {
-        width: calc((100% - 30px) / 4); /* 余白を引いた後で4分割 */
+    .number-item {
+        width: calc(100% - 10px); /* 残りの幅 */
         margin-left: 10px; /* 左余白 */
     }
-    .category-item {
-        margin-left: 0; /* 最初の要素だけ余白をなくす */
-    }
-    .amount-item {
-        width: calc((100% - 30px) / 4); /* 全体の1/4の幅 */
-    }
 
-    .remarks-item {
-        width: calc(100% - (100% - 30px) / 4 - 10px); /* 残りの幅 */
+    .text-item {
+        width: calc(100% - 10px); /* 残りの幅 */
         margin-left: 10px; /* 左余白 */
     }
 
     .title-item {
-        width: calc(100% - 10px);
-        margin-left: 10px; /* 左余白 */
-    }
-
-    .content-item {
         width: calc(100% - 10px);
         margin-left: 10px; /* 左余白 */
     }

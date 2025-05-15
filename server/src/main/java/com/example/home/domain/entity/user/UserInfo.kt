@@ -15,3 +15,4 @@ data class UserInfo(
     val approvalDate: LocalDateTime? = null,
     val deleteDate: LocalDateTime? = null
 )
+

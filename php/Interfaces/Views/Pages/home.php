@@ -6,14 +6,49 @@ require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
-
 $screen_title = "お知らせ";
 
 // 管理者判定
 $admin_flag = 0;
-if($_SESSION['user_permission'] == 2){
+if ($_SESSION['user_permission'] == 2) {
     $admin_flag = 1;
 }
+
+// 変数初期化
+$entry_button_click_flg = False;
+$message = "";
+$entry_error = False;
+
+// マスター設定
+$master_setting_api_refer_result = apiCallMasterSettingRefer();
+$master_settings = [];
+foreach ($master_setting_api_refer_result['data']['setting_list'] as $setting) {
+    $master_settings[$setting['setting_key']] = $setting['setting_value'];
+}
+$admin_notice_view = $master_settings['admin_notice_view'] ?? null;
+if (!isset($_SESSION['notice_view'])) {
+    $_SESSION['notice_view'] = $admin_notice_view;
+}
+
+// お知らせ最大数
+$notice_api_count_result = apiCallNoticeCount();
+$notice_count = $notice_api_count_result['data']['recode_count'];
+
+// ボタン押下時の処理
+if (isset($_POST['update'])) {
+    echo "<script>window.location.href = '/Interfaces/Views/Pages/admin/admin_notice_update.php?id={$_POST['update']}';</script>";
+}
+if (isset($_POST['next'])) {
+    if ($_SESSION['notice_view'] < $notice_count) {
+        $_SESSION['notice_view'] = $_SESSION['notice_view'] + $admin_notice_view;
+    }
+}
+if (isset($_POST['reset'])) {
+    $_SESSION['notice_view'] = $admin_notice_view;
+}
+
+$notice_api_refer_result = apiCallNoticeRefer(null, 0, $_SESSION['notice_view']);
+
 
 ?>
 <!DOCTYPE html>
@@ -24,7 +59,7 @@ if($_SESSION['user_permission'] == 2){
     <title><?php echo $screen_title; ?></title>
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/input_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/notice_form.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -39,11 +74,6 @@ if($_SESSION['user_permission'] == 2){
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
 </header>
 
-<?php
-$notice_count_api_result = apiCallNoticeCount();
-echo $notice_count_api_result['data']['recode_count'];
-
-?>
 <main>
     <div class="title-area">
         <h2 class="title"><?php echo $screen_title; ?></h2>
@@ -52,152 +82,80 @@ echo $notice_count_api_result['data']['recode_count'];
         <div class="summary">
         </div>
     </div>
+
+    <?php
+    if ($entry_button_click_flg == True) {
+        if ($entry_error == True) {
+            echo "<div class='message-fields error-message'>$message</div>";
+        } else {
+            echo "<div class='message-fields success-message'>$message</div>";
+        }
+    }
+    ?>
+
     <div class="contents">
         <div class="content-row">
             <div class="left">
             </div>
             <div class="center">
-                <form action="" method="post">
-                    <div class="form-area">
-
-
-                        <h6 class="form-title">入力フォーム</h6>
-                        <hr>
-
-                        <!-- 入力パターン -->
-                        <div class="form-item">
-                            <div class="form-item-label">
-                                <label class="item-label">入力パターン</label>
-                            </div>
-                            <div class="input-group form-item">
-                                <div class="button-items">
-                                    <button type="button" class="btn btn-secondary" name="">button1</button>
-                                    <button type="button" class="btn btn-secondary" name="">button2</button>
+                <?php foreach ($notice_api_refer_result['data']['notice_list'] as $index => $notice):
+                    $cnt = $index + 1;
+                    $isHidden = $cnt > $_SESSION['notice_view'];
+                    ?>
+                    <form
+                            action=""
+                            method="post"
+                            id="notice-form-<?php echo $cnt; ?>"
+                        <?php if ($cnt > $_SESSION['notice_view']) echo 'style="display:none;"'; ?>
+                    >
+                        <div class="form-area">
+                            <div class='notice-header'>
+                                <div class='notice-no'>
+                                    <h6 class="form-title">
+                                        No. <?php echo htmlspecialchars($notice['notice_id']); ?></h6>
+                                </div>
+                                <div class='notice-date'>
+                                    <div>最終更新日時：<?php echo htmlspecialchars($notice['update_datetime']); ?></div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- 日付 -->
-                        <div class="form-item">
-                            <div class="form-item-label">
-                                <label class="item-label">日付</label>
+                            <div class='notice-title'>
+                                <h3><?php echo nl2br(htmlspecialchars($notice['title'])); ?></h3>
                             </div>
-                            <div class="input-group form-item">
-                                <div class="date-form">
-                                    <input type="date" class="form-control date-item" name="date"/>
-                                </div>
-                                <div class="date-btn-form">
-                                    <button type="button" class="btn btn-primary date-btn-item" name="today-btn">
-                                        当日
+                            <hr>
+                            <div class='notice-content'>
+                                <?php echo nl2br(htmlspecialchars($notice['content'])); ?>
+                            </div>
+                            <?php if ($admin_flag == 1) { ?>
+                                <div class='notice-update'>
+                                    <button type='submit' class='btn btn-primary update-btn' name='update'
+                                            value="<?php echo nl2br(htmlspecialchars($notice['notice_id'])); ?>">更新
                                     </button>
                                 </div>
-                            </div>
+                            <?php } ?>
                         </div>
+                    </form>
+                <?php endforeach; ?>
 
-
-                        <!-- 購入者 -->
-                        <div class="form-item member-item">
-                            <div class="form-item-label">
-                                <label class="item-label">購入者</label>
-                            </div>
-                            <div class="input-group form-item">
-                                <select class="form-select" name="member">
-                                    <option selected>選択してください</option>
-                                    <option value="1">購入者１</option>
-                                    <option value="2">購入者２</option>
-                                    <option value="3">購入者３</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="pc-form">
-                            <!-- 分類 -->
-                            <div class="form-item category-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">分類</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <select class="form-select" name="category">
-                                        <option selected>選択してください</option>
-                                        <option value="1">分類１</option>
-                                        <option value="2">分類２</option>
-                                        <option value="3">分類３</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- 種別 -->
-                            <div class="form-item type-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">種別</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <select class="form-select" name="type">
-                                        <option selected>選択してください</option>
-                                        <option value="1">出費</option>
-                                        <option value="2">収入</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- 支払 -->
-                            <div class="form-item payment-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">支払</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <select class="form-select" name="payment">
-                                        <option selected>選択してください</option>
-                                        <option value="1">現金</option>
-                                        <option value="2">カード</option>
-                                        <option value="3">振込</option>
-                                        <option value="4">引落し</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- 精算 -->
-                            <div class="form-item settlement-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">精算</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <select class="form-select" name="settlement">
-                                        <option selected>選択してください</option>
-                                        <option value="1">未精算</option>
-                                        <option value="2">精算済</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pc-form">
-                            <!-- 金額 -->
-                            <div class="form-item amount-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">金額</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input type="text" class="form-control" name="amount">
-                                </div>
-                            </div>
-
-                            <!-- 備考 -->
-                            <div class="form-item remarks-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">備考</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input type="text" class="form-control" name="remarks">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 登録ボタン -->
+                <form action="" method="post">
+                    <!-- 次のX件ボタン -->
                     <div class="form-item">
                         <div class="submit-area">
-                            <button type="submit" class="btn btn-primary" name="entry">登録</button>
+                            <?php
+                            $next_view = 0;
+                            if (($notice_count - $_SESSION['notice_view']) >= $admin_notice_view) {
+                                $next_view = $admin_notice_view;
+                            } else {
+                                $next_view = $notice_count - $_SESSION['notice_view'];
+                            }
+
+                            if ($next_view < 0) {
+                            } else {
+                                echo "<button type='submit' class='btn btn-primary next-btn' name='next' id='next'>次の{$next_view}件を表示する</button>";
+                            }
+                            if($_SESSION['notice_view']>$admin_notice_view){
+                                echo "<button type='submit' class='btn btn-warning reset-btn' name='reset' id='reset'>表示をリセット</button>";
+                            }
+                            ?>
                         </div>
                     </div>
                 </form>
@@ -211,6 +169,9 @@ echo $notice_count_api_result['data']['recode_count'];
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
+
+<script src="/Interfaces/Assets/JS/setToday.js"></script>
+
 <!-- bootstrap-datepickerのjavascriptコード -->
 <script>
     $('#sample1').datepicker();

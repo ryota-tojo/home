@@ -7,6 +7,7 @@ import com.example.home.api.group_info.refer.response.GroupInfoReferResponse
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.UserId
+import com.example.home.domain.value_object.user.UserLeaderFlg
 import com.example.home.service.group.GroupInfoControlService
 import com.example.home.util.ParseLocalDateTime.parseLocalDateTime
 import jakarta.servlet.http.HttpServletResponse
@@ -35,12 +36,13 @@ class GroupInfoReferApi(
         // リクエスト取得
         val requestGroupsId = if (request.groupsId == "") null else request.groupsId?.let { GroupsId(it) }
         val requestUserId = if (request.userId == null) null else UserId(request.userId)
+        val requestLeader = if (request.leader == null) null else UserLeaderFlg(request.leader)
 
         val requestOffset = request.offSet
         val requestLimit = request.limit
 
         val serviceExecResult =
-            groupInfoControlService.refer(requestGroupsId, requestUserId, requestOffset, requestLimit)
+            groupInfoControlService.refer(requestGroupsId, requestUserId, requestLeader, requestOffset, requestLimit)
 
         // エラー時のレスポンス
         if (serviceExecResult.result != ResponseCode.成功.code) {

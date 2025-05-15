@@ -28,7 +28,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
 <nav class="navbar navbar-expand-lg bg-body-tertiary main-font <?php if($master_setting_maintenance == "1"){ echo "maintenance-nav"; }?> ">
     <div class="container-fluid">
         <?php if(!isset($_SESSION['access_error'])){ ?>
-        <a class="navbar-brand title-font" href="<?php echo './home_input_tmp.php';?>">管理者</a>
+        <a class="navbar-brand title-font" href="<?php echo './home.php';?>">管理者</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -50,8 +50,8 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         マスタ設定
                     </a>
                     <ul class="dropdown-menu drop-font">
-                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin_master_setting_system.php">システム設定</a></li>
-                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin_master_setting_system.php">通知設定</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_master_setting_system.php">システム設定</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_master_setting_send.php">通知設定</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -59,8 +59,8 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         データ管理
                     </a>
                     <ul class="dropdown-menu drop-font">
-                        <li><a class="dropdown-item" href="#">所属グループ管理</a></li>
-                        <li><a class="dropdown-item" href="#">ユーザー管理</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_user_control.php">ユーザー管理</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_group_control.php">所属グループ管理</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -68,8 +68,8 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         運用管理
                     </a>
                     <ul class="dropdown-menu drop-font">
-                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin_notice_entry.php">お知らせ登録</a></li>
-                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin_maintenance.php">メンテナンス</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_notice_entry.php">お知らせ登録</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_maintenance.php">メンテナンス</a></li>
                         <li><a class="dropdown-item" href="/Interfaces/Views/Pages/session_list.php">セッション管理</a></li>
                     </ul>
                 </li>
@@ -85,7 +85,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link menu-font" href="./logout.php">
+                    <a class="nav-link menu-font" href="/Interfaces/Views/Pages/logout.php">
                         ログアウト
                     </a>
                 </li>
@@ -97,7 +97,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                 </button>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link menu-font" href="./logout.php">
+                        <a class="nav-link menu-font" href="/Interfaces/Views/Pages/logout.php">
                             ログアウト
                         </a>
                     </li>
@@ -114,7 +114,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
     <div class="container-fluid">
 
         <?php if(!isset($_SESSION['access_error'])){ ?>
-        <a class="navbar-brand" href="<?php echo './home_input_tmp.php';?>">ホーム</a>
+        <a class="navbar-brand" href="<?php echo './home.php';?>">ホーム</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -135,7 +135,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link menu-font" href="./logout.php">
+                    <a class="nav-link menu-font" href="/Interfaces/Views/Pages/logout.php">
                         ログアウト
                     </a>
                 </li>

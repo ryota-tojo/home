@@ -29,28 +29,79 @@ if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $status = "success";
+    $login_failure_limit = $_POST['login_failure_limit'] ?? '';
+    $lording_layout = $_POST['lording_layout'] ?? '';
+    $admin_userdata_view = $_POST['admin_userdata_view'] ?? '';
+    $admin_groupdata_view = $_POST['admin_groupdata_view'] ?? '';
+    $admin_notice_view = $_POST['admin_notice_view'] ?? '';
+    $admin_notice_default_title = $_POST['admin_notice_default_title'] ?? '';
+    $admin_notice_default_content = $_POST['admin_notice_default_content'] ?? '';
+    $user_input_history_view = $_POST['user_input_history_view'] ?? '';
+    $user_management_view = $_POST['user_management_view'] ?? '';
+    $user_analysis_graph_size_pc_width = $_POST['user_analysis_graph_size_pc_width'] ?? '';
+    $user_analysis_graph_size_pc_height = $_POST['user_analysis_graph_size_pc_height'] ?? '';
+    $user_analysis_graph_size_sp_width = $_POST['user_analysis_graph_size_sp_width'] ?? '';
+    $user_analysis_graph_size_sp_height = $_POST['user_analysis_graph_size_sp_height'] ?? '';
+    $user_analysis_graph_size_tb_width = $_POST['user_analysis_graph_size_tb_width'] ?? '';
+    $user_analysis_graph_size_tb_height = $_POST['user_analysis_graph_size_tb_height'] ?? '';
+    $user_communication_input_history_view = $_POST['user_communication_input_history_view'] ?? '';
+    $user_communication_list_view = $_POST['user_communication_list_view'] ?? '';
+    $user_communication_list_view_conditions = $_POST['user_communication_list_view_conditions'] ?? '';
 
+    $results = [
+        'login_failure_limit' => $login_failure_limit,
+        'lording_layout' => $lording_layout,
+        'admin_userdata_view' => $admin_userdata_view,
+        'admin_groupdata_view' => $admin_groupdata_view,
+        'admin_notice_view' => $admin_notice_view,
+        'admin_notice_default_title' => $admin_notice_default_title,
+        'admin_notice_default_content' => $admin_notice_default_content,
+        'user_input_history_view' => $user_input_history_view,
+        'user_management_view' => $user_management_view,
+        'user_analysis_graph_size_pc_width' => $user_analysis_graph_size_pc_width,
+        'user_analysis_graph_size_pc_height' => $user_analysis_graph_size_pc_height,
+        'user_analysis_graph_size_sp_width' => $user_analysis_graph_size_sp_width,
+        'user_analysis_graph_size_sp_height' => $user_analysis_graph_size_sp_height,
+        'user_analysis_graph_size_tb_width' => $user_analysis_graph_size_tb_width,
+        'user_analysis_graph_size_tb_height' => $user_analysis_graph_size_tb_height,
+        'user_communication_input_history_view' => $user_communication_input_history_view,
+        'user_communication_list_view' => $user_communication_list_view,
+        'user_communication_list_view_conditions' => $user_communication_list_view_conditions
+    ];
 
+    $all_success = true;
+    $error_keys = [];
 
-    if ($status != "success") {
+    foreach ($results as $setting_name => $value) {
+        $result = apiCallMasterSettingUpdate($setting_name, $value);
 
-        $entry_error = True;
-        $message = "設定の更新に失敗しました";
+        // エラーチェック
+        if (isset($result['status']) && $result['status'] === 'error') {
+            $all_success = false;
+            $error_keys[] = $setting_name; // エラーが発生した設定名を追加
+        }
+    }
+
+    if (!$all_success) {
+        $error_keys_str = implode(', ', $error_keys);
+        $message = "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
+        $entry_error = true;
     } else {
-        $message = "設定を更新しました";
+        $message = "設定が正常に更新されました。";
     }
 }
 
 // マスター設定
-$master_setting_api_result = apiCallMasterSettingRefer();
+$master_setting_api_refer_result = apiCallMasterSettingRefer();
 $master_settings = [];
-foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
+foreach ($master_setting_api_refer_result['data']['setting_list'] as $setting) {
     $master_settings[$setting['setting_key']] = $setting['setting_value'];
 }
 
 $master_setting_login_failure_limit = $master_settings['login_failure_limit'] ?? null;
 $master_setting_lording_layout = $master_settings['lording_layout'] ?? null;
 $master_setting_admin_userdata_view = $master_settings['admin_userdata_view'] ?? null;
+$master_setting_admin_groupdata_view = $master_settings['admin_groupdata_view'] ?? null;
 $master_setting_admin_notice_view = $master_settings['admin_notice_view'] ?? null;
 $master_setting_admin_notice_default_title = $master_settings['admin_notice_default_title'] ?? null;
 $master_setting_admin_notice_default_content = $master_settings['admin_notice_default_content'] ?? null;
@@ -123,11 +174,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         ログイン失敗許容回数
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="1" max="99" class="form-control" name="login_failure_limit"
+                                        <input required type="number" min="1" max="99" class="form-control" name="login_failure_limit" placeholder="5"
                                             <?php echo "value='$master_setting_login_failure_limit'"; ?>
                                         >
                                     </div>
@@ -139,11 +191,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         ロード画面レイアウトパターン
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="0" max="1" class="form-control" name="lording_layout"
+                                        <input required type="number" min="0" max="1" class="form-control" name="lording_layout" placeholder="0"
                                             <?php echo "value='$master_setting_lording_layout'"; ?>
                                         >
                                     </div>
@@ -162,12 +215,32 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         ユーザーデータ表示数 / 1ページ
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="admin_userdata_view"
+                                        <input required type="number" min="10" max="25" class="form-control" name="admin_userdata_view" placeholder="10"
                                             <?php echo "value='$master_setting_admin_userdata_view'"; ?>
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="settings-subtitle">所属グループ管理画面設定</h5>
+
+                            <!-- 所属グループデータ表示数 -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        所属グループデータ表示数 / 1ページ
+                                        <div class="required-comment">※必須</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <input required type="number" min="10" max="25" class="form-control" name="admin_groupdata_view" placeholder="10"
+                                            <?php echo "value='$master_setting_admin_groupdata_view'"; ?>
                                         >
                                     </div>
                                 </div>
@@ -180,11 +253,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         お知らせデフォルト表示数
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="1" max="10" class="form-control" name="admin_notice_view"
+                                        <input required type="number" min="1" max="10" class="form-control" name="admin_notice_view" placeholder="5"
                                             <?php echo "value='$master_setting_admin_notice_view'"; ?>
                                         >
                                     </div>
@@ -196,11 +270,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         お知らせタイトルデフォルト値
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input-large">
-                                        <input required type="text" class="form-control" name="admin_notice_default_title"
+                                        <input type="text" class="form-control" name="admin_notice_default_title"
                                             <?php echo "value='$master_setting_admin_notice_default_title'"; ?>
                                         >
                                     </div>
@@ -212,11 +287,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         お知らせ内容デフォルト値
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input-large">
-                                        <textarea required class="form-control" name="admin_notice_default_content"><?php echo $master_setting_admin_notice_default_content; ?></textarea>
+                                        <textarea class="form-control" name="admin_notice_default_content"><?php echo $master_setting_admin_notice_default_content; ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -233,11 +309,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ入力 - 入力履歴表示数
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_input_history_view"
+                                        <input required type="number" min="10" max="25" class="form-control" name="user_input_history_view" placeholder="10"
                                             <?php echo "value='$master_setting_user_input_history_view'"; ?>
                                         >
                                     </div>
@@ -251,11 +328,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ管理 - データ表示数 / 1ページ
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_management_view"
+                                        <input required type="number" min="10" max="50" class="form-control" name="user_management_view" placeholder="20"
                                             <?php echo "value='$master_setting_user_management_view'"; ?>
                                         >
                                     </div>
@@ -269,11 +347,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ分析 - PC表示: グラフ幅
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_pc_width"
+                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_pc_width" placeholder="750"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_pc_width'"; ?>
                                         >
                                     </div>
@@ -285,11 +364,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ分析 - PC表示: グラフ高さ
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_pc_height"
+                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_pc_height" placeholder="200"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_pc_height'"; ?>
                                         >
                                     </div>
@@ -301,11 +381,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ分析 - スマホ表示: グラフ幅
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_sp_width"
+                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_sp_width" placeholder="320"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_sp_width'"; ?>
                                         >
                                     </div>
@@ -317,11 +398,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ分析 - スマホ表示: グラフ高さ
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_sp_height"
+                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_sp_height" placeholder="200"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_sp_height'"; ?>
                                         >
                                     </div>
@@ -333,11 +415,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ分析 - タブレット表示: グラフ幅
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_tb_width"
+                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_tb_width" placeholder="680"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_tb_width'"; ?>
                                         >
                                     </div>
@@ -349,11 +432,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         購入データ分析 - タブレット表示: グラフ高さ
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_tb_height"
+                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_tb_height" placeholder="200"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_tb_height'"; ?>
                                         >
                                     </div>
@@ -367,11 +451,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         お付き合い帳入力 - 入力履歴表示数
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_communication_input_histry_view"
+                                        <input required type="number" min="10" max="25" class="form-control" name="user_communication_input_history_view" placeholder="10"
                                             <?php echo "value='$master_setting_user_communication_input_history_view'"; ?>
                                         >
                                     </div>
@@ -383,11 +468,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         お付き合い帳一覧 - データ表示数 / 1ページ
+                                        <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_communication_list_view"
+                                        <input required type="number" min="10" max="25" class="form-control" name="user_communication_list_view" placeholder="20"
                                             <?php echo "value='$master_setting_user_communication_list_view'"; ?>
                                         >
                                     </div>
@@ -399,11 +485,12 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 <div class="settings-label-container">
                                     <div class="settings-label">
                                         お付き合い帳一覧 - データ検索条件デフォルト設定
+                                        <div class="optional-comment">※任意</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="0" max="1" class="form-control" name="user_communication_list_view_conditions"
+                                        <input type="number" min="0" max="1" class="form-control" name="user_communication_list_view_conditions" placeholder="0"
                                             <?php echo "value='$master_setting_user_communication_list_view_conditions'"; ?>
                                         >
                                     </div>

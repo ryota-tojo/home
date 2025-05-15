@@ -1,0 +1,30 @@
+.table-main {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.table-area {
+    width: 90%;
+    max-height: 500px; /* テーブルエリアに高さ制限を追加 */
+    overflow-y: auto;  /* 縦方向のスクロールを有効にする */
+}
+
+.table-hover > tbody > tr.lock-rows > td {
+    background-color: #979797 !important;
+    color: #505050 !important;
+    cursor: default !important;
+    box-shadow: none !important;
+}
+
+.table-hover > tbody > tr.lock-rows:hover > td {
+    background-color: #979797 !important;
+    box-shadow: none !important;
+}
+
+
+/* クリック可能な行にはポインター表示 */
+tr.clickable-row:hover {
+    cursor: pointer;
+}

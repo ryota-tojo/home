@@ -11,6 +11,15 @@ data class UserReferRequest(
     @field:Size(max = 64, message = "キー「user_name」は64桁以内で入力してください")
     val userName: String? = null,
 
+    @JsonProperty("permission")
+    val permission: Int? = null,
+
+    @JsonProperty("approval")
+    val approval: Int? = null,
+
+    @JsonProperty("deleted")
+    val deleted: Int? = null,
+
     @JsonProperty("offset")
     val offSet: Long? = null,
 

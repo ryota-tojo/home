@@ -7,6 +7,9 @@ interface UserInfoRepository {
     fun refer(
         userId: UserId? = null,
         userName: UserName? = null,
+        userPermission: UserPermission? = null,
+        userApprovalFlg: UserApprovalFlg? = null,
+        userDeleteFlg: UserDeleteFlg? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): List<UserInfo>

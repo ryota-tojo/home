@@ -28,13 +28,13 @@ class UserControlServiceTest extends Specification {
         setup:
 
         when:
-        def result = sut.refer(userId, userName, null, null)
+        def result = sut.refer(userId, userName, null, null, null, null, null)
 
         then:
-        1 * userInfoRepository.refer(_, _, null, null) >> userList
+        1 * userInfoRepository.refer(_, _, null, null, null, null, null) >> userList
         usrCnt * userSettingRepository.refer(_, null) >> FixtureUserSetting.ユーザー設定_正常()
         gigCnt * groupInfoRepository.getGroupsId(_) >> groupsId
-        girCnt * groupInfoRepository.refer(_, _, null, null) >> groupInfo
+        girCnt * groupInfoRepository.refer(_, _, _, null, null) >> groupInfo
         result == expected
 
         where:
@@ -43,7 +43,7 @@ class UserControlServiceTest extends Specification {
         "正常_idなし_groupsIdあり" | new UserReferResult(ResponseCode.成功.code, [FixtureUserRefer.ユーザー参照_正常()])                 | null                              | FixtureUserInfo.ユーザー名_正常() | [FixtureUserInfo.ユーザー情報_正常()] | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1      | 1      | 1
         "正常_idなし_groupsIdなし" | new UserReferResult(ResponseCode.成功.code, [FixtureUserRefer.ユーザー参照_正常()])                 | null                              | null                              | [FixtureUserInfo.ユーザー情報_正常()] | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1      | 1      | 1
         "正常_グループ情報なし"    | new UserReferResult(ResponseCode.成功.code, [FixtureUserRefer.ユーザー参照_所属グループ情報なし()]) | null                              | null                              | [FixtureUserInfo.ユーザー情報_正常()] | null                                   | null                                           | 1      | 1      | 1
-        "正常_ユーザーなし" | new UserReferResult(ResponseCode.データ不在エラー.code, null) | null | null | [] | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 0 | 0 | 0
+        "正常_ユーザーなし"        | new UserReferResult(ResponseCode.データ不在エラー.code, null)                                       | null                              | null                              | []                                    | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 0      | 0      | 0
     }
 
     def "userInfo_save_#useCase"() {
@@ -129,7 +129,7 @@ class UserControlServiceTest extends Specification {
 
         then:
         1 * groupInfoRepository.getGroupsId(userId) >> groupsId
-        girCnt * groupInfoRepository.refer(groupsId, userId, null, null) >> groupInfoList
+        girCnt * groupInfoRepository.refer(groupsId, userId, _, null, null) >> groupInfoList
         gidCnt * groupInfoRepository.delete(null, userId) >> giDelete
         usdCnt * userSettingRepository.delete(userId) >> usDelete
         uidCnt * userInfoRepository.delete(userId) >> uiDelete
@@ -137,11 +137,11 @@ class UserControlServiceTest extends Specification {
 
         where:
         useCase                     | expected                                                                       | groupsId                               | groupInfoList                                  | giDelete | usDelete | uiDelete | girCnt | gidCnt | usdCnt | uidCnt
-        "正常"                  | new UserDeleteResult(ResponseCode.成功.code, 1)             | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1 | 1 | 1 | 1 | 1 | 1 | 1
-        "異常_グループIDなし"   | new UserDeleteResult(ResponseCode.成功.code, 1)             | null                                   | null                                           | 0 | 1 | 1 | 0 | 0 | 1 | 1
+        "正常"                      | new UserDeleteResult(ResponseCode.成功.code, 1)                                | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1        | 1        | 1        | 1      | 1      | 1      | 1
+        "異常_グループIDなし"       | new UserDeleteResult(ResponseCode.成功.code, 1)                                | null                                   | null                                           | 0        | 1        | 1        | 0      | 0      | 1      | 1
         "異常_グループ情報なし"     | new UserDeleteResult(ResponseCode.データ不正エラー.code, 0)                    | FixtureGroupList.所属グループID_正常() | null                                           | 0        | 0        | 0        | 1      | 0      | 0      | 0
         "異常_グループリーダー削除" | new UserDeleteResult(ResponseCode.ユーザーエラー_グループリーダー削除.code, 0) | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_リーダー()] | 0        | 0        | 0        | 1      | 0      | 0      | 0
-        "異常_データ不在エラー" | new UserDeleteResult(ResponseCode.データ不在エラー.code, 0) | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 0 | 0 | 0 | 1 | 1 | 1 | 1
+        "異常_データ不在エラー"     | new UserDeleteResult(ResponseCode.データ不在エラー.code, 0)                    | FixtureGroupList.所属グループID_正常() | [FixtureGroupInfo.所属グループ情報_メンバー()] | 0        | 0        | 0        | 1      | 1      | 1      | 1
     }
 }
 

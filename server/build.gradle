@@ -63,6 +63,9 @@ dependencies {
 
     // JUnit プラットフォームランチャー（必要な場合）
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Spring Boot DevTools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 sourceSets {

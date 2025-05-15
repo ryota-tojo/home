@@ -7,3 +7,7 @@ require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/NoticeApiC
 require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/UserApiClient.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/GroupApiClient.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/GroupInfoApiClient.php';
+
+//require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/CategoryApiClient.php';
+//require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/MemberApiClient.php';
+//require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/CommentApiClient.php';

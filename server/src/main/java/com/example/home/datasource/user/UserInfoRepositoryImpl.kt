@@ -15,38 +15,37 @@ class UserInfoRepositoryImpl : UserInfoRepository {
     override fun refer(
         userId: UserId?,
         userName: UserName?,
+        userPermission: UserPermission?,
+        userApprovalFlg: UserApprovalFlg?,
+        userDeleteFlg: UserDeleteFlg?,
         offset: Long?,
         limit: Int?
     ): List<UserInfo> {
         return transaction {
+            TbTsUserInfo
+                .select {
+                    var condition: Op<Boolean> = Op.TRUE
 
-            if (userId == null && userName == null) {
-                TbTsUserInfo.selectAll()
-                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
-                    .map {
-                        UserInfo(
-                            UserId(it[TbTsUserInfo.userId]),
-                            UserName(it[TbTsUserInfo.userName]),
-                            UserPassword(it[TbTsUserInfo.password]),
-                            UserPermission(it[TbTsUserInfo.permission]),
-                            UserApprovalFlg(it[TbTsUserInfo.approvalFlg]),
-                            UserDeleteFlg(it[TbTsUserInfo.deleteFlg]),
-                            it[TbTsUserInfo.createDate],
-                            it[TbTsUserInfo.updateDate],
-                            it[TbTsUserInfo.approvalDate],
-                            it[TbTsUserInfo.deleteDate]
-                        )
-                    }
-            } else if (userId != null) {
-                TbTsUserInfo.select {
-                    Op.build {
-                        var condition: Op<Boolean> = Op.TRUE
-                        userId.let { condition = TbTsUserInfo.userId eq it.value }
-                        condition
-                    }
+                    // userIdフィルタ
+                    userId?.let { condition = condition and (TbTsUserInfo.userId eq it.value) }
+
+                    // userNameフィルタ
+                    userName?.let { condition = condition and (TbTsUserInfo.userName eq it.value) }
+
+                    // userPermissionフィルタ
+                    userPermission?.let { condition = condition and (TbTsUserInfo.permission eq it.value) }
+
+                    // userApprovalFlgフィルタ
+                    userApprovalFlg?.let { condition = condition and (TbTsUserInfo.approvalFlg eq it.value) }
+
+                    // userDeleteFlgフィルタ
+                    userDeleteFlg?.let { condition = condition and (TbTsUserInfo.deleteFlg eq it.value) }
+
+                    condition
                 }
-                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
-                    .map {
+                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
+                .orderBy(TbTsUserInfo.updateDate, SortOrder.DESC)
+                .map {
                     UserInfo(
                         UserId(it[TbTsUserInfo.userId]),
                         UserName(it[TbTsUserInfo.userName]),
@@ -60,30 +59,6 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                         it[TbTsUserInfo.deleteDate]
                     )
                 }
-            } else {
-                TbTsUserInfo.select {
-                    Op.build {
-                        var condition: Op<Boolean> = Op.TRUE
-                        userName?.let { condition = condition and (TbTsUserInfo.userName eq it.value) }
-                        condition
-                    }
-                }
-                    .apply { limit?.let { limit(it, offset = offset ?: 0) } }
-                    .map {
-                    UserInfo(
-                        UserId(it[TbTsUserInfo.userId]),
-                        UserName(it[TbTsUserInfo.userName]),
-                        UserPassword(it[TbTsUserInfo.password]),
-                        UserPermission(it[TbTsUserInfo.permission]),
-                        UserApprovalFlg(it[TbTsUserInfo.approvalFlg]),
-                        UserDeleteFlg(it[TbTsUserInfo.deleteFlg]),
-                        it[TbTsUserInfo.createDate],
-                        it[TbTsUserInfo.updateDate],
-                        it[TbTsUserInfo.approvalDate],
-                        it[TbTsUserInfo.deleteDate]
-                    )
-                }
-            }
         }
     }
 
@@ -150,6 +125,10 @@ class UserInfoRepositoryImpl : UserInfoRepository {
         deleteFlg: UserDeleteFlg?
     ): Int {
         return transaction {
+            val userRecord = TbTsUserInfo
+                .select { TbTsUserInfo.userId eq userId.value }
+                .singleOrNull()
+
             var condition: Op<Boolean> = TbTsUserInfo.userId eq userId.value
             val updateRows = TbTsUserInfo.update({
                 condition
@@ -165,11 +144,19 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                 }
                 if (approvalFlg != null) {
                     it[TbTsUserInfo.approvalFlg] = approvalFlg.value
-                    it[approvalDate] = LocalDateTime.now()
+                    if(userRecord!=null){
+                        if (userRecord[TbTsUserInfo.approvalFlg]!=1 && approvalFlg.value == 1) {
+                            it[approvalDate] = LocalDateTime.now()
+                        }
+                    }
                 }
                 if (deleteFlg != null) {
                     it[TbTsUserInfo.deleteFlg] = deleteFlg.value
-                    it[deleteDate] = LocalDateTime.now()
+                    if(userRecord!=null) {
+                        if (userRecord[TbTsUserInfo.deleteFlg] != 1 && deleteFlg.value == 1) {
+                            it[deleteDate] = LocalDateTime.now()
+                        }
+                    }
                 }
                 it[updateDate] = LocalDateTime.now()
             }

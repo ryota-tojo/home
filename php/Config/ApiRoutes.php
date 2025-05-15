@@ -40,9 +40,11 @@ const API_GROUP_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/dele
 
 // 所属グループ情報API
 const API_GROUP_INFO_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/group/info/refer"];
+const API_GROUP_INFO_AND_USER_INFO_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/group/info/user_refer"];
 const API_GROUP_INFO_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/group/info/count"];
 const API_GROUP_INFO_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/info/create"];
 const API_GROUP_INFO_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/info/update"];
+const API_GROUP_INFO_LEADER_CHANGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/info/leader_change"];
 const API_GROUP_INFO_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/info/delete"];
 
 // カテゴリーAPI
