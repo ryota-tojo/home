@@ -1,10 +1,13 @@
+.settings{
+    margin-top: 30px;
+}
 .settings-subtitle{
     margin-top: 30px;
 }
 .settings-form {
     display: flex;
     width: 100%;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 .settings-label-container{
     display: flex;
@@ -21,10 +24,11 @@
     display: flex;
     justify-content: center;
     width: 100%;
-    margin-top: 50px;
+    margin-top: 10px;
 }
 .settings-section{
-    margin-top: 50px;
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 .settings-label{
     font-size: 1.0rem;
@@ -58,6 +62,14 @@
     color: #616161;
     font-size: 60%;
     margin-top: 0.5em; /* ← ここで位置を微調整 */
+}
+.settings-btn-container{
+    width: 100%;
+}
+.settings-submit{
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 @media (max-width: 1024px){

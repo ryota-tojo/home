@@ -20,6 +20,9 @@ data class UserReferRequest(
     @JsonProperty("deleted")
     val deleted: Int? = null,
 
+    @JsonProperty("group_affiliation")
+    val groupAffiliation: Int? = null,
+
     @JsonProperty("offset")
     val offSet: Long? = null,
 

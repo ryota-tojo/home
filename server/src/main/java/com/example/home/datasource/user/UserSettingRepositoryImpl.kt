@@ -5,6 +5,7 @@ import com.example.home.domain.repository.user.UserSettingRepository
 import com.example.home.domain.value_object.user.UserId
 import com.example.home.domain.value_object.user.UserSettingKey
 import com.example.home.domain.value_object.user.UserSettingValue
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupSetting
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserSetting
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -15,14 +16,11 @@ import org.springframework.stereotype.Repository
 class UserSettingRepositoryImpl : UserSettingRepository {
     override fun refer(userId: UserId, settingKey: UserSettingKey?): List<UserSetting> {
         return transaction {
-            TbTsUserSetting.select {
-                Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
-                    userId.let { condition = TbTsUserSetting.userId eq it.value }
-                    settingKey?.let { condition = condition and (TbTsUserSetting.settingKey eq it.value) }
-                    condition
-                }
-            }
+            val condition = buildList<Op<Boolean>> {
+                add(TbTsUserSetting.userId eq userId.value) // userId は非nullと仮定
+                settingKey?.let { add(TbTsUserSetting.settingKey eq it.value) }
+            }.reduceOrNull { acc, op -> acc and op } ?: Op.TRUE
+            TbTsUserSetting.select { condition }
                 .orderBy(TbTsUserSetting.userSettingId to SortOrder.ASC)
                 .map {
                 UserSetting(
@@ -71,9 +69,14 @@ class UserSettingRepositoryImpl : UserSettingRepository {
         }
     }
 
-    override fun delete(userId: UserId): Int {
+    override fun delete(userId: UserId,settingKey: UserSettingKey?): Int {
         return transaction {
-            val deletedRows = TbTsUserSetting.deleteWhere { TbTsUserSetting.userId eq userId.value }
+            var condition: Op<Boolean> = TbTsUserSetting.userId eq userId.value
+            settingKey?.let {
+                condition = condition and (TbTsUserSetting.settingKey eq it.value)
+            }
+
+            val deletedRows = TbTsUserSetting.deleteWhere { condition }
             return@transaction deletedRows
         }
     }

@@ -1,0 +1,92 @@
+.link-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: transparent; /* 背景透明 */
+    color: #007bff;                /* 青文字 */
+    text-decoration: none;
+    border: 1px solid #007bff;     /* 枠線を付けるとボタンっぽさが出ます */
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-align: center;
+}
+
+.link-btn:hover {
+    background-color: #007bff; /* ホバー時に青背景 */
+    color: white;              /* 文字を白に */
+}
+
+.btn-area {
+    margin: 10px 0 30px 0;
+}
+@media (max-width: 1024px) {
+    .btn-area {
+        display: grid;
+        width: 100%;
+    }
+    .btn-left-area,
+    .btn-right-area,
+    .btn-center-area {
+        width: 100%;
+    }
+    .btn-item {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    .btn {
+        display: block;
+        width: 90%;
+        margin-top: 5px;
+    }
+    .link-btn {
+        display: block;
+        width: 90%;
+        margin-top: 5px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .btn-area {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    .btn-left-area {
+        width: 30%;
+        display: flex;
+        justify-content: left;
+        gap: 12px;
+    }
+    .btn-right-area {
+        width: 60%;
+        display: flex;
+        justify-content: right;
+        gap: 12px;
+    }
+    .btn-center-area{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+    .modal-btn-left-area {
+        width: 30%;
+        display: flex;
+        justify-content: left;
+        gap: 12px;
+    }
+    .modal-btn-right-area {
+        width: 70%;
+        display: flex;
+        justify-content: right;
+        gap: 12px;
+    }
+    .modal-btn-center-area {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+}

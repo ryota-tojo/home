@@ -3,10 +3,10 @@ html, body {
     margin: 0;
 }
 .admin-body{
-    background-color: #e1fad7 !important;
+    background-color: #e1fad7;
 }
 .body{
-    background-color: antiquewhite !important;
+    background-color: antiquewhite;
 }
 main {
     margin-top: 100px; /* （※）の高さに合わせる */
@@ -15,9 +15,6 @@ main {
     margin: 20px 0 20px 0;
     display: flex;
     justify-content: center;
-}
-.title{
-    font-size: 3rem;
 }
 
 .summary-area{
@@ -36,6 +33,9 @@ main {
     width: 100%;
 }
 @media (max-width: 1024px){
+    .title{
+        font-size: 2rem;
+    }
     .content-row{
         width: 94%;
         display: grid;
@@ -51,6 +51,9 @@ main {
     }
 }
 @media (min-width: 1024px) {
+    .title{
+        font-size: 3rem;
+    }
     .content-row{
         width: 98%;
         display: flex;

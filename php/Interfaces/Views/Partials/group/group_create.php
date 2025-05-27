@@ -1,10 +1,17 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 function groupEntry($user_id, $groups_id, $group_name, $group_password){
 
+    if($user_id == ""){
+        $data = [
+            "status" => "error",
+            "message" => "ユーザーが選択されていません"
+        ];
+        return json_encode($data);
+    }
     $group_refer_api_result = apiCallGroupRefer($groups_id);
     if($group_refer_api_result['status'] == "success"){
         $data = [
@@ -30,6 +37,20 @@ function groupEntry($user_id, $groups_id, $group_name, $group_password){
             "message" => "所属グループ情報の登録に失敗しました"
         ];
         return json_encode($data);
+    }
+
+    $group_setting_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/InitializationConfig/group_setting_items.php';
+    foreach ($group_setting_items as [$key,$value]) {
+        $result = apiCallGroupCreateSetting($groups_id,$key,$value);
+        if ($result['status'] !== 'success') {
+            $errors[] = "設定 {$key} の登録に失敗しました";
+        }
+    }
+    if (!empty($errors)) {
+        return json_encode([
+            'status' => 'error',
+            'message' => implode("\n", $errors)
+        ]);
     }
 
     $data = [

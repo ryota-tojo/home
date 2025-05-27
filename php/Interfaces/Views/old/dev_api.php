@@ -1,9 +1,9 @@
 <?php
 
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 
-use Application\Services\ApiService;
+use Application\Services\apiService;
 
 session_start();
 
@@ -33,7 +33,7 @@ if (isset($_POST['request-btn'])) {
             $arr[$key] = $value;
         }
     }
-    $api_s = new ApiService($post_resource_path);
+    $api_s = new apiService($post_resource_path);
     $res = $api_s->httpRequest($post_http_status, $arr);
 
 }

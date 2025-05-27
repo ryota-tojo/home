@@ -1,8 +1,8 @@
 <?php
 
-use Application\Services\ApiService;
+use Application\Services\apiService;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/ApiRoutes.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
 
 function apiCallLoginCheck($user_name, $password)
 {
@@ -14,7 +14,7 @@ function apiCallLoginCheck($user_name, $password)
         "password" => $password
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -31,7 +31,7 @@ function apiCallLoginCheck($user_name, $password)
 
 }
 
-function apiCallUserRefer($user_id = null, $user_name = null, $permission = null, $approval = null, $deleted = null, $offset = 0, $limit = 100)
+function apiCallUserRefer($user_id = null, $user_name = null, $permission = null, $approval = null, $deleted = null, $group_affiliation = null, $offset = 0, $limit = 100)
 {
 
     $http_method = API_USER_REFER['HTTP_METHOD'];
@@ -42,12 +42,13 @@ function apiCallUserRefer($user_id = null, $user_name = null, $permission = null
         "permission" => $permission,
         "approval" => $approval,
         "deleted" => $deleted,
+        "group_affiliation" => $group_affiliation,
         "offset" => $offset,
         "limit" => $limit
     ];
 
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -63,7 +64,7 @@ function apiCallUserRefer($user_id = null, $user_name = null, $permission = null
     ];
 }
 
-function apiCallUserCount($user_id = null, $user_name = null, $permission = null, $approval = null, $deleted = null)
+function apiCallUserCount($user_id = null, $user_name = null, $permission = null, $approval = null, $deleted = null, $group_affiliation = null)
 {
 
     $http_method = API_USER_COUNT['HTTP_METHOD'];
@@ -73,10 +74,11 @@ function apiCallUserCount($user_id = null, $user_name = null, $permission = null
         "user_name" => $user_name,
         "permission" => $permission,
         "approval" => $approval,
-        "deleted" => $deleted
+        "deleted" => $deleted,
+        "group_affiliation" => $group_affiliation,
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -105,7 +107,7 @@ function apiCallUserCreate($user_name = null, $password = null, $permission = nu
         "delete" => $delete
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -135,7 +137,34 @@ function apiCallUserUpdateInfo($user_id, $user_name = null, $password = null, $p
         "delete" => $delete
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
+    $response = $api_service->httpRequest($http_method, $request_parameter);
+
+    $data = json_decode($response, true);
+
+    $response_status = $data['status'];
+    $response_message = $data['message'];
+    $response_data = $data['data'];
+
+    return [
+        "status" => $response_status,
+        "message" => $response_message,
+        "data" => $response_data
+    ];
+}
+
+function apiCallUserCreateSetting($user_id, $key, $value = null)
+{
+
+    $http_method = API_USER_CREATE_SETTING['HTTP_METHOD'];
+    $api_path = API_USER_CREATE_SETTING['API_PATH'];
+    $request_parameter = [
+        "user_id" => $user_id,
+        "setting_key" => $key,
+        "setting_value" => $value
+    ];
+
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -162,7 +191,7 @@ function apiCallUserUpdateSetting($user_id, $key, $value = null)
         "setting_value" => $value
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -177,7 +206,31 @@ function apiCallUserUpdateSetting($user_id, $key, $value = null)
         "data" => $response_data
     ];
 }
+function apiCallUserDeleteSetting($user_id, $key = null)
+{
 
+    $http_method = API_USER_DELETE_SETTING['HTTP_METHOD'];
+    $api_path = API_USER_DELETE_SETTING['API_PATH'];
+    $request_parameter = [
+        "user_id" => $user_id,
+        "setting_key" => $key
+    ];
+
+    $api_service = new apiService($api_path);
+    $response = $api_service->httpRequest($http_method, $request_parameter);
+
+    $data = json_decode($response, true);
+
+    $response_status = $data['status'];
+    $response_message = $data['message'];
+    $response_data = $data['data'];
+
+    return [
+        "status" => $response_status,
+        "message" => $response_message,
+        "data" => $response_data
+    ];
+}
 function apiCallUserDelete($user_id = null)
 {
 
@@ -187,7 +240,7 @@ function apiCallUserDelete($user_id = null)
         "user_id" => $user_id
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);

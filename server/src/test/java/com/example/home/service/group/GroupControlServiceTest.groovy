@@ -64,7 +64,7 @@ class GroupControlServiceTest extends Specification {
 
         then:
         1 * groupListRepository.refer(_, null, null) >> groupList
-        gsCnt * groupSettingRepository.refer(_) >> groupSetting
+        gsCnt * groupSettingRepository.refer(_,_) >> groupSetting
         result == expected
 
         where:
@@ -92,7 +92,7 @@ class GroupControlServiceTest extends Specification {
 
         where:
         useCase                     | expected                                                                                  | groupName                                              | groupList                                  | glrCnt | glsCnt | etcCnt
-        "正常"                      | new GroupSaveResult(ResponseCode.成功.code, FixtureGroupList.所属グループ一覧_正常(), []) | FixtureGroupList.所属グループ名_正常()                 | []                                         | 1      | 1      | _
+        "正常"                      | new GroupSaveResult(ResponseCode.成功.code, FixtureGroupList.所属グループ一覧_正常(), null) | FixtureGroupList.所属グループ名_正常()                 | []                                         | 1      | 1      | _
         "異常_バリデーションエラー" | new GroupSaveResult(ResponseCode.バリデーションエラー.code, null, null)                   | FixtureGroupList.所属グループ名_バリデーションエラー() | []                                         | 0      | 0      | 0
         "異常_重複エラー"           | new GroupSaveResult(ResponseCode.重複エラー.code, null, null)                             | FixtureGroupList.所属グループ名_正常()                 | [FixtureGroupList.所属グループ一覧_正常()] | 1      | 0      | 0
     }
@@ -143,8 +143,8 @@ class GroupControlServiceTest extends Specification {
 
         then:
         glrCnt * groupListRepository.refer(groupsId, null, null) >> groupList
-        gsrCnt * groupSettingRepository.refer(groupsId) >> GroupSettingList
-        gsdCnt * groupSettingRepository.delete(groupsId) >> gsDeleteRows
+        gsrCnt * groupSettingRepository.refer(groupsId,_) >> GroupSettingList
+        gsdCnt * groupSettingRepository.delete(groupsId,_) >> gsDeleteRows
         gldCnt * groupListRepository.delete(groupsId) >> glDeleteRows
         _ * groupInfoRepository.delete(groupsId)
         _ * categoryRepository.delete(groupsId)

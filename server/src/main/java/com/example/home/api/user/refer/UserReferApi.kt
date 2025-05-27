@@ -35,9 +35,10 @@ class UserReferApi(
         // リクエスト取得
         val requestUserId = if (request.userId == 0) null else request.userId?.let { UserId(it) }
         val requestUserName = if (request.userName == "") null else request.userName?.let { UserName(it) }
-        val requestPermission = if (request.permission == 0) null else request.permission?.let { UserPermission(it) }
-        val requestApproval = if (request.approval == 0) null else request.approval?.let { UserApprovalFlg(it) }
-        val requestDeleted = if (request.deleted == 0) null else request.deleted?.let { UserDeleteFlg(it) }
+        val requestPermission = request.permission?.let { UserPermission(it) }
+        val requestApproval = request.approval?.let { UserApprovalFlg(it) }
+        val requestDeleted = request.deleted?.let { UserDeleteFlg(it) }
+        val requestGroupAffiliation = request.groupAffiliation
 
         val requestOffset = request.offSet
         val requestLimit = request.limit
@@ -48,6 +49,7 @@ class UserReferApi(
             requestPermission,
             requestApproval,
             requestDeleted,
+            requestGroupAffiliation,
             requestOffset,
             requestLimit
         )

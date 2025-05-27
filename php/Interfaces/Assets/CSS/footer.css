@@ -21,19 +21,25 @@
 }
 
 .back-to-top:hover {
-    color: #81c784; /* ホバー時の明るい緑 */
+    color: #81c784;
 }
 
 /* 区切り線 */
 .footer-divider {
     border: 0;
     height: 1px;
-    background-color: #323131; /* 落ち着いた色 */
-    margin: 10px 0; /* 上下の余白 */
+    background-color: #323131;
+    margin: 10px 0;
 }
 
 /* バージョン表示部分 */
 .footer-bottom {
-    font-size: 0.9rem; /* 少し小さめの文字 */
-    color: #636363; /* サブテキスト色 */
+    font-size: 1.2rem;
+    color: #636363;
+}
+
+.loading {
+    display: none;
+    z-index: -1;
+    pointer-events: none;
 }

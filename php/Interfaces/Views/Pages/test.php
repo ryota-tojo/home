@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -55,22 +55,13 @@ if ($_SESSION['user_permission'] == 2) {
                 </div>
                 <div class="center">
                     <?php
-                    $a = apiCallUserRefer();
 
-                    foreach ($a['data']['user'] as $user){
-                        $userInfo = $user['user_info'];
-                        $userSettings = $user['user_setting'];
-                        $groupInfo = $user['group_info'];
+                    require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_setting_update.php';
+                    groupSettingUpdate();
+                    require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_setting_update.php';
+                    userSettingUpdate();
 
-                        echo "ユーザー名: " . $userInfo['user_name'] . PHP_EOL;
-                        echo "パスワード: " . $userInfo['password'] . PHP_EOL;
 
-                        foreach ($userSettings as $setting) {
-                            echo $setting['setting_key'] . " = " . $setting['setting_value'] . PHP_EOL;
-                        }
-                        echo "<br>";
-
-                    }
                     ?>
 
                 </div>
@@ -78,6 +69,8 @@ if ($_SESSION['user_permission'] == 2) {
                 </div>
             </div>
         </div>
+
+
     </main>
 
     <footer>

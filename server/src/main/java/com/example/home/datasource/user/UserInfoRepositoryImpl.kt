@@ -3,12 +3,15 @@ package com.example.home.datasource.user
 import com.example.home.domain.entity.user.UserInfo
 import com.example.home.domain.repository.user.UserInfoRepository
 import com.example.home.domain.value_object.user.*
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupInfo
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserInfo
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 
 @Repository
 class UserInfoRepositoryImpl : UserInfoRepository {
@@ -18,32 +21,49 @@ class UserInfoRepositoryImpl : UserInfoRepository {
         userPermission: UserPermission?,
         userApprovalFlg: UserApprovalFlg?,
         userDeleteFlg: UserDeleteFlg?,
+        requestGroupAffiliation:Int?,
         offset: Long?,
         limit: Int?
     ): List<UserInfo> {
         return transaction {
-            TbTsUserInfo
-                .select {
-                    var condition: Op<Boolean> = Op.TRUE
+            // JOIN 先を決定
+            val joinedTable = when (requestGroupAffiliation) {
+                1 -> TbTsUserInfo innerJoin TbTsGroupInfo
+                0 -> TbTsUserInfo leftJoin TbTsGroupInfo
+                else -> TbTsUserInfo
+            }
 
-                    // userIdフィルタ
-                    userId?.let { condition = condition and (TbTsUserInfo.userId eq it.value) }
+            // グループ所属条件（requestGroupAffiliation に応じて）
+            val baseCondition = when (requestGroupAffiliation) {
+                0 -> TbTsGroupInfo.userId.isNull()
+                else -> null
+            }
 
-                    // userNameフィルタ
-                    userName?.let { condition = condition and (TbTsUserInfo.userName eq it.value) }
+            // ユーザー検索条件
+            val additionalCondition = buildList<Op<Boolean>> {
+                userId?.let { add(TbTsUserInfo.userId eq it.value) }
+                userName?.let { add(TbTsUserInfo.userName like "%${it.value}%") }
+                userPermission?.let { add(TbTsUserInfo.permission eq it.value) }
+                userApprovalFlg?.let { add(TbTsUserInfo.approvalFlg eq it.value) }
+                userDeleteFlg?.let { add(TbTsUserInfo.deleteFlg eq it.value) }
+            }.reduceOrNull { acc, op -> acc and op }
 
-                    // userPermissionフィルタ
-                    userPermission?.let { condition = condition and (TbTsUserInfo.permission eq it.value) }
+            // すべての条件を AND でまとめる
+            val whereCondition = when {
+                baseCondition != null && additionalCondition != null -> baseCondition and additionalCondition
+                baseCondition != null -> baseCondition
+                else -> additionalCondition
+            }
 
-                    // userApprovalFlgフィルタ
-                    userApprovalFlg?.let { condition = condition and (TbTsUserInfo.approvalFlg eq it.value) }
+            // クエリ実行
+            val query = if (whereCondition != null) {
+                joinedTable.select { whereCondition }
+            } else {
+                joinedTable.selectAll()
+            }
 
-                    // userDeleteFlgフィルタ
-                    userDeleteFlg?.let { condition = condition and (TbTsUserInfo.deleteFlg eq it.value) }
-
-                    condition
-                }
-                .apply { limit?.let { limit(it, offset = offset ?: 0) } }
+            query
+                .apply { limit?.let { limit(it, offset ?: 0) } }
                 .orderBy(TbTsUserInfo.updateDate, SortOrder.DESC)
                 .map {
                     UserInfo(

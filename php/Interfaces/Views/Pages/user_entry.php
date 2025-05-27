@@ -1,10 +1,12 @@
 <?php
 
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
 
 session_start();
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/font/basic_font.php';
 
 $screen_title = "ユーザー新規登録申請";
 
@@ -43,13 +45,14 @@ if (isset($_POST['application-btn'])) {
     $re_password = $_POST['re-password'] ?? '';
 
     if($password == $re_password){
-        $user_create_api_result = apiCallUserCreate($user_name,$password);
-        $user_create_result = $user_create_api_result['status'];
+        $result = userEntry($user_name, $password, 0, 0, 0);
+        $data = json_decode($result, true);
+        $status = $data['status'];
 
-        if($user_create_result=='success'){
+        if($status=='success'){
             $entry = True;
         }else{
-            $error_msg = str_replace("データ","ユーザー",$user_create_api_result['data']['message']);
+            $error_msg = $data['message'];
             $entry_error = True;
         }
     }else{

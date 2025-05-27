@@ -6,14 +6,14 @@ require $_SERVER['DOCUMENT_ROOT'] . '/Domain/Models/GroupListRepository.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Domain/Models/GroupSettingRepository.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Domain/Services/GroupRepositoryCollection.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/GroupManagementService.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 
 use Application\Services\GroupManagementService;
 use Domain\Models\GroupListRepository;
 use Domain\Models\GroupSettingRepository;
 use Domain\Services\GroupRepositoryCollection;
 use Infrastructure\Persistence\Database;
-use Application\Services\ApiService;
+use Application\Services\apiService;
 
 session_start();
 

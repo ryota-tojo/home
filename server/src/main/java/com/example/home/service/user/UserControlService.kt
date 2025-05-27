@@ -1,10 +1,8 @@
 package com.example.home.service.user
 
+import com.example.home.domain.entity.group.result.GroupSettingCreateResult
 import com.example.home.domain.entity.user.UserRefer
-import com.example.home.domain.entity.user.result.UserDeleteResult
-import com.example.home.domain.entity.user.result.UserReferResult
-import com.example.home.domain.entity.user.result.UserSaveResult
-import com.example.home.domain.entity.user.result.UserUpdateResult
+import com.example.home.domain.entity.user.result.*
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.user.UserInfoRepository
@@ -26,6 +24,7 @@ class UserControlService(
         userPermission: UserPermission? = null,
         userApprovalFlg: UserApprovalFlg? = null,
         userDeleteFlg: UserDeleteFlg? = null,
+        requestGroupAffiliation:Int? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): UserReferResult {
@@ -37,6 +36,7 @@ class UserControlService(
             userPermission = userPermission,
             userApprovalFlg = userApprovalFlg,
             userDeleteFlg = userDeleteFlg,
+            requestGroupAffiliation = requestGroupAffiliation,
             offset = offset,
             limit = limit,
         )
@@ -99,27 +99,27 @@ class UserControlService(
             approvalFlg,
             deleteFlg
         )
-        val userDefaultSettings = mutableListOf<Pair<String, String>>()
-        for ((key, value) in TsDefaultData.USER_SETTING) {
-            userDefaultSettings.add(Pair(key, value))
-        }
-        val userSetting = userDefaultSettings.mapNotNull { (key, value) ->
-            try {
-                userSettingRepository.save(
-                    createUser.userId,
-                    UserSettingKey(key),
-                    UserSettingValue(value)
-                )
-            } catch (e: Exception) {
-                null
-            }
-        }
+//        val userDefaultSettings = mutableListOf<Pair<String, String>>()
+//        for ((key, value) in TsDefaultData.USER_SETTING) {
+//            userDefaultSettings.add(Pair(key, value))
+//        }
+//        val userSetting = userDefaultSettings.mapNotNull { (key, value) ->
+//            try {
+//                userSettingRepository.save(
+//                    createUser.userId,
+//                    UserSettingKey(key),
+//                    UserSettingValue(value)
+//                )
+//            } catch (e: Exception) {
+//                null
+//            }
+//        }
 
         return UserSaveResult(
             ResponseCode.成功.code,
             UserRefer(
                 createUser,
-                userSetting,
+                null,
                 null
             )
         )
@@ -161,6 +161,33 @@ class UserControlService(
         )
     }
 
+    fun userSettingSave(
+        userId: UserId,
+        userSettingKey: UserSettingKey,
+        userSettingValue: UserSettingValue
+    ): UserSettingCreateResult {
+        if (!ValidationCheck.symbol(userSettingKey.toString()).result ||
+            !ValidationCheck.symbol(userSettingValue.toString()).result
+        ) {
+            return UserSettingCreateResult(
+                ResponseCode.バリデーションエラー.code,
+                null
+            )
+        }
+        if (userSettingRepository.refer(userId,userSettingKey).isNotEmpty()) {
+            return UserSettingCreateResult(ResponseCode.重複エラー.code)
+        }
+        val userSetting = userSettingRepository.save(
+            userId,
+            userSettingKey,
+            userSettingValue
+        )
+        return UserSettingCreateResult(
+            ResponseCode.成功.code,
+            userSetting
+        )
+    }
+
     fun userSettingUpdate(
         userId: UserId,
         userSettingKey: UserSettingKey,
@@ -188,6 +215,25 @@ class UserControlService(
         return UserUpdateResult(
             ResponseCode.成功.code,
             updateRows
+        )
+    }
+    fun userSettingDelete(
+        userId: UserId,
+        userSettingKey: UserSettingKey?=null
+    ): UserSettingDeleteResult {
+        val deleteRows = userSettingRepository.delete(
+            userId,
+            userSettingKey
+        )
+        if (deleteRows == 0) {
+            return UserSettingDeleteResult(
+                ResponseCode.データ不在エラー.code,
+                0
+            )
+        }
+        return UserSettingDeleteResult(
+            ResponseCode.成功.code,
+            deleteRows
         )
     }
 

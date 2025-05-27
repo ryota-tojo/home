@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -19,6 +19,37 @@ if ($admin_flag == 0) {
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
 
+ob_start();
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $screen_title; ?></title>
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="<?php if ($admin_flag == 1) {
+    echo 'admin-body';
+} else {
+    echo 'body';
+} ?>">
+<header>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
+</header>
+
+<?php
+ob_flush();
+flush();
+
 $filename = basename(__FILE__);
 $user_file_flag   = str_contains($filename, 'user');
 $group_file_flag  = str_contains($filename, 'group');
@@ -26,6 +57,7 @@ $update_file_flag = str_contains($filename, 'update');
 $screen = $_GET['screen'] ?? null;
 $user_id = $_GET['user_id'] ?? null;
 $groups_id = $_GET['groups_id'] ?? null;
+$page = $_GET['page'] ?? null;
 
 $url_param = [];
 if ($screen !== null) {
@@ -168,30 +200,6 @@ foreach ($users_data as $user) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $screen_title; ?></title>
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/link.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body class="<?php if ($admin_flag == 1) {
-    echo 'admin-body';
-} else {
-    echo 'body';
-} ?>">
-<header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
-</header>
-
 
 <main>
     <div class="title-area">
@@ -203,24 +211,15 @@ foreach ($users_data as $user) {
         </div>
     </div>
 
-    <div class="link-area">
-        <div class="link">
+    <div class="btn-area">
+        <div class="btn-center-area">
             <?php
             //
-            if ($user_file_flag OR $screen=="user") {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_control.php?$url_param'>ユーザー管理</a>";
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_entry.php?$url_param'>ユーザー登録</a>";
-            }
-            if ($user_id != null) {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_update.php?$url_param'>ユーザー更新</a>";
-            }
-
             if ($group_file_flag OR $screen=="group") {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_control.php?$url_param'>所属グループ管理</a>";
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_entry.php?$url_param'>所属グループ登録</a>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_update.php?{$url_param}'>所属グループ更新</a></div>";
             }
-            if ($groups_id != null) {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_update.php?$url_param'>所属グループ更新</a>";
+            if ($group_file_flag OR $screen=="group_assign") {
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_assign.php?{$url_param}&page={$page}'>所属グループメンバー配属</a></div>";
             }
             ?>
         </div>
@@ -470,129 +469,14 @@ foreach ($users_data as $user) {
                         </div>
 
                         <!-- 登録ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
-                                    <div class="settings-submit">
-                                        <button type="submit" class="btn btn-primary" name="user-entry">
-                                            ユーザー情報更新
-                                        </button>
-                                    </div>
+                        <div class="btn-area">
+                            <div class="btn-center-area">
+                                <div class="btn-item">
+                                    <button type="submit" class="btn btn-primary" name="user-entry">
+                                        ユーザー情報更新
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    </form>
-                    <form action="" method="post">
-                        <div class="settings-section">
-                            <h4 class="settings-title">所属グループ情報</h4>
-                            <hr>
-
-                            <div class="settings-form">
-                                <div class="settings-label-container">
-                                    <div class="settings-label">
-                                        所属グループ名
-                                    </div>
-                                </div>
-                                <div class="settings-input-container">
-                                    <input hidden type="text" class="form-control" name="groups_id"
-                                        <?php
-                                        echo "value='{$groups_id}'";
-                                        ?>
-                                    >
-                                    <?php
-                                    if ($groups_id == "") {
-                                        echo "-";
-                                    } else {
-                                        echo "<a href='/Interfaces/Views/Pages/admin/admin_group_update.php?screen={$screen}&user_id={$user_id}&groups_id={$groups_id}'>$groups_id</a>";
-                                    }
-                                    ?>
-                                </div>
-                            </div>
-
-                            <div class="settings-form">
-                                <div class="settings-label-container">
-                                    <div class="settings-label">
-                                        リーダーフラグ
-                                        <div class="disabled-comment">※入力不可</div>
-                                    </div>
-                                </div>
-                                <div class="settings-input-container">
-                                    <div class="form-check">
-                                        <input disabled class="form-check-input" type="radio"
-                                                                              name="group_leader"
-                                                                              id="group_leader_option1" value="0"
-                                            <?php if ($group_leader != '1') echo 'checked'; ?>>
-                                        <label class="form-check-label" for="group_leader_option1">
-                                            メンバー
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input disabled class="form-check-input" type="radio"
-                                                                              name="group_leader"
-                                                                              id="group_leader_option2" value="1"
-                                            <?php if ($group_leader == '1') echo 'checked'; ?>>
-                                        <label class="form-check-label" for="group_leader_option2">
-                                            リーダー
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="settings-form">
-                                <div class="settings-label-container">
-                                    <div class="settings-label">
-                                        所属グループ承認フラグ
-                                        <div class="required-comment">※必須</div>
-                                    </div>
-                                </div>
-                                <div class="settings-input-container">
-                                    <div class="form-check">
-                                        <input <?php if ($group_leader== '1') echo 'disabled'; ?> class="form-check-input" type="radio"
-                                               name="group_approval"
-                                               id="group_approval_option1" value="0"
-                                            <?php if ($group_approval != '1') echo 'checked'; ?>>
-                                        <label class="form-check-label" for="group_approval_option1">
-                                            未承認
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input <?php if ($group_leader== '1') echo 'disabled'; ?> class="form-check-input" type="radio"
-                                               name="group_approval"
-                                               id="group_approval_option2" value="1"
-                                            <?php if ($group_approval == '1') echo 'checked'; ?>>
-                                        <label class="form-check-label" for="group_approval_option2">
-                                            承認
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- リーダー変更ボタン -->
-                            <div <?php if($group_leader!=1){ echo "hidden"; } ?> class="settings-section">
-                                <div class="settings-form">
-                                    <div class="settings-btn-container">
-                                        <div class="settings-submit">
-                                            <button type="submit" class="btn btn-primary" name="leader-change">
-                                                リーダーを変更する
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 登録ボタン -->
-                            <div <?php if($group_leader==1){ echo "hidden"; } ?> class="settings-section">
-                                <div class="settings-form">
-                                    <div class="settings-btn-container">
-                                        <div class="settings-submit">
-                                            <button type="submit" class="btn btn-primary" name="group-info-entry">
-                                                所属グループ情報更新
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </form>
 
@@ -646,21 +530,132 @@ foreach ($users_data as $user) {
                                     >
                                 </div>
                             </div>
+
                             <!-- 登録ボタン -->
-                            <div class="settings-section">
-                                <div class="settings-form">
-                                    <div class="settings-btn-container">
-                                        <div class="settings-submit">
-                                            <button type="submit" class="btn btn-primary" name="setting-entry">
-                                                ユーザー設定更新
-                                            </button>
-                                        </div>
+                            <div class="btn-area">
+                                <div class="btn-center-area">
+                                    <div class="btn-item">
+                                        <button type="submit" class="btn btn-primary" name="setting-entry">
+                                            ユーザー設定更新
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </form>
 
+                    <form action="" method="post">
+                        <div class="settings-section">
+                            <h4 class="settings-title">所属グループ情報</h4>
+                            <hr>
+
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        所属グループ名
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <input hidden type="text" class="form-control" name="groups_id"
+                                        <?php
+                                        echo "value='{$groups_id}'";
+                                        ?>
+                                    >
+                                    <?php
+                                    if ($groups_id == "-") {
+                                        echo "未所属";
+                                    } else {
+                                        echo "<a href='/Interfaces/Views/Pages/admin/admin_group_update.php?screen={$screen}&user_id={$user_id}&groups_id={$groups_id}'>$groups_id</a>";
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+
+                            <?php if ($groups_id != "-") { ?>
+                                <div class="settings-form">
+                                    <div class="settings-label-container">
+                                        <div class="settings-label">
+                                            リーダーフラグ
+                                            <div class="disabled-comment">※入力不可</div>
+                                        </div>
+                                    </div>
+                                    <div class="settings-input-container">
+                                        <div class="form-check">
+                                            <input disabled class="form-check-input" type="radio"
+                                                   name="group_leader"
+                                                   id="group_leader_option1" value="0"
+                                                <?php if ($group_leader != '1') echo 'checked'; ?>>
+                                            <label class="form-check-label" for="group_leader_option1">
+                                                メンバー
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input disabled class="form-check-input" type="radio"
+                                                   name="group_leader"
+                                                   id="group_leader_option2" value="1"
+                                                <?php if ($group_leader == '1') echo 'checked'; ?>>
+                                            <label class="form-check-label" for="group_leader_option2">
+                                                リーダー
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form">
+                                    <div class="settings-label-container">
+                                        <div class="settings-label">
+                                            所属グループ承認フラグ
+                                            <div class="required-comment">※必須</div>
+                                        </div>
+                                    </div>
+                                    <div class="settings-input-container">
+                                        <div class="form-check">
+                                            <input <?php if ($group_leader== '1') echo 'disabled'; ?> class="form-check-input" type="radio"
+                                                                                                      name="group_approval"
+                                                                                                      id="group_approval_option1" value="0"
+                                                <?php if ($group_approval != '1') echo 'checked'; ?>>
+                                            <label class="form-check-label" for="group_approval_option1">
+                                                未承認
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input <?php if ($group_leader== '1') echo 'disabled'; ?> class="form-check-input" type="radio"
+                                                                                                      name="group_approval"
+                                                                                                      id="group_approval_option2" value="1"
+                                                <?php if ($group_approval == '1') echo 'checked'; ?>>
+                                            <label class="form-check-label" for="group_approval_option2">
+                                                承認
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- リーダー変更ボタン -->
+                                <div <?php if($group_leader!=1){ echo "hidden"; } ?> class="btn-area">
+                                    <div class="btn-center-area">
+                                        <div class="btn-item">
+                                            <button type="submit" class="btn btn-primary" name="leader-change">
+                                                リーダーを変更する
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 登録ボタン -->
+                                <div <?php if($group_leader==1){ echo "hidden"; } ?> class="btn-area">
+                                    <div class="btn-center-area">
+                                        <div class="btn-item">
+                                            <button type="submit" class="btn btn-primary" name="group-info-entry">
+                                                所属グループ情報更新
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <?php }?>
+
+                        </div>
+                    </form>
 
                 </div>
             </div>
@@ -673,10 +668,11 @@ foreach ($users_data as $user) {
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
-<script>
-    $('#sample1').datepicker();
-</script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

@@ -169,28 +169,7 @@ class GroupInfoControlService(
     }
 
     fun delete(groupsId: GroupsId? = null, userId: UserId? = null): GroupInfoDeleteResult {
-        val groupInfoList = groupInfoRepository.refer(groupsId, userId)
-        if (groupInfoList == null) {
-            return GroupInfoDeleteResult(
-                ResponseCode.データ不在エラー.code,
-                0
-            )
-        }
-        groupInfoList.forEach { groupInfo ->
-            if (groupInfo.userLeaderFlg.value == 1) {
-                return GroupInfoDeleteResult(
-                    ResponseCode.既にリーダーが存在するグループ.code,
-                    0
-                )
-            }
-        }
         val deleteRows = groupInfoRepository.delete(groupsId, userId)
-        if (deleteRows == 0) {
-            return GroupInfoDeleteResult(
-                ResponseCode.データ不在エラー.code,
-                0
-            )
-        }
         return GroupInfoDeleteResult(
             ResponseCode.成功.code,
             deleteRows

@@ -2,7 +2,7 @@
 
 namespace Application\Services;
 
-class ApiService
+class apiService
 {
     public function __construct($path)
     {
