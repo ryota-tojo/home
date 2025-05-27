@@ -45,15 +45,6 @@ class GroupInfoDeleteApi(
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 
-            if (serviceExecResult.result == ResponseCode.データ不在エラー.code) {
-                parameter = "groups_id, user_id"
-                errorMessage = ResponseCode.データ不在エラー.message
-            }
-            if (serviceExecResult.result == ResponseCode.既にリーダーが存在するグループ.code) {
-                parameter = "groups_id, user_id"
-                errorMessage = ResponseCode.既にリーダーが存在するグループ.message
-            }
-
             val errorResponse =
                 ErrorResponse(
                     status,

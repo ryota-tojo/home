@@ -10,6 +10,7 @@ interface UserInfoRepository {
         userPermission: UserPermission? = null,
         userApprovalFlg: UserApprovalFlg? = null,
         userDeleteFlg: UserDeleteFlg? = null,
+        requestGroupAffiliation:Int?=null,
         offset: Long? = null,
         limit: Int? = null,
     ): List<UserInfo>

@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -18,6 +18,37 @@ if($admin_flag == 0){
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = 'access_error.php';</script>";
 }
+
+ob_start();
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $screen_title; ?></title>
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/shopping_input_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="<?php if ($admin_flag == 1) {
+    echo 'admin-body';
+} else {
+    echo 'body';
+} ?>">
+<header>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
+</header>
+
+<?php
+ob_flush();
+flush();
 
 // 変数初期化
 $entry_button_click_flg = False;
@@ -57,28 +88,6 @@ if (isset($_POST['entry'])) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $screen_title; ?></title>
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/shopping_input_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body class="<?php if ($admin_flag == 1) {
-    echo 'admin-body';
-} else {
-    echo 'body';
-} ?>">
-<header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
-</header>
 
 <main>
     <div class="title-area">
@@ -141,9 +150,11 @@ if (isset($_POST['entry'])) {
                     </div>
 
                     <!-- 登録ボタン -->
-                    <div class="form-item">
-                        <div class="submit-area">
-                            <button type="submit" class="btn btn-primary" name="entry">登録</button>
+                    <div class="btn-area">
+                        <div class="btn-center-area">
+                            <div class="btn-item">
+                                <button type="submit" class="btn btn-primary" name="entry">登録</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -157,10 +168,11 @@ if (isset($_POST['entry'])) {
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
-<script>
-    $('#sample1').datepicker();
-</script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

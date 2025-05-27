@@ -1,8 +1,8 @@
 <?php
 
-use Application\Services\ApiService;
+use Application\Services\apiService;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/ApiRoutes.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
 
 function apiCallNoticeRefer($id = null,$offset = null,$limit=null)
 {
@@ -15,7 +15,7 @@ function apiCallNoticeRefer($id = null,$offset = null,$limit=null)
         "limit" => $limit
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -38,7 +38,7 @@ function apiCallNoticeCount($id = null)
     $api_path = API_NOTICE_COUNT['API_PATH'];
     $request_parameter = [];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -64,7 +64,7 @@ function apiCallNoticeCreate($title,$content)
         "content" => $content
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -91,7 +91,7 @@ function apiCallNoticeUpdate($id, $title = null,$content=null)
         "content" => $content
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -116,7 +116,7 @@ function apiCallNoticeDelete($id)
         "notice_id" => $id
     ];
 
-    $api_service = new ApiService($api_path);
+    $api_service = new apiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);

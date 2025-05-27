@@ -83,17 +83,18 @@ class GroupControlService(
         }
         val groupList = groupListRepository.save(groupsId, groupName, groupPassword)
 
-        val settings = mutableListOf<Pair<String, String>>()
-        for ((key, value) in TsDefaultData.GROUP_SETTING) {
-            settings.add(Pair(key, value))
-        }
-        val groupSetting = settings.mapNotNull { (key, value) ->
-            try {
-                groupSettingRepository.save(groupsId, GroupSettingKey(key), GroupSettingValue(value))
-            } catch (e: Exception) {
-                null
-            }
-        }
+        // 所属グループ設定は設定しない
+//        val settings = mutableListOf<Pair<String, String>>()
+//        for ((key, value) in TsDefaultData.GROUP_SETTING) {
+//            settings.add(Pair(key, value))
+//        }
+//        val groupSetting = settings.mapNotNull { (key, value) ->
+//            try {
+//                groupSettingRepository.save(groupsId, GroupSettingKey(key), GroupSettingValue(value))
+//            } catch (e: Exception) {
+//                null
+//            }
+//        }
 
         val categoryDefaultSettings = mutableListOf<Pair<String, String>>()
         for ((key, value) in TsDefaultData.CATEGORIES) {
@@ -147,7 +148,7 @@ class GroupControlService(
         return GroupSaveResult(
             ResponseCode.成功.code,
             groupList,
-            groupSetting
+            null
         )
     }
 
@@ -171,6 +172,27 @@ class GroupControlService(
         )
     }
 
+    fun settingSave(
+        groupsId: GroupsId,
+        settingKey: GroupSettingKey,
+        settingValue: GroupSettingValue
+    ): GroupSettingCreateResult {
+        if (!ValidationCheck.symbol(groupsId.toString()).result ||
+            !ValidationCheck.symbol(settingKey.toString()).result ||
+            !ValidationCheck.symbol(settingValue.toString()).result
+        ) {
+            return GroupSettingCreateResult(ResponseCode.バリデーションエラー.code,null)
+        }
+        if (groupListRepository.refer(groupsId).isEmpty()) {
+            return GroupSettingCreateResult(ResponseCode.データ不在エラー.code,null)
+        }
+        if (groupSettingRepository.refer(groupsId,settingKey).isNotEmpty()) {
+            return GroupSettingCreateResult(ResponseCode.重複エラー.code)
+        }
+        val groupSetting=groupSettingRepository.save(groupsId, settingKey, settingValue)
+        return GroupSettingCreateResult(ResponseCode.成功.code, groupSetting)
+    }
+
     fun settingUpdate(
         groupsId: GroupsId,
         settingKey: GroupSettingKey,
@@ -187,6 +209,16 @@ class GroupControlService(
             return GroupSettingUpdateResult(ResponseCode.データ不在エラー.code)
         }
         return GroupSettingUpdateResult(ResponseCode.成功.code, updateRows)
+    }
+    fun settingDelete(
+        groupsId: GroupsId,
+        settingKey: GroupSettingKey?=null
+    ): GroupSettingDeleteResult {
+        val updateRows = groupSettingRepository.delete(groupsId, settingKey)
+        if (updateRows == 0) {
+            return GroupSettingDeleteResult(ResponseCode.データ不在エラー.code)
+        }
+        return GroupSettingDeleteResult(ResponseCode.成功.code, updateRows)
     }
 
     fun delete(groupsId: GroupsId): GroupDeleteResult {

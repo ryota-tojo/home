@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -18,6 +18,33 @@ if($admin_flag == 0){
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = 'access_error.php';</script>";
 }
+
+ob_start();
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $screen_title; ?></title>
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
+<header>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
+</header>
+
+<?php
+ob_flush();
+flush();
 
 // 変数初期化
 $send_button_click_flg = False;
@@ -80,25 +107,6 @@ $notification_url = $master_settings['$notification_url'] ?? null;
 $notification_token = $master_settings['$notification_token'] ?? null;
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $screen_title; ?></title>
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
-<header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
-</header>
-
 
 <main>
     <div class="title-area">
@@ -208,9 +216,9 @@ $notification_token = $master_settings['$notification_token'] ?? null;
                         </div>
 
                         <!-- 更新ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
+                        <div class="btn-area">
+                            <div class="btn-center-area">
+                                <div class="btn-item">
                                     <div class="settings-submit">
                                         <button type="submit" class="btn btn-primary" name="entry">更新</button>
                                     </div>
@@ -230,10 +238,11 @@ $notification_token = $master_settings['$notification_token'] ?? null;
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
-<script>
-    $('#sample1').datepicker();
-</script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

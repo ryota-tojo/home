@@ -26,7 +26,7 @@ class GroupListRepositoryImpl : GroupListRepository {
                     condition
                 }
             }
-                .orderBy(TbTsGroupList.groupListId to SortOrder.ASC)
+                .orderBy(TbTsGroupList.groupListId to SortOrder.DESC)
                 .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                 .map {
                 GroupList(

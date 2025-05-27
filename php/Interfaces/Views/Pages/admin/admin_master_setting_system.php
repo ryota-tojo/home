@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -30,9 +30,14 @@ if (isset($_POST['entry'])) {
 
     $status = "success";
     $login_failure_limit = $_POST['login_failure_limit'] ?? '';
+    $font_family = $_POST['font_family'] ?? '';
+    $random_font_family = $_POST['random_font_family'] ?? '';
+    $random_font_probability = $_POST['random_font_probability'] ?? '';
+    $loading_delay_seconds = $_POST['loading_delay_seconds'] ?? '';
     $lording_layout = $_POST['lording_layout'] ?? '';
     $admin_userdata_view = $_POST['admin_userdata_view'] ?? '';
     $admin_groupdata_view = $_POST['admin_groupdata_view'] ?? '';
+    $admin_groupinfodata_view = $_POST['admin_groupinfodata_view'] ?? '';
     $admin_notice_view = $_POST['admin_notice_view'] ?? '';
     $admin_notice_default_title = $_POST['admin_notice_default_title'] ?? '';
     $admin_notice_default_content = $_POST['admin_notice_default_content'] ?? '';
@@ -50,9 +55,14 @@ if (isset($_POST['entry'])) {
 
     $results = [
         'login_failure_limit' => $login_failure_limit,
+        'font_family' => $font_family,
+        'random_font_family' => $random_font_family,
+        'random_font_probability' => $random_font_probability,
+        'loading_delay_seconds' => $loading_delay_seconds,
         'lording_layout' => $lording_layout,
         'admin_userdata_view' => $admin_userdata_view,
         'admin_groupdata_view' => $admin_groupdata_view,
+        'admin_groupinfodata_view' => $admin_groupinfodata_view,
         'admin_notice_view' => $admin_notice_view,
         'admin_notice_default_title' => $admin_notice_default_title,
         'admin_notice_default_content' => $admin_notice_default_content,
@@ -91,6 +101,33 @@ if (isset($_POST['entry'])) {
     }
 }
 
+ob_start();
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $screen_title; ?></title>
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
+<header>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
+</header>
+
+<?php
+ob_flush();
+flush();
+
 // マスター設定
 $master_setting_api_refer_result = apiCallMasterSettingRefer();
 $master_settings = [];
@@ -99,9 +136,14 @@ foreach ($master_setting_api_refer_result['data']['setting_list'] as $setting) {
 }
 
 $master_setting_login_failure_limit = $master_settings['login_failure_limit'] ?? null;
+$master_setting_font_family = $master_settings['font_family'] ?? null;
+$master_setting_random_font_family = $master_settings['random_font_family'] ?? null;
+$master_setting_random_font_probability = $master_settings['random_font_probability'] ?? null;
+$master_setting_loading_delay_seconds = $master_settings['loading_delay_seconds'] ?? null;
 $master_setting_lording_layout = $master_settings['lording_layout'] ?? null;
 $master_setting_admin_userdata_view = $master_settings['admin_userdata_view'] ?? null;
 $master_setting_admin_groupdata_view = $master_settings['admin_groupdata_view'] ?? null;
+$master_setting_admin_groupinfodata_view = $master_settings['admin_groupinfodata_view'] ?? null;
 $master_setting_admin_notice_view = $master_settings['admin_notice_view'] ?? null;
 $master_setting_admin_notice_default_title = $master_settings['admin_notice_default_title'] ?? null;
 $master_setting_admin_notice_default_content = $master_settings['admin_notice_default_content'] ?? null;
@@ -117,26 +159,9 @@ $master_setting_user_communication_input_history_view = $master_settings['user_c
 $master_setting_user_communication_list_view = $master_settings['user_communication_list_view'] ?? null;
 $master_setting_user_communication_list_view_conditions = $master_settings['user_communication_list_view_conditions'] ?? null;
 
+$font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
+
 ?>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $screen_title; ?></title>
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
-<header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
-</header>
-
 
 <main>
     <div class="title-area">
@@ -186,6 +211,85 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                             </div>
 
+                            <!-- メインフォント -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        メインフォント
+                                        <div class="required-comment">※必須</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <select required class="form-control" name="font_family">
+                                            <?php
+                                            foreach ($font_items as $font) {
+                                                $selected = ($master_setting_font_family === $font) ? "selected" : "";
+                                                echo "<option value=\"$font\" $selected>$font</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- ランダムフォント -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        ランダムフォント
+                                        <div class="optional-comment">※任意</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <select required class="form-control" name="random_font_family">
+                                            <?php
+                                            foreach ($font_items as $font) {
+                                                $selected = ($master_setting_random_font_family === $font) ? "selected" : "";
+                                                echo "<option value=\"$font\" $selected>$font</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ランダムフォント確率 -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        ランダムフォント確率最大値
+                                        <div class="optional-comment">※任意</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <input type="number" min=1 max=100 class="form-control" name="random_font_probability"
+                                            <?php echo "value='$master_setting_random_font_probability'"; ?>
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ロード画面を表示するまでの秒数 -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        ロード画面を表示するまでの秒数
+                                        <div class="required-comment">※必須</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <input required type="number" min="0" max="5" class="form-control" name="loading_delay_seconds" placeholder="1"
+                                            <?php echo "value='$master_setting_loading_delay_seconds'"; ?>
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- ロード画面レイアウトパターン -->
                             <div class="settings-form">
                                 <div class="settings-label-container">
@@ -220,7 +324,7 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="admin_userdata_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control" name="admin_userdata_view" placeholder="10"
                                             <?php echo "value='$master_setting_admin_userdata_view'"; ?>
                                         >
                                     </div>
@@ -239,8 +343,25 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="admin_groupdata_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control" name="admin_groupdata_view" placeholder="10"
                                             <?php echo "value='$master_setting_admin_groupdata_view'"; ?>
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 所属グループデータ表示数 -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        所属グループ情報データ表示数 / 1ページ
+                                        <div class="required-comment">※必須</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <input required type="number" min="5" max="25" class="form-control" name="admin_groupinfodata_view" placeholder="10"
+                                            <?php echo "value='$master_setting_admin_groupinfodata_view'"; ?>
                                         >
                                     </div>
                                 </div>
@@ -314,7 +435,7 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_input_history_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control" name="user_input_history_view" placeholder="10"
                                             <?php echo "value='$master_setting_user_input_history_view'"; ?>
                                         >
                                     </div>
@@ -333,7 +454,7 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="50" class="form-control" name="user_management_view" placeholder="20"
+                                        <input required type="number" min="5" max="50" class="form-control" name="user_management_view" placeholder="20"
                                             <?php echo "value='$master_setting_user_management_view'"; ?>
                                         >
                                     </div>
@@ -456,7 +577,7 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_communication_input_history_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control" name="user_communication_input_history_view" placeholder="10"
                                             <?php echo "value='$master_setting_user_communication_input_history_view'"; ?>
                                         >
                                     </div>
@@ -473,7 +594,7 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="10" max="25" class="form-control" name="user_communication_list_view" placeholder="20"
+                                        <input required type="number" min="5" max="25" class="form-control" name="user_communication_list_view" placeholder="20"
                                             <?php echo "value='$master_setting_user_communication_list_view'"; ?>
                                         >
                                     </div>
@@ -498,9 +619,9 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
                             </div>
 
                             <!-- 更新ボタン -->
-                            <div class="settings-section">
-                                <div class="settings-form">
-                                    <div class="settings-btn-container">
+                            <div class="btn-area">
+                                <div class="btn-center-area">
+                                    <div class="btn-item">
                                         <div class="settings-submit">
                                             <button type="submit" class="btn btn-primary" name="entry">更新</button>
                                         </div>
@@ -520,10 +641,11 @@ $master_setting_user_communication_list_view_conditions = $master_settings['user
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
-<script>
-    $('#sample1').datepicker();
-</script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

@@ -43,6 +43,15 @@
         justify-content: center;
         width: 80%;
     }
+    .date-btn-form{
+        width: calc((100% - 30px) / 4);
+    }
+    .date-btn-item{
+        position: relative;
+        top: -5px;
+        right:-5px;
+
+    }
 }
 @media (min-width: 1024px) {
     .header-btn-area{

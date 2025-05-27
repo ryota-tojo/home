@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -19,9 +19,41 @@ if ($admin_flag == 0) {
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
 
+ob_start();
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $screen_title; ?></title>
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/table_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="<?php if ($admin_flag == 1) {
+    echo 'admin-body';
+} else {
+    echo 'body';
+} ?>">
+<header>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
+</header>
+
+<?php
+ob_flush();
+flush();
+
 $filename = basename(__FILE__);
-$user_file_flag   = str_contains($filename, 'user');
-$group_file_flag  = str_contains($filename, 'group');
+$user_file_flag = str_contains($filename, 'user');
+$group_file_flag = str_contains($filename, 'group');
 $update_file_flag = str_contains($filename, 'update');
 $screen = $_GET['screen'] ?? null;
 $user_id = $_GET['user_id'] ?? null;
@@ -36,7 +68,7 @@ if ($user_id !== null) {
 }
 if ($groups_id !== null) {
     $url_param[] = "groups_id=$groups_id";
-}else{
+} else {
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 
@@ -47,6 +79,21 @@ $url_param = implode('&', $url_param);
 $entry_button_click_flg = False;
 $message = "";
 $entry_error = False;
+
+// マスター設定
+$master_setting_api_refer_result = apiCallMasterSettingRefer();
+$master_settings = [];
+foreach ($master_setting_api_refer_result['data']['setting_list'] as $setting) {
+    $master_settings[$setting['setting_key']] = $setting['setting_value'];
+}
+$master_setting_admin_groupinfodata_view = $master_settings['admin_groupinfodata_view'] ?? null;
+
+// 1ページに表示する件数
+$limit = $master_setting_admin_groupinfodata_view;
+
+// 現在のページ番号
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
 
 // ボタン押下時の処理
 if (isset($_POST['group_entry'])) {
@@ -59,7 +106,6 @@ if (isset($_POST['group_entry'])) {
     $group_api_update_result = apiCallGroupUpdateList($groups_id, $group_name, $group_password);
     $status = $group_api_update_result['status'];
 
-    $status = "success";
     if ($status != "success") {
 
         $entry_error = True;
@@ -109,16 +155,147 @@ if (isset($_POST['setting_entry'])) {
     }
 }
 
+if (isset($_POST['user_assign'])) {
+    echo "<script>window.location.href = 'admin_group_assign.php?$url_param';</script>";
+}
+
+if (isset($_POST['user_approval'])) {
+    $entry_button_click_flg = True;
+    $suc_cnt = 0;
+    $err_cnt = 0;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_users'])) {
+        $selected_users = $_POST['selected_users'];
+
+        foreach ($selected_users as $user_id) {
+
+            $result = apiCallGroupInfoRefer($groups_id, $user_id);
+            $user_leader_flg = "0";
+            $user_group_approval = "0";
+            if ($result['status'] == "success") {
+                foreach ($result['data']['group_info'] as $group_info) {
+                    $user_leader_flg = $group_info['leader'];
+                    $user_group_approval = $group_info['approval'];
+                }
+            }
+            if ($user_leader_flg == "1") {
+                $err_cnt += 1;
+                continue;
+            }
+            if ($user_group_approval == "1") {
+                $err_cnt += 1;
+                continue;
+            }
+            apiCallGroupInfoUpdate($groups_id, $user_id, null, 1);
+            $suc_cnt += 1;
+        }
+
+        $message = $suc_cnt . "件のユーザーを承認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+    } else {
+        $message = "ユーザーが選択されていません";
+        $entry_error = true;
+    }
+}
+
+if (isset($_POST['user_un_approval'])) {
+    $entry_button_click_flg = True;
+    $suc_cnt = 0;
+    $err_cnt = 0;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_users'])) {
+        $selected_users = $_POST['selected_users'];
+
+        foreach ($selected_users as $user_id) {
+
+            $result = apiCallGroupInfoRefer($groups_id, $user_id);
+            $user_leader_flg = "0";
+            $user_group_approval = "0";
+            if ($result['status'] == "success") {
+                foreach ($result['data']['group_info'] as $group_info) {
+                    $user_leader_flg = $group_info['leader'];
+                    $user_group_approval = $group_info['approval'];
+                }
+            }
+            if ($user_leader_flg == "1") {
+                $err_cnt += 1;
+                continue;
+            }
+            if ($user_group_approval == "0") {
+                $err_cnt += 1;
+                continue;
+            }
+            apiCallGroupInfoUpdate($groups_id, $user_id, null, 0);
+            $suc_cnt += 1;
+        }
+
+        $message = $suc_cnt . "件のユーザーを否認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+    } else {
+        $message = "ユーザーが選択されていません";
+        $entry_error = true;
+    }
+}
+
+if (isset($_POST['user_deleted'])) {
+    $entry_button_click_flg = True;
+    $suc_cnt = 0;
+    $err_cnt = 0;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_users'])) {
+        $selected_users = $_POST['selected_users'];
+
+        foreach ($selected_users as $user_id) {
+
+            $result = apiCallGroupInfoRefer($groups_id, $user_id);
+            $user_leader_flg = "0";
+            $user_group_approval = "0";
+            if ($result['status'] == "success") {
+                foreach ($result['data']['group_info'] as $group_info) {
+                    $user_leader_flg = $group_info['leader'];
+                    $user_group_approval = $group_info['approval'];
+                }
+            }
+            if ($user_leader_flg == "1") {
+                $err_cnt += 1;
+                continue;
+            }
+            if ($user_group_approval == "1") {
+                $err_cnt += 1;
+                continue;
+            }
+            apiCallGroupInfoDelete($groups_id, $user_id);
+            $suc_cnt += 1;
+        }
+
+        $message = $suc_cnt . "件のユーザーを除籍しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+    } else {
+        $message = "ユーザーが選択されていません";
+        $entry_error = true;
+    }
+}
+
+
 $group_refer_api_result = apiCallGroupRefer($groups_id);
 if ($group_refer_api_result['status'] == "error") {
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
-$group_info_refer_api_result = apiCallGroupInfoRefer($groups_id);
-if ($group_info_refer_api_result['status'] == "error") {
-    $_SESSION['access_error'] = 1;
-    echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
+$group_info_count_api_result = apiCallGroupInfoCount($groups_id);
+if ($group_info_count_api_result['status'] != "error") {
+    $group_info_refer_api_result = apiCallGroupInfoRefer($groups_id, null, null, $offset, $limit);
+    if ($group_info_refer_api_result['status'] == "error") {
+        $_SESSION['access_error'] = 1;
+        echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
+    }
 }
+
+if(isset($group_info_refer_api_result)){
+    // 所属グループ情報の総数を取得
+    $total_groupinfos = $group_info_count_api_result['data']['recode_count'];
+    $group_info_data = $group_info_refer_api_result['data']['group_info'];
+    // 総ページ数を計算
+    $total_pages = ceil($total_groupinfos / $limit);
+}else{
+    $total_pages=1;
+    $group_info_data=[];
+}
+
 
 $group_name = "";
 $group_password = "";
@@ -146,34 +323,9 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
 
 }
 
-$group_info_data = $group_info_refer_api_result['data']['group_info'];
+
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $screen_title; ?></title>
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/table_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/link.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body class="<?php if ($admin_flag == 1) {
-    echo 'admin-body';
-} else {
-    echo 'body';
-} ?>">
-<header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
-</header>
-
 
 <main>
     <div class="title-area">
@@ -184,30 +336,6 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
             所属グループの各種設定を更新します
         </div>
     </div>
-
-    <div class="link-area">
-        <div class="link">
-            <?php
-            //
-            if ($user_file_flag OR $screen=="user") {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_control.php?$url_param'>ユーザー管理</a>";
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_entry.php?$url_param'>ユーザー登録</a>";
-            }
-            if ($user_id != null) {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_update.php?$url_param'>ユーザー更新</a>";
-            }
-
-            if ($group_file_flag OR $screen=="group") {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_control.php?$url_param'>所属グループ管理</a>";
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_entry.php?$url_param'>所属グループ登録</a>";
-            }
-            if ($groups_id != null) {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_update.php?$url_param'>所属グループ更新</a>";
-            }
-            ?>
-        </div>
-    </div>
-
 
     <?php
     if ($entry_button_click_flg == True) {
@@ -228,7 +356,7 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
                     <form action="" method="post">
 
                         <div class="settings-section">
-                            <h4 class="settings-title">基本設定</h4>
+                            <h4 class="settings-title">所属グループ情報</h4>
                             <hr>
 
                             <div class="settings-form">
@@ -257,7 +385,8 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input required type="text" minlength="4" maxlength="32" class="form-control" name="group_name"
+                                    <input required type="text" minlength="4" maxlength="32" class="form-control"
+                                           name="group_name"
                                         <?php
                                         echo "value='{$group_name}'";
                                         ?>
@@ -271,7 +400,8 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input required type="password" minlength="4" maxlength="64" class="form-control" name="group_password"
+                                    <input required type="password" minlength="4" maxlength="64" class="form-control"
+                                           name="group_password"
                                         <?php
                                         echo "value='{$group_password}'";
                                         ?>
@@ -281,17 +411,16 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
                         </div>
 
                         <!-- 登録ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
-                                    <div class="settings-submit">
-                                        <button type="submit" class="btn btn-primary" name="group_entry">
-                                            所属グループ更新
-                                        </button>
-                                    </div>
+                        <div class="btn-area">
+                            <div class="btn-center-area">
+                                <div class="btn-item">
+                                    <button type="submit" class="btn btn-primary" name="group_entry">
+                                        所属グループ情報更新
+                                    </button>
                                 </div>
                             </div>
                         </div>
+
                     </form>
 
                     <form action="" method="post">
@@ -393,18 +522,15 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
                         </div>
 
                         <!-- 登録ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
-                                    <div class="settings-submit">
-                                        <button type="submit" class="btn btn-primary" name="setting_entry">
-                                            所属グループ設定更新
-                                        </button>
-                                    </div>
+                        <div class="btn-area">
+                            <div class="btn-center-area">
+                                <div class="btn-item">
+                                    <button type="submit" class="btn btn-primary" name="setting_entry">
+                                        所属グループ設定更新
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
                     </form>
                 </div>
             </div>
@@ -414,69 +540,164 @@ $group_info_data = $group_info_refer_api_result['data']['group_info'];
     </div>
 </main>
 
-<div class="table-main">
-    <div class="table-area">
-        <table class="table table-light table-striped table-bordered table-hover">
-            <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>氏名</th>
-                <th>権限</th>
-                <th>承認</th>
-                <th>削除</th>
-                <th>リーダー</th>
-                <th>所属グループ承認</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
+<hr>
 
-            foreach ($group_info_data as $group_info) {
-                $user_id = htmlspecialchars($group_info['user_id'], ENT_QUOTES, 'UTF-8');
+<form method="post" action="">
 
-                $userinfo_api_refer_result = apiCallUserRefer($user_id);
-                $users_data = $userinfo_api_refer_result['data']['user'];
-
-                $user_name = "";
-                $permission = "";
-                $approval = "";
-                $deleted = "";
-
-                foreach ($users_data as $user) {
-                    $user_name = $user['user_info']['user_name'];
-                    $permission = $user['user_info']['permission'];
-                    $approval = $user['user_info']['approval'];
-                    $deleted = $user['user_info']['delete'];
-                }
-
-
-                $leader = $group_info['leader'] == "0" ? "-" : "リーダー";
-                $group_approval = $group_info['approval'] == "0" ? "未承認" : "承認";
-
-                echo "<tr style='cursor: pointer;' onclick=\"window.location='/Interfaces/Views/Pages/admin/admin_user_update.php?screen={$screen}&groups_id={$groups_id}&user_id={$user_id}'\">";
-                echo "<td>$user_id</td>";
-                echo "<td>$user_name</td>";
-                echo "<td>$permission</td>";
-                echo "<td>$approval</td>";
-                echo "<td>$deleted</td>";
-                echo "<td>$leader</td>";
-                echo "<td>$group_approval</td>";
-                echo "</tr>";
-
-            }
-            ?>
-            </tbody>
-        </table>
+    <div class="btn-area">
+        <div class="btn-left-area">
+            <div class="btn-item">
+                <button type="submit" class="btn btn-primary" name="user_assign">
+                    ユーザーを配属する
+                </button>
+            </div>
+        </div>
+        <div class="btn-right-area">
+            <div class="btn-item">
+                <button type="submit" class="btn btn-primary" name="user_approval"
+                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ 既に承認済みのユーザー')">
+                    選択ユーザーを承認
+                </button>
+            </div>
+            <div class="btn-item">
+                <button type="submit" class="btn btn-warning" name="user_un_approval"
+                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ 既に未承認のユーザー')">
+                    選択ユーザーを否認
+                </button>
+            </div>
+            <div class="btn-item">
+                <button type="submit" class="btn btn-danger" name="user_deleted"
+                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ 承認済みのユーザー')">
+                    選択ユーザーを除籍
+                </button>
+            </div>
+        </div>
     </div>
+
+    <div class="table-main">
+        <div class="table-area">
+            <table class="table table-light table-striped table-bordered table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
+                    <th>#</th>
+                    <th>氏名</th>
+                    <th>権限</th>
+                    <th>承認</th>
+                    <th>削除</th>
+                    <th>リーダー</th>
+                    <th>所属グループ承認</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($group_info_data as $group_info) {
+                    $user_id = htmlspecialchars($group_info['user_id'], ENT_QUOTES, 'UTF-8');
+
+                    $userinfo_api_refer_result = apiCallUserRefer($user_id);
+                    $users_data = $userinfo_api_refer_result['data']['user'];
+
+                    $user_name = "";
+                    $permission = "";
+                    $approval = "";
+                    $deleted = "";
+
+                    foreach ($users_data as $user) {
+                        $user_name = $user['user_info']['user_name'];
+                        $permission = $user['user_info']['permission'];
+                        $approval = $user['user_info']['approval'];
+                        $deleted = $user['user_info']['delete'];
+                    }
+
+                    $leader = $group_info['leader'] == "0" ? "-" : "リーダー";
+                    $group_approval = $group_info['approval'] == "0" ? "未承認" : "承認";
+
+                    echo "<tr style='cursor: pointer;' onclick=\"window.location='/Interfaces/Views/Pages/admin/admin_user_update.php?screen={$screen}&groups_id={$groups_id}&user_id={$user_id}'\">";
+                    echo "<td><input type='checkbox' name='selected_users[]' value='$user_id' onclick='event.stopPropagation();'></td>";
+                    echo "<td>$user_id</td>";
+                    echo "<td>$user_name</td>";
+                    echo "<td>$permission</td>";
+                    echo "<td>$approval</td>";
+                    echo "<td>$deleted</td>";
+                    echo "<td>$leader</td>";
+                    echo "<td>$group_approval</td>";
+                    echo "</tr>";
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+<!-- ページネーション -->
+<div class="pagination-container">
+    <nav>
+        <ul class="pagination justify-content-center">
+            <?php if ($page > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?<?php echo $url_param; ?>&page=1">最初</a>
+
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?<?php echo $url_param; ?>&page=<?php echo $page - 1; ?>">前</a>
+                </li>
+            <?php else: ?>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">最初</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">前</a>
+                </li>
+            <?php endif; ?>
+
+            <!-- ページ番号 -->
+            <?php
+            // 表示するページの範囲を設定
+            $start = max(1, $page - 2); // 最初のページは1
+            $end = min($total_pages, $page + 2); // 最後のページは$total_pages
+
+            for ($i = $start; $i <= $end; $i++): ?>
+                <li class="page-item <?php echo ($i === $page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?<?php echo $url_param; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <?php if ($page < $total_pages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?<?php echo $url_param; ?>&page=<?php echo $page + 1; ?>">次</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?<?php echo $url_param; ?>&page=<?php echo $total_pages; ?>">最後</a>
+                </li>
+            <?php else: ?>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">次</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">最後</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
 </div>
+
 
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
+
 <script>
-    $('#sample1').datepicker();
+    function toggleAll(source) {
+        const checkboxes = document.querySelectorAll('input[name="selected_users[]"]');
+        checkboxes.forEach(cb => cb.checked = source.checked);
+    }
 </script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

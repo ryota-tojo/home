@@ -47,7 +47,7 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.save(groupsId, userId, leaderFlg)
 
         then:
-        uiCnt * userInfoRepository.refer(userId, null, null, null, null, null, null) >> userInfo
+        uiCnt * userInfoRepository.refer(userId, null, null, null, null, null, null, null) >> userInfo
         grCnt * groupInfoRepository.refer(groupsId, null, _, null, null) >> groupInfoRefer
         gsCnt * groupInfoRepository.save(groupsId, userId, leaderFlg) >> groupInfo
         result == expected
@@ -89,14 +89,11 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.delete(groupsId, userId)
 
         then:
-        1 * groupInfoRepository.refer(groupsId, userId, _, null, null) >> groupInfoRefer
         gdCnt * groupInfoRepository.delete(groupsId, userId) >> deleteRows
         result == expected
 
         where:
         useCase                               | expected                                                                       | groupInfoRefer                                 | deleteRows | gdCnt
         "正常"                                | new GroupInfoDeleteResult(ResponseCode.成功.code, 1)                           | [FixtureGroupInfo.所属グループ情報_メンバー()] | 1          | 1
-        "異常_データなし"                     | new GroupInfoDeleteResult(ResponseCode.データ不在エラー.code, 0)               | null                                           | 0          | 0
-        "異常_既にリーダーが存在するグループ" | new GroupInfoDeleteResult(ResponseCode.既にリーダーが存在するグループ.code, 0) | [FixtureGroupInfo.所属グループ情報_リーダー()] | 0          | 0
     }
 }

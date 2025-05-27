@@ -27,7 +27,9 @@ const API_USER_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/user/refer"];
 const API_USER_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/user/count"];
 const API_USER_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/user/create"];
 const API_USER_UPDATE_INFO = ["HTTP_METHOD" => "POST", "API_PATH" => "api/user/update/info"];
+const API_USER_CREATE_SETTING = ["HTTP_METHOD" => "POST", "API_PATH" => "api/user/create/setting"];
 const API_USER_UPDATE_SETTING = ["HTTP_METHOD" => "POST", "API_PATH" => "api/user/update/setting"];
+const API_USER_DELETE_SETTING = ["HTTP_METHOD" => "POST", "API_PATH" => "api/user/delete/setting"];
 const API_USER_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/user/delete"];
 
 // 所属グループ一覧API
@@ -35,7 +37,9 @@ const API_GROUP_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/group/refer"
 const API_GROUP_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/group/count"];
 const API_GROUP_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/create"];
 const API_GROUP_UPDATE_LIST = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/update/list"];
+const API_GROUP_CREATE_SETTING = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/create/setting"];
 const API_GROUP_UPDATE_SETTING = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/update/setting"];
+const API_GROUP_DELETE_SETTING = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/delete/setting"];
 const API_GROUP_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/group/delete"];
 
 // 所属グループ情報API

@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 
@@ -15,7 +15,7 @@ $admin_flag = 0;
 if ($_SESSION['user_permission'] == 2) {
     $admin_flag = 1;
 }
-if($admin_flag == 0){
+if ($admin_flag == 0) {
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = 'access_error.php';</script>";
 }
@@ -30,7 +30,7 @@ $master_setting_maintenance = "";
 if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
-    $master_setting_update_api_result = apiCallMasterSettingUpdate("maintenance","1","メンテナンス判定");
+    $master_setting_update_api_result = apiCallMasterSettingUpdate("maintenance", "1", "メンテナンス判定");
 
     $status = $master_setting_update_api_result['status'];
     if ($status != "success") {
@@ -44,7 +44,7 @@ if (isset($_POST['entry'])) {
 if (isset($_POST['un_entry'])) {
     $entry_button_click_flg = True;
 
-    $master_setting_update_api_result = apiCallMasterSettingUpdate("maintenance","0","メンテナンス判定");
+    $master_setting_update_api_result = apiCallMasterSettingUpdate("maintenance", "0", "メンテナンス判定");
 
     $status = $master_setting_update_api_result['status'];
     if ($status != "success") {
@@ -56,16 +56,9 @@ if (isset($_POST['un_entry'])) {
     }
 }
 
-// マスター設定
-if ($entry_error == False) {
-    $master_setting_refer_api_result = apiCallMasterSettingRefer();
-    foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
-        if ($setting['setting_key'] == 'maintenance') {
-            $master_setting_maintenance = $setting['setting_value'];
-        }
-    }
-}
+ob_start();
 ?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -76,17 +69,36 @@ if ($entry_error == False) {
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
+<body class="<?php if ($admin_flag == 1) {
+    echo 'admin-body';
+} else {
+    echo 'body';
+} ?>">
 <header>
     <?php
-        require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php';
+    require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php';
     ?>
 </header>
 
+<?php
+ob_flush();
+flush();
+
+// マスター設定
+if ($entry_error == False) {
+    $master_setting_refer_api_result = apiCallMasterSettingRefer();
+    foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
+        if ($setting['setting_key'] == 'maintenance') {
+            $master_setting_maintenance = $setting['setting_value'];
+        }
+    }
+}
+?>
 
 <main>
     <div class="title-area">
@@ -116,30 +128,30 @@ if ($entry_error == False) {
                 <div class="settings">
                     <form action="" method="post">
 
-                        <?php if($master_setting_maintenance == 0){ ?>
-                        <!-- 登録ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
-                                    <div class="settings-submit">
-                                        <button type="submit" class="btn btn-primary" name="entry">メンテナンス状態に変更する</button>
+                        <?php if ($master_setting_maintenance == 0) { ?>
+                            <!-- 登録ボタン -->
+                            <div class="btn-area">
+                                <div class="btn-center-area">
+                                    <div class="btn-item">
+                                        <button type="submit" class="btn btn-primary" name="entry">
+                                            メンテナンス状態に変更する
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <?php } ?>
 
-                        <?php if($master_setting_maintenance == 1){ ?>
-                        <!-- 解除ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
-                                    <div class="settings-submit">
-                                        <button type="submit" class="btn btn-success" name="un_entry">メンテナンス状態を解除する</button>
+                        <?php if ($master_setting_maintenance == 1) { ?>
+                            <!-- 解除ボタン -->
+                            <div class="btn-area">
+                                <div class="btn-center-area">
+                                    <div class="btn-item">
+                                        <button type="submit" class="btn btn-success" name="un_entry">
+                                            メンテナンス状態を解除する
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <?php } ?>
 
                     </form>
@@ -154,10 +166,11 @@ if ($entry_error == False) {
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
-<script>
-    $('#sample1').datepicker();
-</script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

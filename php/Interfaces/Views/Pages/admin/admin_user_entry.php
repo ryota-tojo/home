@@ -3,8 +3,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
 
 $screen_title = "ユーザー登録";
 
@@ -17,6 +18,37 @@ if ($admin_flag == 0) {
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
+
+ob_start();
+?>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $screen_title; ?></title>
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
+    <link rel="stylesheet" href="/Interfaces/Assets/CSS/button_form.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="<?php if ($admin_flag == 1) {
+    echo 'admin-body';
+} else {
+    echo 'body';
+} ?>">
+<header>
+    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
+</header>
+
+<?php
+ob_flush();
+flush();
 
 $filename = basename(__FILE__);
 $user_file_flag   = str_contains($filename, 'user');
@@ -59,14 +91,13 @@ if (isset($_POST['entry'])) {
     $approval = $_POST['approval'] ?? '';
     $deleted = $_POST['deleted'] ?? '';
 
-    $userinfo_api_create_result = apiCallUserCreate($user_name, $password, $permission, $approval, $deleted);
-
-    $status = $userinfo_api_create_result['status'];
-    $error_message = $userinfo_api_create_result['data']['message'];
+    $result = userEntry($user_name, $password, $permission, $approval, $deleted);
+    $data = json_decode($result, true);
+    $status = $data['status'];
 
     if ($status != "success") {
-
         $entry_error = True;
+        $error_message = $data['message'];
         $message = "$error_message";
     } else {
         $message = "ユーザー情報を登録しました";
@@ -74,30 +105,6 @@ if (isset($_POST['entry'])) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $screen_title; ?></title>
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/message.css">
-    <link rel="stylesheet" href="/Interfaces/Assets/CSS/link.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body class="<?php if ($admin_flag == 1) {
-    echo 'admin-body';
-} else {
-    echo 'body';
-} ?>">
-<header>
-    <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
-</header>
-
 
 <main>
     <div class="title-area">
@@ -109,24 +116,12 @@ if (isset($_POST['entry'])) {
         </div>
     </div>
 
-    <div class="link-area">
-        <div class="link">
+    <div class="btn-area">
+        <div class="btn-center-area">
             <?php
             //
-            if ($user_file_flag OR $screen=="user") {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_control.php?$url_param'>ユーザー管理</a>";
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_entry.php?$url_param'>ユーザー登録</a>";
-            }
-            if ($user_id != null) {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_user_update.php?$url_param'>ユーザー更新</a>";
-            }
-
-            if ($group_file_flag OR $screen=="group") {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_control.php?$url_param'>所属グループ管理</a>";
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_entry.php?$url_param'>所属グループ登録</a>";
-            }
-            if ($groups_id != null) {
-                echo "<a href='/Interfaces/Views/Pages/admin/admin_group_update.php?$url_param'>所属グループ更新</a>";
+            if ($user_file_flag or $screen == "user") {
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_control.php?$url_param'>ユーザー管理</a></div>";
             }
             ?>
         </div>
@@ -283,14 +278,12 @@ if (isset($_POST['entry'])) {
                         </div>
 
                         <!-- 登録ボタン -->
-                        <div class="settings-section">
-                            <div class="settings-form">
-                                <div class="settings-btn-container">
-                                    <div class="settings-submit">
-                                        <button type="submit" class="btn btn-primary" name="entry">
-                                            ユーザー登録
-                                        </button>
-                                    </div>
+                        <div class="btn-area">
+                            <div class="btn-center-area">
+                                <div class="btn-item">
+                                    <button type="submit" class="btn btn-primary" name="entry">
+                                        ユーザー登録
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -306,10 +299,11 @@ if (isset($_POST['entry'])) {
 <footer>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/footer.php'; ?>
 </footer>
-<!-- bootstrap-datepickerのjavascriptコード -->
-<script>
-    $('#sample1').datepicker();
-</script>
+
+<?php
+require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/JS/basic_js.php';
+?>
+
 </body>
 </html>
 

@@ -11,13 +11,16 @@ if ($_SESSION['user_permission'] == 2) {
 
 // マスター設定
 $master_setting_maintenance = 0;
+$master_setting_lording_layout = 0;
 $master_setting_refer_api_result = apiCallMasterSettingRefer();
 foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
     if ($setting['setting_key'] == 'maintenance') {
         $master_setting_maintenance = $setting['setting_value'];
     }
+    if ($setting['setting_key'] == 'lording_layout') {
+        $master_setting_lording_layout = $setting['setting_value'];
+    }
 }
-
 ?>
 
 <!-- 共通 -->
@@ -28,7 +31,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
 <nav class="navbar navbar-expand-lg bg-body-tertiary main-font <?php if($master_setting_maintenance == "1"){ echo "maintenance-nav"; }?> ">
     <div class="container-fluid">
         <?php if(!isset($_SESSION['access_error'])){ ?>
-        <a class="navbar-brand title-font" href="<?php echo './home.php';?>">管理者</a>
+        <a class="navbar-brand title-font" href="<?php echo '/Interfaces/Views/Pages/home.php';?>">管理者</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -114,16 +117,19 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
     <div class="container-fluid">
 
         <?php if(!isset($_SESSION['access_error'])){ ?>
-        <a class="navbar-brand" href="<?php echo './home.php';?>">ホーム</a>
+        <a class="navbar-brand title-font" href="<?php echo './home.php';?>">ホーム</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <?php if($_SESSION['user_groups_id'] == ""){ ?>
+
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle menu-font" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        テンプレート
+                        テンプレート未所属
                     </a>
                     <ul class="dropdown-menu drop-font">
                         <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">テスト用ページ</a></li>
@@ -131,8 +137,25 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         <li><a class="dropdown-item" href="/Interfaces/Views/Pages/home_input_tmp.php">入力フォーム</a></li>
                     </ul>
                 </li>
-
             </ul>
+
+            <?php }else{ ?>
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle menu-font" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        テンプレート所属
+                    </a>
+                    <ul class="dropdown-menu drop-font">
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">テスト用ページ</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/home_setting_tmp.php">設定フォーム</a></li>
+                        <li><a class="dropdown-item" href="/Interfaces/Views/Pages/home_input_tmp.php">入力フォーム</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <?php } ?>
+
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link menu-font" href="/Interfaces/Views/Pages/logout.php">
@@ -142,7 +165,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
             </ul>
 
             <?php }else{ ?>
-                <a class="navbar-brand title-font" href="<?php echo '#';?>">管理者</a>
+                <a class="navbar-brand title-font" href="<?php echo '#';?>">ホーム</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -159,3 +182,14 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
     </div>
 </nav>
 <?php } ?>
+
+<?php
+
+// 共通フォント読込
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/font/basic_font.php';
+
+// ロード画面読込
+if($master_setting_lording_layout == 1){
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Layouts/lord_start.php';
+}
+?>

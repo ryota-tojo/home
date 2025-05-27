@@ -4,7 +4,6 @@ package com.example.home.api.group.create
 import com.example.home.api.ErrorResponse
 import com.example.home.api.group.create.request.GroupCreateRequest
 import com.example.home.api.group.create.response.GroupCreateResponse
-
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.value_object.group.GroupName
 import com.example.home.domain.value_object.group.GroupPassword

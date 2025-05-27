@@ -6,7 +6,7 @@ import com.example.home.domain.value_object.group.GroupSettingValue
 import com.example.home.domain.value_object.group.GroupsId
 
 interface GroupSettingRepository {
-    fun refer(groupsId: GroupsId? = null): List<GroupSetting>
+    fun refer(groupsId: GroupsId? = null, groupSettingKey: GroupSettingKey? = null): List<GroupSetting>
     fun save(
         groupsId: GroupsId,
         settingKey: GroupSettingKey,
@@ -19,5 +19,5 @@ interface GroupSettingRepository {
         settingValue: GroupSettingValue
     ): Int
 
-    fun delete(groupsId: GroupsId): Int
+    fun delete(groupsId: GroupsId, settingKey: GroupSettingKey? = null): Int
 }

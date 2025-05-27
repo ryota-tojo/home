@@ -21,5 +21,5 @@ interface UserSettingRepository {
         settingValue: UserSettingValue
     ): Int
 
-    fun delete(userId: UserId): Int
+    fun delete(userId: UserId,settingKey: UserSettingKey?=null): Int
 }

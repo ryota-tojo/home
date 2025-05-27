@@ -13,15 +13,13 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class GroupSettingRepositoryImpl : GroupSettingRepository {
-    override fun refer(groupsId: GroupsId?): List<GroupSetting> {
+    override fun refer(groupsId: GroupsId?,groupSettingKey: GroupSettingKey?): List<GroupSetting> {
         return transaction {
-            TbTsGroupSetting.select {
-                Op.build {
-                    var condition: Op<Boolean> = Op.TRUE
-                    groupsId?.let { condition = TbTsGroupSetting.groupsId eq it.value }
-                    condition
-                }
-            }
+            val condition = buildList<Op<Boolean>> {
+                groupsId?.let { add(TbTsGroupSetting.groupsId eq it.value) }
+                groupSettingKey?.let { add(TbTsGroupSetting.settingKey eq it.value) }
+            }.reduceOrNull { acc, op -> acc and op } ?: Op.TRUE
+            TbTsGroupSetting.select { condition }
                 .orderBy(TbTsGroupSetting.groupSettingId to SortOrder.ASC)
                 .map {
                 GroupSetting(
@@ -78,9 +76,14 @@ class GroupSettingRepositoryImpl : GroupSettingRepository {
         }
     }
 
-    override fun delete(groupsId: GroupsId): Int {
+    override fun delete(groupsId: GroupsId,settingKey: GroupSettingKey?): Int {
         return transaction {
-            val deletedRows = TbTsGroupSetting.deleteWhere { TbTsGroupSetting.groupsId eq groupsId.value }
+            var condition: Op<Boolean> = TbTsGroupSetting.groupsId eq groupsId.value
+            settingKey?.let {
+                condition = condition and (TbTsGroupSetting.settingKey eq it.value)
+            }
+
+            val deletedRows = TbTsGroupSetting.deleteWhere { condition }
             return@transaction deletedRows
         }
     }

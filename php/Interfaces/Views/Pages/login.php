@@ -1,7 +1,7 @@
 <?php
 
 require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/base64Service.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
@@ -14,6 +14,9 @@ $screen_title = "ログイン";
 
 // 初期設定
 initialization();
+
+// フォント読込
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/font/basic_font.php';
 
 // セッション初期設定
 $_SESSION['error_cnt'] = $_SESSION['error_cnt'] ?? 0;
@@ -292,8 +295,9 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
         </div>
     </div>
     <form action="" method="POST">
-        <button type="button" name="admin-btn" id="admin-btn">admin入力</button>
-        <button type="button" name="user-btn" id="user-btn">user入力</button>
+        <button type="button" name="admin-btn" id="admin-btn">管理者</button>
+        <button type="button" name="user-btn" id="user1-btn">グループ未所属ユーザー</button>
+        <button type="button" name="user-btn" id="user2-btn">グループ所属ユーザー</button>
     </form>
 </main>
 
@@ -306,8 +310,13 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
         document.getElementById('password').value = 'adminadmin';
     });
 
-    document.getElementById('user-btn').addEventListener('click', function () {
-        document.getElementById('user-name').value = 'user';
+    document.getElementById('user1-btn').addEventListener('click', function () {
+        document.getElementById('user-name').value = 'hoge001';
+        document.getElementById('password').value = '1234567890';
+    });
+
+    document.getElementById('user2-btn').addEventListener('click', function () {
+        document.getElementById('user-name').value = 'hoge002';
         document.getElementById('password').value = '1234567890';
     });
 </script>

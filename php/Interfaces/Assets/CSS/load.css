@@ -1,0 +1,50 @@
+.loading {
+    position: fixed;
+    top: 0; /* 追加 */
+    left: 0; /* 追加 */
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+}
+@keyframes suddenFadeIn {
+    0%, 90% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading-area {
+    display: flex; /* gridからflexに変更で横並び */
+    flex-direction: column; /* 縦に並べる場合はcolumn */
+    justify-content: center;
+    align-items: center;
+    width: max-content; /* 中身に合わせて幅を縮める */
+    padding: 1rem;
+    background-color: rgba(255, 200, 200); /* 背景見やすくしたい場合 */
+    border-radius: 10px;
+}
+
+.img-area {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.load-icon {
+    max-width: 300px;
+    max-height: 300px;
+    transform: scale(1.4);
+}
+
+.loading-content {
+    font-size: 200%;
+}
+
