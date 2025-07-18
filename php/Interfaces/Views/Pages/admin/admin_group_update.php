@@ -2,12 +2,16 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "所属グループ更新";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -110,8 +114,10 @@ if (isset($_POST['group_entry'])) {
 
         $entry_error = True;
         $message = "所属グループの更新に失敗しました";
+        createLogs(LOG_TYPE_ERROR, "所属グループの更新に失敗");
     } else {
         $message = "所属グループを更新しました";
+        createLogs(LOG_TYPE_INFO, "所属グループを更新");
     }
 }
 
@@ -150,8 +156,10 @@ if (isset($_POST['setting_entry'])) {
         $error_keys_str = implode(', ', $error_keys);
         $message = "所属グループ設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "所属グループ設定の更新に失敗");
     } else {
         $message = "所属グループ設定が正常に更新されました。";
+        createLogs(LOG_TYPE_INFO, "所属グループ設定を更新");
     }
 }
 
@@ -190,9 +198,12 @@ if (isset($_POST['user_approval'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを承認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー承認 - ユーザー未選択");
     }
 }
 
@@ -227,9 +238,12 @@ if (isset($_POST['user_un_approval'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを否認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー否認 - ユーザー未選択");
     }
 }
 
@@ -264,9 +278,12 @@ if (isset($_POST['user_deleted'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを除籍しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー除籍 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー除籍 - ユーザー未選択");
     }
 }
 
@@ -333,7 +350,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
     </div>
     <div class="summary-area">
         <div class="summary">
-            所属グループの各種設定を更新します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

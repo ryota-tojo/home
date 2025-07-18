@@ -12,6 +12,10 @@ const API_MASTER_CHOICES_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/m
 const API_MASTER_CHOICES_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/choices/update"];
 const API_MASTER_CHOICES_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/choices/delete"];
 
+// 画面マスタAPI
+const API_MASTER_SCREEN_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/master/screen/refer"];
+const API_MASTER_SCREEN_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/master/screen/create"];
+
 // お知らせAPI
 const API_NOTICE_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/notice/refer"];
 const API_NOTICE_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/notice/count"];
@@ -58,6 +62,7 @@ const API_CATEGORY_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/categor
 const API_CATEGORY_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/category/update"];
 const API_CATEGORY_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/category/delete"];
 const API_CATEGORY_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/category/disable"];
+const API_CATEGORY_UN_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/category/un-disable"];
 
 // メンバーAPI
 const API_MEMBER_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/member/refer"];
@@ -66,6 +71,7 @@ const API_MEMBER_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/member/cr
 const API_MEMBER_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/member/update"];
 const API_MEMBER_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/member/delete"];
 const API_MEMBER_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/member/disable"];
+const API_MEMBER_UN_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/member/un-disable"];
 
 // テンプレートAPI
 // - 登録テンプレート

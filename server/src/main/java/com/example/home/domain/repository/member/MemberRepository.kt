@@ -29,6 +29,8 @@ interface MemberRepository {
 
     fun setDeleted(memberId: MemberId): Int
 
+    fun setUnDeleted(memberId: MemberId): Int
+
     fun delete(groupsId: GroupsId? = null, memberId: MemberId? = null): Int
 
 }

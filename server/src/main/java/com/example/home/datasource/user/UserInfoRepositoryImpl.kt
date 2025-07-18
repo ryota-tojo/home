@@ -2,16 +2,17 @@ package com.example.home.datasource.user
 
 import com.example.home.domain.entity.user.UserInfo
 import com.example.home.domain.repository.user.UserInfoRepository
+import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.*
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsGroupInfo
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsUserInfo
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 
 @Repository
 class UserInfoRepositoryImpl : UserInfoRepository {
@@ -21,20 +22,34 @@ class UserInfoRepositoryImpl : UserInfoRepository {
         userPermission: UserPermission?,
         userApprovalFlg: UserApprovalFlg?,
         userDeleteFlg: UserDeleteFlg?,
-        requestGroupAffiliation:Int?,
+        groupsId: GroupsId?,
+        groupApproval: Int?,
+        leader: Int?,
+        groupAffiliation: Int?,
         offset: Long?,
         limit: Int?
     ): List<UserInfo> {
         return transaction {
             // JOIN 先を決定
-            val joinedTable = when (requestGroupAffiliation) {
-                1 -> TbTsUserInfo innerJoin TbTsGroupInfo
-                0 -> TbTsUserInfo leftJoin TbTsGroupInfo
+            val joinedTable = when {
+                groupAffiliation == 1 || groupsId != null -> TbTsUserInfo innerJoin TbTsGroupInfo
+                groupAffiliation == 0 -> TbTsUserInfo leftJoin TbTsGroupInfo
                 else -> TbTsUserInfo
             }
 
-            // グループ所属条件（requestGroupAffiliation に応じて）
-            val baseCondition = when (requestGroupAffiliation) {
+            val groupApprovalCondition = when (groupApproval) {
+                0 -> TbTsGroupInfo.approvalFlg eq 0
+                1 -> TbTsGroupInfo.approvalFlg eq 1
+                else -> null
+            }
+
+            val groupLeaderCondition = when (leader) {
+                0 -> TbTsGroupInfo.leaderFlg eq 0
+                1 -> TbTsGroupInfo.leaderFlg eq 1
+                else -> null
+            }
+
+            val affiliationCondition = when (groupAffiliation) {
                 0 -> TbTsGroupInfo.userId.isNull()
                 else -> null
             }
@@ -46,14 +61,17 @@ class UserInfoRepositoryImpl : UserInfoRepository {
                 userPermission?.let { add(TbTsUserInfo.permission eq it.value) }
                 userApprovalFlg?.let { add(TbTsUserInfo.approvalFlg eq it.value) }
                 userDeleteFlg?.let { add(TbTsUserInfo.deleteFlg eq it.value) }
+                groupsId?.let { add(TbTsGroupInfo.groupsId eq it.value) }
             }.reduceOrNull { acc, op -> acc and op }
 
             // すべての条件を AND でまとめる
-            val whereCondition = when {
-                baseCondition != null && additionalCondition != null -> baseCondition and additionalCondition
-                baseCondition != null -> baseCondition
-                else -> additionalCondition
-            }
+            val conditions = listOfNotNull(
+                affiliationCondition,
+                groupLeaderCondition,
+                additionalCondition,
+                groupApprovalCondition
+            )
+            val whereCondition = conditions.reduceOrNull { acc, cond -> acc and cond }
 
             // クエリ実行
             val query = if (whereCondition != null) {

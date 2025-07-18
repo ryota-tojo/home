@@ -112,6 +112,18 @@ class CategoryRepositoryImpl : CategoryRepository {
         }
     }
 
+    override fun setUnDeleted(categoryId: CategoryId): Int {
+        return transaction {
+            var condition: Op<Boolean> = TbTsCategorys.categoryId eq categoryId.value
+            val updateRows = TbTsCategorys.update({
+                condition
+            }) {
+                it[deletedFlg] = 0
+            }
+            return@transaction updateRows
+        }
+    }
+
     override fun delete(groupsId: GroupsId?, categoryId: CategoryId?): Int {
         return transaction {
             val condition = if (groupsId != null) {

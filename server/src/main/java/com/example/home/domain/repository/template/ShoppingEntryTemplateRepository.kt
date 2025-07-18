@@ -58,6 +58,11 @@ interface ShoppingEntryTemplateRepository {
         templateId: TemplateId
     ): Int
 
+    fun setUnDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int
+
     fun delete(groupsId: GroupsId, templateId: TemplateId? = null): Int
 
 }

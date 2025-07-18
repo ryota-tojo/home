@@ -1,13 +1,13 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 $loading_delay_seconds = "";
 $bf_master_setting_api_result = apiCallMasterSettingRefer();
 foreach ($bf_master_setting_api_result['data']['setting_list'] as $bf_setting) {
     if ($bf_setting['setting_key'] == 'loading_delay_seconds') {
-        $bf_keyword = $bf_setting['setting_value'];
+        $loading_delay_seconds = $bf_setting['setting_value'];
     }
 }
 

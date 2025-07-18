@@ -1,6 +1,6 @@
 <?php
 
-use Application\Services\apiService;
+use Application\Services\ApiService;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
 
@@ -15,7 +15,7 @@ function apiCallGroupRefer($groups_id = null, $offset = 0, $limit = 100)
         "limit" => $limit,
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -40,7 +40,7 @@ function apiCallGroupCount($groups_id = null)
         "groups_id" => $groups_id
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -67,7 +67,7 @@ function apiCallGroupCreate($groups_id, $group_name, $group_password)
         "group_password" => $group_password
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -94,7 +94,7 @@ function apiCallGroupUpdateList($groups_id, $group_name = null, $group_password 
         "group_password" => $group_password
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -121,7 +121,7 @@ function apiCallGroupCreateSetting($groups_id, $setting_key, $setting_value = nu
         "setting_value" => $setting_value
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -148,7 +148,7 @@ function apiCallGroupUpdateSetting($groups_id, $setting_key = null, $setting_val
         "setting_value" => $setting_value
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -174,7 +174,7 @@ function apiCallGroupDeleteSetting($groups_id, $setting_key = null)
         "setting_key" => $setting_key
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -199,7 +199,7 @@ function apiCallGroupDelete($groups_id)
         "groups_id" => $groups_id
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);

@@ -87,6 +87,20 @@ class MemberService(
         )
     }
 
+    fun setUnDeleted(memberId: MemberId): MemberUpdateResult {
+        val updateRows = memberRepository.setUnDeleted(memberId)
+        if (updateRows == 0) {
+            return MemberUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                updateRows
+            )
+        }
+        return MemberUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
     fun delete(groupsId: GroupsId? = null, memberId: MemberId? = null): MemberDeleteResult {
         val deleteRows = memberRepository.delete(groupsId, memberId)
         if (deleteRows == 0) {

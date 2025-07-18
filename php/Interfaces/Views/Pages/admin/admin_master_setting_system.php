@@ -2,19 +2,23 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "システム設定";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
 if ($_SESSION['user_permission'] == 2) {
     $admin_flag = 1;
 }
-if($admin_flag == 0){
+if ($admin_flag == 0) {
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = 'access_error.php';</script>";
 }
@@ -35,6 +39,7 @@ if (isset($_POST['entry'])) {
     $random_font_probability = $_POST['random_font_probability'] ?? '';
     $loading_delay_seconds = $_POST['loading_delay_seconds'] ?? '';
     $lording_layout = $_POST['lording_layout'] ?? '';
+    $output_logs = $_POST['output_logs'] ?? '';
     $admin_userdata_view = $_POST['admin_userdata_view'] ?? '';
     $admin_groupdata_view = $_POST['admin_groupdata_view'] ?? '';
     $admin_groupinfodata_view = $_POST['admin_groupinfodata_view'] ?? '';
@@ -60,6 +65,7 @@ if (isset($_POST['entry'])) {
         'random_font_probability' => $random_font_probability,
         'loading_delay_seconds' => $loading_delay_seconds,
         'lording_layout' => $lording_layout,
+        'output_logs' => $output_logs,
         'admin_userdata_view' => $admin_userdata_view,
         'admin_groupdata_view' => $admin_groupdata_view,
         'admin_groupinfodata_view' => $admin_groupinfodata_view,
@@ -96,8 +102,10 @@ if (isset($_POST['entry'])) {
         $error_keys_str = implode(', ', $error_keys);
         $message = "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "設定更新に失敗 [$error_keys_str]");
     } else {
         $message = "設定が正常に更新されました。";
+        createLogs(LOG_TYPE_INFO, "設定更新");
     }
 }
 
@@ -119,7 +127,11 @@ ob_start();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body class="<?php if($admin_flag == 1){echo 'admin-body';}else{echo 'body';}?>">
+<body class="<?php if ($admin_flag == 1) {
+    echo 'admin-body';
+} else {
+    echo 'body';
+} ?>">
 <header>
     <?php require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/nav.php'; ?>
 </header>
@@ -141,6 +153,8 @@ $master_setting_random_font_family = $master_settings['random_font_family'] ?? n
 $master_setting_random_font_probability = $master_settings['random_font_probability'] ?? null;
 $master_setting_loading_delay_seconds = $master_settings['loading_delay_seconds'] ?? null;
 $master_setting_lording_layout = $master_settings['lording_layout'] ?? null;
+$master_setting_output_logs = $master_settings['output_logs'] ?? null;
+$_SESSION['output_logs'] = $master_setting_output_logs;
 $master_setting_admin_userdata_view = $master_settings['admin_userdata_view'] ?? null;
 $master_setting_admin_groupdata_view = $master_settings['admin_groupdata_view'] ?? null;
 $master_setting_admin_groupinfodata_view = $master_settings['admin_groupinfodata_view'] ?? null;
@@ -169,15 +183,15 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
     </div>
     <div class="summary-area">
         <div class="summary">
-            システム全体の設定を管理する
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 
     <?php
-    if($entry_button_click_flg == True){
-        if($entry_error == True){
+    if ($entry_button_click_flg == True) {
+        if ($entry_error == True) {
             echo "<div class='message-fields error-message'>$message</div>";
-        }else{
+        } else {
             echo "<div class='message-fields success-message'>$message</div>";
         }
     }
@@ -194,6 +208,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                             <h4 class="settings-title">システム設定</h4>
                             <hr>
 
+                            <h5 class="settings-subtitle">ログイン画面設定</h5>
+
                             <!-- ログイン失敗許容回数 -->
                             <div class="settings-form">
                                 <div class="settings-label-container">
@@ -204,12 +220,15 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="1" max="99" class="form-control" name="login_failure_limit" placeholder="5"
+                                        <input required type="number" min="1" max="99" class="form-control"
+                                               name="login_failure_limit" placeholder="5"
                                             <?php echo "value='$master_setting_login_failure_limit'"; ?>
                                         >
                                     </div>
                                 </div>
                             </div>
+
+                            <h5 class="settings-subtitle">フォント設定</h5>
 
                             <!-- メインフォント -->
                             <div class="settings-form">
@@ -266,12 +285,15 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min=1 max=100 class="form-control" name="random_font_probability"
+                                        <input type="number" min=1 max=100 class="form-control"
+                                               name="random_font_probability"
                                             <?php echo "value='$master_setting_random_font_probability'"; ?>
                                         >
                                     </div>
                                 </div>
                             </div>
+
+                            <h5 class="settings-subtitle">ロード画面設定</h5>
 
                             <!-- ロード画面を表示するまでの秒数 -->
                             <div class="settings-form">
@@ -283,7 +305,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="0" max="5" class="form-control" name="loading_delay_seconds" placeholder="1"
+                                        <input required type="number" min="0" max="5" class="form-control"
+                                               name="loading_delay_seconds" placeholder="1"
                                             <?php echo "value='$master_setting_loading_delay_seconds'"; ?>
                                         >
                                     </div>
@@ -300,8 +323,29 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="0" max="1" class="form-control" name="lording_layout" placeholder="0"
+                                        <input required type="number" min="0" max="1" class="form-control"
+                                               name="lording_layout" placeholder="0"
                                             <?php echo "value='$master_setting_lording_layout'"; ?>
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="settings-subtitle">ログ出力設定</h5>
+
+                            <!-- ログ出力フラグ -->
+                            <div class="settings-form">
+                                <div class="settings-label-container">
+                                    <div class="settings-label">
+                                        ログ出力フラグ
+                                        <div class="required-comment">※必須</div>
+                                    </div>
+                                </div>
+                                <div class="settings-input-container">
+                                    <div class="settings-input">
+                                        <input required type="number" min="0" max="1" class="form-control"
+                                               name="output_logs" placeholder="0"
+                                            <?php echo "value='$master_setting_output_logs'"; ?>
                                         >
                                     </div>
                                 </div>
@@ -324,7 +368,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="25" class="form-control" name="admin_userdata_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control"
+                                               name="admin_userdata_view" placeholder="10"
                                             <?php echo "value='$master_setting_admin_userdata_view'"; ?>
                                         >
                                     </div>
@@ -343,7 +388,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="25" class="form-control" name="admin_groupdata_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control"
+                                               name="admin_groupdata_view" placeholder="10"
                                             <?php echo "value='$master_setting_admin_groupdata_view'"; ?>
                                         >
                                     </div>
@@ -360,7 +406,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="25" class="form-control" name="admin_groupinfodata_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control"
+                                               name="admin_groupinfodata_view" placeholder="10"
                                             <?php echo "value='$master_setting_admin_groupinfodata_view'"; ?>
                                         >
                                     </div>
@@ -379,7 +426,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="1" max="10" class="form-control" name="admin_notice_view" placeholder="5"
+                                        <input required type="number" min="1" max="10" class="form-control"
+                                               name="admin_notice_view" placeholder="5"
                                             <?php echo "value='$master_setting_admin_notice_view'"; ?>
                                         >
                                     </div>
@@ -413,7 +461,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input-large">
-                                        <textarea class="form-control" name="admin_notice_default_content"><?php echo $master_setting_admin_notice_default_content; ?></textarea>
+                                        <textarea class="form-control"
+                                                  name="admin_notice_default_content"><?php echo $master_setting_admin_notice_default_content; ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -435,7 +484,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="25" class="form-control" name="user_input_history_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control"
+                                               name="user_input_history_view" placeholder="10"
                                             <?php echo "value='$master_setting_user_input_history_view'"; ?>
                                         >
                                     </div>
@@ -454,7 +504,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="50" class="form-control" name="user_management_view" placeholder="20"
+                                        <input required type="number" min="5" max="50" class="form-control"
+                                               name="user_management_view" placeholder="20"
                                             <?php echo "value='$master_setting_user_management_view'"; ?>
                                         >
                                     </div>
@@ -473,7 +524,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_pc_width" placeholder="750"
+                                        <input type="number" min="200" max="2500" class="form-control"
+                                               name="user_analysis_graph_size_pc_width" placeholder="750"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_pc_width'"; ?>
                                         >
                                     </div>
@@ -490,7 +542,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_pc_height" placeholder="200"
+                                        <input type="number" min="200" max="2500" class="form-control"
+                                               name="user_analysis_graph_size_pc_height" placeholder="200"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_pc_height'"; ?>
                                         >
                                     </div>
@@ -507,7 +560,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_sp_width" placeholder="320"
+                                        <input type="number" min="200" max="2500" class="form-control"
+                                               name="user_analysis_graph_size_sp_width" placeholder="320"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_sp_width'"; ?>
                                         >
                                     </div>
@@ -524,7 +578,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_sp_height" placeholder="200"
+                                        <input type="number" min="200" max="2500" class="form-control"
+                                               name="user_analysis_graph_size_sp_height" placeholder="200"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_sp_height'"; ?>
                                         >
                                     </div>
@@ -541,7 +596,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_tb_width" placeholder="680"
+                                        <input type="number" min="200" max="2500" class="form-control"
+                                               name="user_analysis_graph_size_tb_width" placeholder="680"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_tb_width'"; ?>
                                         >
                                     </div>
@@ -558,7 +614,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="200" max="2500" class="form-control" name="user_analysis_graph_size_tb_height" placeholder="200"
+                                        <input type="number" min="200" max="2500" class="form-control"
+                                               name="user_analysis_graph_size_tb_height" placeholder="200"
                                             <?php echo "value='$master_setting_user_analysis_graph_size_tb_height'"; ?>
                                         >
                                     </div>
@@ -577,7 +634,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="25" class="form-control" name="user_communication_input_history_view" placeholder="10"
+                                        <input required type="number" min="5" max="25" class="form-control"
+                                               name="user_communication_input_history_view" placeholder="10"
                                             <?php echo "value='$master_setting_user_communication_input_history_view'"; ?>
                                         >
                                     </div>
@@ -594,7 +652,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input required type="number" min="5" max="25" class="form-control" name="user_communication_list_view" placeholder="20"
+                                        <input required type="number" min="5" max="25" class="form-control"
+                                               name="user_communication_list_view" placeholder="20"
                                             <?php echo "value='$master_setting_user_communication_list_view'"; ?>
                                         >
                                     </div>
@@ -611,7 +670,8 @@ $font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
                                 </div>
                                 <div class="settings-input-container">
                                     <div class="settings-input">
-                                        <input type="number" min="0" max="1" class="form-control" name="user_communication_list_view_conditions" placeholder="0"
+                                        <input type="number" min="0" max="1" class="form-control"
+                                               name="user_communication_list_view_conditions" placeholder="0"
                                             <?php echo "value='$master_setting_user_communication_list_view_conditions'"; ?>
                                         >
                                     </div>

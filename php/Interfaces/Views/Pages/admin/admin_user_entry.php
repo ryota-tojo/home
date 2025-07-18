@@ -2,12 +2,17 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-$screen_title = "ユーザー登録";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -99,8 +104,12 @@ if (isset($_POST['entry'])) {
         $entry_error = True;
         $error_message = $data['message'];
         $message = "$error_message";
+        createLogs(LOG_TYPE_ERROR, "ユーザー情報の登録に失敗");
+
     } else {
         $message = "ユーザー情報を登録しました";
+        createLogs(LOG_TYPE_INFO, "ユーザー情報を登録");
+
     }
 }
 
@@ -112,7 +121,7 @@ if (isset($_POST['entry'])) {
     </div>
     <div class="summary-area">
         <div class="summary">
-            ユーザーを登録します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

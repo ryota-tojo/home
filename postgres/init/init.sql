@@ -17,6 +17,13 @@ CREATE TABLE ms_choices (
     PRIMARY KEY (id)
 );
 
+-- 画面マスタ
+CREATE TABLE ms_screen (
+    screen_id VARCHAR(256), 
+    screen_name VARCHAR(256), 
+    remarks VARCHAR(1024)
+);
+
 -- お知らせ
 CREATE TABLE ts_notice (
     id SERIAL NOT NULL,
@@ -223,91 +230,3 @@ CREATE TABLE ts_communication (
     PRIMARY KEY (id)
 );
 
--- -- 設定マスタへのデータ挿入
--- INSERT INTO ms_setting (setting_key, setting_value,setting_remarks)
--- VALUES
---     ('login_failure_limit', '5','ログイン失敗許容回数'),
---     ('maintenance', '0','メンテナンス判定'),
---     ('slack_report_send_flg', '0','Slack: 通知フラグ'),
---     ('slack_report_webhookurl', '','Slack: Web hook URL'),
---     ('slack_send_test', '0','Slack: 通知テストフラグ'),
---     ('lording_layout', '0','ロード画面レイアウトパターン'),
---     ('admin_userdata_view', '10','管理者画面: ユーザーデータ表示数/1ページ'),
---     ('admin_notice_view', '5','管理者画面: お知らせデフォルト表示数'),
---     ('admin_notice_initial_title', 'お知らせ','管理者画面: お知らせタイトルデフォルト値'),
---     ('admin_notice_initial_content', 'XXXXX','管理者画面: お知らせ内容デフォルト値'),
---     ('user_input_history_view', '10','ユーザー画面： 購入データ入力 - 入力履歴表示数'),
---     ('user_management_view', '20','ユーザー画面： 購入データ管理 - データ表示数/1ページ'),
---     ('user_analysis_graph_size_pc_width', '750','ユーザー画面： 購入データ分析 - PC表示: グラフ幅'),
---     ('user_analysis_graph_size_pc_height', '200','ユーザー画面： 購入データ分析 - PC表示: グラフ高さ'),
---     ('user_analysis_graph_size_sp_width', '320','ユーザー画面： 購入データ分析 - スマホ表示: グラフ幅'),
---     ('user_analysis_graph_size_sp_height', '200','ユーザー画面： 購入データ分析 - スマホ表示: グラフ高さ'),
---     ('user_analysis_graph_size_tb_width', '680','ユーザー画面： 購入データ分析 - タブレット表示: グラフ幅'),
---     ('user_analysis_graph_size_tb_height', '200','ユーザー画面： 購入データ分析 - タブレット表示: グラフ高さ'),
---     ('user_communication_input_histry_view', '10','ユーザー画面： お付き合い帳入力 - 入力履歴表示数'),
---     ('user_communication_list_view', '20','ユーザー画面： お付き合い帳一覧 - データ表示数/1ページ'),
---     ('user_communication_list_view_conditions', '0','ユーザー画面： お付き合い帳一覧 - データ検索条件デフォルト設定');
-
--- -- 選択肢マスタへのデータ挿入
--- INSERT INTO ms_choices (item_type, item_no, item_name_pc, item_name_sp)
--- VALUES
---     ('type', 0, '収入', '収入'),
---     ('type', 1, '支出', '支出'),
---     ('payment', 0, '現金', '現金'),
---     ('payment', 1, 'カード', 'カード'),
---     ('payment', 2, '引落し', '引落し'),
---     ('payment', 3, '振込み', '振込み'),
---     ('settlement', 0, '未精算','未'),
---     ('settlement', 1, '精算済','済');
-
--- -- ユーザー情報へのデータ挿入
--- INSERT INTO ts_userinfo (
---     user_name, 
---     password, 
---     permission, 
---     approval_flg, 
---     delete_flg, 
---     create_date, 
---     update_date, 
---     approval_date, 
---     delete_date
--- )
--- VALUES
---     ('admin', 'adminadmin', 2, 1, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
-
--- -- グループ一覧へのデータ挿入
--- INSERT INTO ts_grouplist (
---     groups_id, 
---     group_name,
---     group_password
--- )
--- VALUES
---     ('maintenance', '管理者','adminadmin');
-
--- -- 所属グループ情報へのデータ挿入
--- INSERT INTO ts_groupinfo (
---     groups_id, 
---     user_id, 
---     leader_flg, 
---     create_date, 
---     update_date
--- )
--- VALUES
---     ('maintenance',  
---      (SELECT user_id FROM ts_userinfo WHERE user_name = 'admin' AND password = 'adminadmin'), 
---      1, 
---      CURRENT_TIMESTAMP, 
---      CURRENT_TIMESTAMP);
-
--- -- お知らせデータの挿入
--- INSERT INTO ts_notice (
---     title, 
---     content, 
---     create_date, 
---     update_date
--- )
--- VALUES
---     ('サービス開始', 
---      '本サービスを開始しました。',
---      CURRENT_TIMESTAMP, 
---      CURRENT_TIMESTAMP);

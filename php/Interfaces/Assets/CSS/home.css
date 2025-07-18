@@ -24,6 +24,7 @@ main {
 }
 .summary{
     font-size: 1rem;
+    text-align: center;
 }
 
 /*  */
@@ -31,6 +32,12 @@ main {
     display: flex;
     justify-content: center;
     width: 100%;
+}
+.divider{
+    border: 0;
+    height: 1px;
+    background-color: #323131;
+    margin: 10px 0;
 }
 @media (max-width: 1024px){
     .title{

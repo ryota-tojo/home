@@ -1,6 +1,6 @@
 <?php
 
-use Application\Services\apiService;
+use Application\Services\ApiService;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
 
@@ -11,7 +11,7 @@ function apiCallMasterChoicesRefer()
     $api_path = API_MASTER_CHOICES_REFER['API_PATH'];
     $request_parameter = null;
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -39,7 +39,7 @@ function apiCallMasterChoicesCreate($type,$no,$name_pc,$name_sp)
         "item_name_sp" => $name_sp
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -68,7 +68,7 @@ function apiCallMasterChoicesUpdate($id,$type,$no,$name_pc,$name_sp)
         "item_name_sp" => $name_sp
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -93,7 +93,7 @@ function apiCallMasterChoicesDelete($id)
         "id" => $id
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);

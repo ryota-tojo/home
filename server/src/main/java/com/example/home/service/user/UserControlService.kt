@@ -1,13 +1,12 @@
 package com.example.home.service.user
 
-import com.example.home.domain.entity.group.result.GroupSettingCreateResult
 import com.example.home.domain.entity.user.UserRefer
 import com.example.home.domain.entity.user.result.*
 import com.example.home.domain.model.ResponseCode
 import com.example.home.domain.repository.group.GroupInfoRepository
 import com.example.home.domain.repository.user.UserInfoRepository
 import com.example.home.domain.repository.user.UserSettingRepository
-import com.example.home.domain.value_object.TsDefaultData
+import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.*
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
@@ -24,7 +23,10 @@ class UserControlService(
         userPermission: UserPermission? = null,
         userApprovalFlg: UserApprovalFlg? = null,
         userDeleteFlg: UserDeleteFlg? = null,
-        requestGroupAffiliation:Int? = null,
+        groupsId: GroupsId? = null,
+        groupApproval: Int? = null,
+        leader: Int? = null,
+        groupAffiliation: Int? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): UserReferResult {
@@ -36,7 +38,10 @@ class UserControlService(
             userPermission = userPermission,
             userApprovalFlg = userApprovalFlg,
             userDeleteFlg = userDeleteFlg,
-            requestGroupAffiliation = requestGroupAffiliation,
+            groupsId = groupsId,
+            groupApproval = groupApproval,
+            leader = leader,
+            groupAffiliation = groupAffiliation,
             offset = offset,
             limit = limit,
         )

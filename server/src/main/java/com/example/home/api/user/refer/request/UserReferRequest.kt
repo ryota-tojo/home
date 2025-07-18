@@ -20,6 +20,15 @@ data class UserReferRequest(
     @JsonProperty("deleted")
     val deleted: Int? = null,
 
+    @JsonProperty("groups_id")
+    val groupsId: String? = null,
+
+    @JsonProperty("group_approval")
+    val groupApproval: Int? = null,
+
+    @JsonProperty("leader")
+    val leader: Int? = null,
+
     @JsonProperty("group_affiliation")
     val groupAffiliation: Int? = null,
 

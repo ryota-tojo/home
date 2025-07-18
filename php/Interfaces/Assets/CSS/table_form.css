@@ -29,3 +29,22 @@
 tr.clickable-row:hover {
     cursor: pointer;
 }
+
+@media (max-width: 1024px) {
+    .table-area {
+        max-height: 400px; /* テーブル全体の高さ制限 */
+        overflow-y: auto; /* 垂直スクロール */
+        overflow-x: auto; /* 必要に応じて横スクロールも */
+    }
+
+    .table-area table {
+        width: 100%;
+        border-collapse: separate; /* stickyとの相性 */
+    }
+
+    .table-area thead th {
+        position: sticky;
+        top: 0;
+
+    }
+}

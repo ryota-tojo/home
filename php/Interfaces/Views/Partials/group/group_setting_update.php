@@ -1,9 +1,10 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
-function groupSettingUpdate(){
+function groupSettingUpdate()
+{
 
     $group_api_count_result = apiCallGroupCount();
     $total = $group_api_count_result['data']['recode_count'];
@@ -37,13 +38,13 @@ function groupSettingUpdate(){
                 }
 
                 $group_setting_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/InitializationConfig/group_setting_items.php';
-                foreach ($group_setting_items as [$key,$value]) {
+                foreach ($group_setting_items as [$key, $value]) {
 
                     if (in_array($key, $group_settings, true)) {
                         continue;
                     }
 
-                    $result = apiCallGroupCreateSetting($groups_id,$key,$value);
+                    $result = apiCallGroupCreateSetting($groups_id, $key, $value);
                     if ($result['status'] !== 'success') {
                         $errors[] = "設定 {$key} の登録に失敗しました";
                     }
@@ -54,16 +55,13 @@ function groupSettingUpdate(){
                         'message' => implode("\n", $errors)
                     ]);
                 }
-
-
-
-
-
-
-
-
-
             }
         }
     }
+
+    $data = [
+        "status" => "success",
+        "message" => "すべての所属グループに設定を反映しました",
+    ];
+    return json_encode($data);
 }

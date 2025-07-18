@@ -2,12 +2,16 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "通知設定";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -58,6 +62,7 @@ if (isset($_POST['send_test'])) {
     $send_button_click_flg = True;
     $send_error = -1;
     $message = "通知機能が実装されていません";
+    createLogs(LOG_TYPE_INFO, "通知テスト送信");
 }
 if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
@@ -90,8 +95,10 @@ if (isset($_POST['entry'])) {
         $error_keys_str = implode(', ', $error_keys);
         $message = "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "設定更新に失敗 [$error_keys_str]");
     } else {
         $message = "設定が正常に更新されました。";
+        createLogs(LOG_TYPE_INFO, "設定更新");
     }
 }
 
@@ -114,7 +121,7 @@ $notification_token = $master_settings['$notification_token'] ?? null;
     </div>
     <div class="summary-area">
         <div class="summary">
-            通知関連の設定を管理する
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

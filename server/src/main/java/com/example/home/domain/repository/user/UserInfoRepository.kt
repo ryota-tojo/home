@@ -1,6 +1,7 @@
 package com.example.home.domain.repository.user
 
 import com.example.home.domain.entity.user.UserInfo
+import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.*
 
 interface UserInfoRepository {
@@ -10,7 +11,10 @@ interface UserInfoRepository {
         userPermission: UserPermission? = null,
         userApprovalFlg: UserApprovalFlg? = null,
         userDeleteFlg: UserDeleteFlg? = null,
-        requestGroupAffiliation:Int?=null,
+        groupsId: GroupsId? = null,
+        groupApproval: Int? = null,
+        leader: Int? = null,
+        groupAffiliation: Int? = null,
         offset: Long? = null,
         limit: Int? = null,
     ): List<UserInfo>
