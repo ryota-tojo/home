@@ -1,14 +1,22 @@
 <?php
 
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/font/basic_font.php';
 
-$screen_title = "ユーザー新規登録申請";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 変数初期化
 $entry = False;

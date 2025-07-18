@@ -44,7 +44,7 @@ class TemplateEntryDisableApi(
         if (serviceExecResult.result != ResponseCode.成功.code) {
 
             val status = "error"
-            val message = "登録用テンプレート削除化失敗"
+            val message = "登録用テンプレート無効化失敗"
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 

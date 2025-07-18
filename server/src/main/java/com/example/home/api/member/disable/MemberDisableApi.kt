@@ -39,7 +39,7 @@ class MemberDisableApi(
         if (serviceExecResult.result != ResponseCode.成功.code) {
 
             val status = "error"
-            val message = "カテゴリー削除化失敗"
+            val message = "メンバー無効化失敗"
             var parameter = "-"
             var errorMessage = "想定外のエラー"
 

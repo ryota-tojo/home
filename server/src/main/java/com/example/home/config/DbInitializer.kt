@@ -1,13 +1,8 @@
 package com.example.home.config
 
-import com.example.home.infrastructure.persistence.exposed_tables.master.TbMsChoices
-import com.example.home.infrastructure.persistence.exposed_tables.master.TbMsSetting
-import com.example.home.infrastructure.persistence.exposed_tables.transaction.*
 import com.example.home.util.PropertiesUtil.loadProperties
 import jakarta.annotation.PostConstruct
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Component
 
 @Component
@@ -43,12 +38,15 @@ class DbInitializer {
             user = dbConfig.user,
             password = dbConfig.password
         )
+//        createTable()
     }
 //    fun createTable(){
+//        println("DB - Create table")
 //        SchemaUtils.create(
 //            // マスター
 //            TbMsSetting,
 //            TbMsChoices,
+//            TbMsScreen,
 //
 //            // トランザクション
 //            // -- お知らせ
@@ -65,14 +63,17 @@ class DbInitializer {
 //
 //            // -- 家計簿関連 - 予算
 //            TbTsBudgets,
+//
 //            // -- 家計簿関連 - 購入データ
 //            TbTsCategorys,
 //            TbTsMembers,
 //            TbTsShopping,
+//
 //            // -- 家計簿関連 - テンプレート
 //            TbTsTmpShoppingInput,
 //            TbTsTmpShoppingEntry,
 //            TbTsTmpShoppingSearch,
+//
 //            // -- 家計簿関連 - コメント
 //            TbTsComment,
 //
@@ -80,8 +81,5 @@ class DbInitializer {
 //            TbTsCommunication
 //
 //        )
-//    }
-//    fun defaultData(){
-//
 //    }
 }

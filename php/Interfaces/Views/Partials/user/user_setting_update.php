@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
 function userSettingUpdate()
@@ -14,7 +14,7 @@ function userSettingUpdate()
     for ($i = 0; $i < $pages; $i++) {
         $offset = $i * $perPage;
 
-        $user_api_refer_result = apiCallUserRefer(null, null, null, null, null, null, $offset, $perPage);
+        $user_api_refer_result = apiCallUserRefer(null, null, null, null, null, null, null,null,$offset, $perPage);
 
         if ($user_api_refer_result['status'] !== 'success') {
             echo "ユーザー取得に失敗しました<br>";
@@ -55,9 +55,13 @@ function userSettingUpdate()
                         'message' => implode("\n", $errors)
                     ]);
                 }
-
-
             }
         }
+
+        $data = [
+            "status" => "success",
+            "message" => "すべてのユーザーに設定を反映しました",
+        ];
+        return json_encode($data);
     }
 }

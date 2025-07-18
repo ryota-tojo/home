@@ -1,6 +1,6 @@
 <?php
 
-use Application\Services\apiService;
+use Application\Services\ApiService;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
 
@@ -17,7 +17,7 @@ function apiCallGroupInfoAndUserInfoRefer($groups_id = null, $user_id = null, $l
         "limit" => $limit
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -46,7 +46,7 @@ function apiCallGroupInfoRefer($groups_id = null, $user_id = null, $leader = nul
         "limit" => $limit
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -73,7 +73,7 @@ function apiCallGroupInfoCount($groups_id = null, $user_id = null, $leader = nul
         "leader" => $leader
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -100,7 +100,7 @@ function apiCallGroupInfoCreate($groups_id, $user_id, $leader)
         "leader" => $leader
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -128,7 +128,7 @@ function apiCallGroupInfoUpdate($groups_id, $user_id, $leader = null, $approval 
         "approval" => $approval
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -155,7 +155,7 @@ function apiCallGroupInfoLeaderChange($groups_id, $leader_user_id, $new_leader_u
         "new_leader_user_id" => $new_leader_user_id
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -181,7 +181,7 @@ function apiCallGroupInfoDelete($groups_id = null, $user_id = null)
         "user_id" => $user_id
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);

@@ -1,6 +1,6 @@
 <?php
 
-use Application\Services\apiService;
+use Application\Services\ApiService;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
 
@@ -13,7 +13,7 @@ function apiCallMasterSettingRefer($key = null)
         "setting_key" => $key
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -40,7 +40,7 @@ function apiCallMasterSettingCreate($key,$value,$remarks)
         "remarks" => $remarks
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -67,7 +67,7 @@ function apiCallMasterSettingUpdate($key, $value = null,$remarks=null)
         "remarks" => $remarks
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);
@@ -92,7 +92,7 @@ function apiCallMasterSettingDelete($key = null)
         "setting_key" => $key
     ];
 
-    $api_service = new apiService($api_path);
+    $api_service = new ApiService($api_path);
     $response = $api_service->httpRequest($http_method, $request_parameter);
 
     $data = json_decode($response, true);

@@ -47,7 +47,7 @@ class GroupInfoControlServiceTest extends Specification {
         def result = sut.save(groupsId, userId, leaderFlg)
 
         then:
-        uiCnt * userInfoRepository.refer(userId, null, null, null, null, null, null, null) >> userInfo
+        uiCnt * userInfoRepository.refer(userId, null, null, null, null, null, null, null, null, null, null) >> userInfo
         grCnt * groupInfoRepository.refer(groupsId, null, _, null, null) >> groupInfoRefer
         gsCnt * groupInfoRepository.save(groupsId, userId, leaderFlg) >> groupInfo
         result == expected

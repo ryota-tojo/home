@@ -1,9 +1,9 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
-function groupEntry($user_id, $groups_id, $group_name, $group_password){
+function groupCreate($user_id, $groups_id, $group_name, $group_password){
 
     if($user_id == ""){
         $data = [

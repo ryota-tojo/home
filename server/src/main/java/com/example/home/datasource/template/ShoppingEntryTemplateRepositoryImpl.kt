@@ -218,6 +218,21 @@ class ShoppingEntryTemplateRepositoryImpl : ShoppingEntryTemplateRepository {
         }
     }
 
+    override fun setUnDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): Int {
+        return transaction {
+            val updateRows = TbTsTmpShoppingEntry.update({
+                (TbTsTmpShoppingEntry.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingEntry.templateId eq templateId.value)
+            }) {
+                it[deletedFlg] = 0
+            }
+            return@transaction updateRows
+        }
+    }
+
     override fun delete(groupsId: GroupsId, templateId: TemplateId?): Int {
         return transaction {
             val deleteRows = TbTsTmpShoppingEntry.deleteWhere {

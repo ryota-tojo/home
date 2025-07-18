@@ -2,13 +2,16 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_delete.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "所属グループ管理";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -129,14 +132,16 @@ if (isset($_POST['entry'])) {
         }
     }
 
-    $message = "ユーザー検索条件を変更しました";
+    $message = "所属グループ検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, "所属グループ検索条件変更");
 
 }
 if (isset($_POST['reset'])) {
     $entry_button_click_flg = True;
     $_SESSION['groups_id'] = null;
     $_SESSION['group_name'] = null;
-    $message = "ユーザー検索条件をリセットしました";
+    $message = "所属グループ検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, "所属グループ検索条件リセット");
 
 }
 
@@ -166,10 +171,13 @@ if (isset($_POST['group_deleted'])) {
         }
 
         $message = $suc_cnt . "件の所属グループを削除しました<br>" . $err_cnt . "件の所属グループの削除に失敗しました";
+        createLogs(LOG_TYPE_INFO, "所属グループ削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
         $message = "所属グループが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "所属グループ削除 - 所属グループ未選択");
+
     }
 }
 
@@ -194,7 +202,7 @@ $total_pages = ceil($total_users / $limit);
     </div>
     <div class="summary-area">
         <div class="summary">
-            所属グループの一覧を管理します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

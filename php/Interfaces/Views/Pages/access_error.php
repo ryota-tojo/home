@@ -3,9 +3,16 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -19,7 +26,7 @@ if ($_SESSION['user_permission'] == 2) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ページタイトル</title>
+    <title><?php echo $screen_items; ?></title>
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/font.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/home.css">
     <link rel="stylesheet" href="/Interfaces/Assets/CSS/setting_form.css">
@@ -40,8 +47,7 @@ if ($_SESSION['user_permission'] == 2) {
     </div>
     <div class="summary-area">
         <div class="summary err_msg">
-            セッション切れ、または画面に不正アクセスしました。<br>
-            再ログインしてください。
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
     <div class="contents">

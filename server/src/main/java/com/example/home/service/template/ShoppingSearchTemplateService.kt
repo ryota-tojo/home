@@ -213,6 +213,23 @@ class ShoppingSearchTemplateService(
         )
     }
 
+    fun setUnDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): ShoppingSearchTemplateUpdateResult {
+        val updateRows = shoppingSearchTemplateRepository.setUnDeleted(groupsId, templateId)
+        if (updateRows == 0) {
+            return ShoppingSearchTemplateUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                updateRows
+            )
+        }
+        return ShoppingSearchTemplateUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
     fun delete(groupsId: GroupsId, templateId: TemplateId? = null): ShoppingSearchTemplateDeleteResult {
         val deleteRows = shoppingSearchTemplateRepository.delete(groupsId, templateId)
         if (deleteRows == 0) {

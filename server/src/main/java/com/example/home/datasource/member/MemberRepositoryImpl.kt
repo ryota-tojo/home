@@ -112,6 +112,18 @@ class MemberRepositoryImpl : MemberRepository {
         }
     }
 
+    override fun setUnDeleted(memberId: MemberId): Int {
+        return transaction {
+            var condition: Op<Boolean> = TbTsMembers.memberId eq memberId.value
+            val updateRows = TbTsMembers.update({
+                condition
+            }) {
+                it[deletedFlg] = 0
+            }
+            return@transaction updateRows
+        }
+    }
+
     override fun delete(groupsId: GroupsId?, memberId: MemberId?): Int {
         return transaction {
             val condition = if (groupsId != null) {

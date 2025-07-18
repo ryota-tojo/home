@@ -6,6 +6,7 @@ import com.example.home.api.user.refer.request.UserReferRequest
 import com.example.home.api.user.refer.response.UserReferResponse
 import com.example.home.api.user.refer.response.UserReferResponse.UserInfoObject
 import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.user.*
 import com.example.home.service.user.UserControlService
 import com.example.home.util.ParseLocalDateTime.parseLocalDateTime
@@ -38,6 +39,9 @@ class UserReferApi(
         val requestPermission = request.permission?.let { UserPermission(it) }
         val requestApproval = request.approval?.let { UserApprovalFlg(it) }
         val requestDeleted = request.deleted?.let { UserDeleteFlg(it) }
+        val requestGroupsId = request.groupsId?.let { GroupsId(it) }
+        val requestGroupApproval = request.groupApproval
+        val requestLeader = request.leader
         val requestGroupAffiliation = request.groupAffiliation
 
         val requestOffset = request.offSet
@@ -49,6 +53,9 @@ class UserReferApi(
             requestPermission,
             requestApproval,
             requestDeleted,
+            requestGroupsId,
+            requestGroupApproval,
+            requestLeader,
             requestGroupAffiliation,
             requestOffset,
             requestLimit

@@ -3,11 +3,16 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-$screen_title = "ユーザー管理";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -77,9 +82,6 @@ $message = "";
 $entry_error = False;
 if (!isset($_SESSION['user_search_type_flg'])) {
     $_SESSION['user_search_type_flg'] = "user_id";
-}
-if (!isset($_SESSION['user_count'])) {
-    $_SESSION['user_count'] = 0;
 }
 if (!isset($_SESSION['search_user_id'])) {
     $_SESSION['search_user_id'] = 0;
@@ -164,6 +166,7 @@ if (isset($_POST['entry'])) {
     }
 
     $message = "ユーザー検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
 
 }
 if (isset($_POST['reset'])) {
@@ -176,6 +179,7 @@ if (isset($_POST['reset'])) {
     $_SESSION['user_search_type_flg'] = "user_id";
 
     $message = "ユーザー検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, "ユーザー検索条件リセット");
 }
 if (isset($_POST['user_approval'])) {
     $entry_button_click_flg = True;
@@ -213,10 +217,12 @@ if (isset($_POST['user_approval'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを承認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー承認 - ユーザー未選択");
     }
 }
 
@@ -256,10 +262,12 @@ if (isset($_POST['user_un_approval'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを否認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー否認 - ユーザー未選択");
     }
 }
 if (isset($_POST['user_deleted'])) {
@@ -298,10 +306,12 @@ if (isset($_POST['user_deleted'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを削除しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー削除 - ユーザー未選択");
     }
 }
 if (isset($_POST['user_un_deleted'])) {
@@ -336,10 +346,12 @@ if (isset($_POST['user_un_deleted'])) {
         }
 
         $message = $suc_cnt . "件のユーザーを削除解除しました<br>" . $err_cnt . "件のユーザーをスキップしました";
+        createLogs(LOG_TYPE_INFO, "ユーザー削除解除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
         $message = "ユーザーが選択されていません";
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー削除解除 - ユーザー未選択");
     }
 }
 
@@ -350,9 +362,9 @@ $approval_param = ($_SESSION['search_approval'] == -1) ? null : $_SESSION['searc
 $deleted_param = ($_SESSION['search_deleted'] == -1) ? null : $_SESSION['search_deleted'];
 $group_affiliation_param = ($_SESSION['search_group_affiliation'] == -1) ? null : $_SESSION['search_group_affiliation'];
 
-$userinfo_api_count_result = apiCallUserCount($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, $group_affiliation_param);
+$userinfo_api_count_result = apiCallUserCount($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, null,null,null,$group_affiliation_param);
 if ($userinfo_api_count_result['status'] != "error") {
-    $userinfo_api_refer_result = apiCallUserRefer($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, $group_affiliation_param, $offset, $limit);
+    $userinfo_api_refer_result = apiCallUserRefer($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, null,null,null,$group_affiliation_param, $offset, $limit);
     if ($userinfo_api_refer_result['status'] != "error") {
         $users_data = $userinfo_api_refer_result['data']['user'];
     }
@@ -372,7 +384,7 @@ $total_pages = ceil($total_users / $limit);
     </div>
     <div class="summary-area">
         <div class="summary">
-            ユーザー情報を管理します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

@@ -2,12 +2,16 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "ユーザー情報更新";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -128,8 +132,10 @@ if (isset($_POST['group-info-entry'])) {
 
         $entry_error = True;
         $message = "所属グループ情報の更新に失敗しました";
+        createLogs(LOG_TYPE_ERROR, "所属グループ情報の更新に失敗");
     } else {
         $message = "所属グループ情報を更新しました";
+        createLogs(LOG_TYPE_INFO, "所属グループ情報を更新");
     }
 }
 
@@ -161,8 +167,10 @@ if (isset($_POST['setting-entry'])) {
         $error_keys_str = implode(', ', $error_keys);
         $message = "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
+        createLogs(LOG_TYPE_ERROR, "ユーザー設定の更新に失敗");
     } else {
         $message = "設定が正常に更新されました。";
+        createLogs(LOG_TYPE_INFO, "ユーザー設定を更新");
     }
 }
 
@@ -207,7 +215,7 @@ foreach ($users_data as $user) {
     </div>
     <div class="summary-area">
         <div class="summary">
-            ユーザーの各種設定を更新します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

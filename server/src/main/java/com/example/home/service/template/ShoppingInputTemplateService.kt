@@ -209,6 +209,23 @@ class ShoppingInputTemplateService(
         )
     }
 
+    fun setUnDeleted(
+        groupsId: GroupsId,
+        templateId: TemplateId
+    ): ShoppingInputTemplateUpdateResult {
+        val updateRows = shoppingInputTemplateRepository.setUnDeleted(groupsId, templateId)
+        if (updateRows == 0) {
+            return ShoppingInputTemplateUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                updateRows
+            )
+        }
+        return ShoppingInputTemplateUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
     fun delete(groupsId: GroupsId, templateId: TemplateId? = null): ShoppingInputTemplateDeleteResult {
         val deleteRows = shoppingInputTemplateRepository.delete(groupsId, templateId)
         if (deleteRows == 0) {

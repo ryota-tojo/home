@@ -91,6 +91,20 @@ class CategoryService(
         )
     }
 
+    fun setUnDeleted(categoryId: CategoryId): CategoryUpdateResult {
+        val updateRows = categoryRepository.setUnDeleted(categoryId)
+        if (updateRows == 0) {
+            return CategoryUpdateResult(
+                ResponseCode.データ不在エラー.code,
+                updateRows
+            )
+        }
+        return CategoryUpdateResult(
+            ResponseCode.成功.code,
+            updateRows
+        )
+    }
+
     fun delete(groupsId: GroupsId? = null, categoryId: CategoryId? = null): CategoryDeleteResult {
         val deleteRows = categoryRepository.delete(groupsId, categoryId)
         if (deleteRows == 0) {

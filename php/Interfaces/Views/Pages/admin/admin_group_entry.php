@@ -2,13 +2,17 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "所属グループ登録";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -70,10 +74,6 @@ if ($user_id !== null) {
 }
 if ($groups_id !== null) {
     $url_param[] = "groups_id=$groups_id";
-}else{
-//    $_SESSION['access_error'] = 1;
-//    echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
-
 }
 $url_param = implode('&', $url_param);
 
@@ -170,7 +170,7 @@ if (isset($_POST['entry'])) {
     }
 
     $message = "ユーザー検索条件を変更しました";
-
+    createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
 }
 if (isset($_POST['reset'])) {
     $_SESSION['search_user_id'] = null;
@@ -182,6 +182,7 @@ if (isset($_POST['reset'])) {
     $_SESSION['user_search_type_flg'] = "user_id";
 
     $message = "ユーザー検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, "ユーザー検索条件リセット");
 }
 
 $post_groups_id = '';
@@ -198,16 +199,18 @@ if (isset($_POST['group_entry'])) {
     $post_new_leader_id = $_POST['new-leader-id'] ?? '';
     $post_new_leader_name = $_POST['new-leader-name'] ?? '';
 
-    $result = groupEntry($post_new_leader_id,$post_groups_id, $post_group_name, $post_group_password);
+    $result = groupCreate($post_new_leader_id,$post_groups_id, $post_group_name, $post_group_password);
     $data = json_decode($result, true);
     $status = $data['status'];
 
     if ($status != "success") {
         $entry_error = True;
         $message = $data['message'];
+        createLogs(LOG_TYPE_ERROR, "所属グループの作成に失敗");
 
     } else {
         $message = $data['message'];
+        createLogs(LOG_TYPE_INFO, "所属グループを作成");
 
     }
 }
@@ -218,9 +221,9 @@ $approval_param = ($_SESSION['search_approval'] == -1) ? null : $_SESSION['searc
 $deleted_param = ($_SESSION['search_deleted'] == -1) ? null : $_SESSION['search_deleted'];
 $group_affiliation_param = ($_SESSION['search_group_affiliation'] == -1) ? null : $_SESSION['search_group_affiliation'];
 
-$userinfo_api_count_result = apiCallUserCount($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, $group_affiliation_param);
+$userinfo_api_count_result = apiCallUserCount($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, null,null,null,$group_affiliation_param);
 if ($userinfo_api_count_result['status'] != "error") {
-    $userinfo_api_refer_result = apiCallUserRefer($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, $group_affiliation_param, $offset, $limit);
+    $userinfo_api_refer_result = apiCallUserRefer($_SESSION['search_user_id'], $_SESSION['search_user_name'], $permission_param, $approval_param, $deleted_param, null,null,null, $group_affiliation_param, $offset, $limit);
     $users_data = $userinfo_api_refer_result['data']['user'];
 }
 
@@ -238,7 +241,7 @@ $total_pages = ceil($total_users / $limit);
     </div>
     <div class="summary-area">
         <div class="summary">
-            所属グループを登録します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

@@ -2,12 +2,16 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-
-$screen_title = "所属グループリーダー変更";
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // 管理者判定
 $admin_flag = 0;
@@ -123,8 +127,10 @@ if (isset($_POST['update'])) {
     if ($status == 'error') {
         $message = $group_info_api_leader_change_result['data']['message'];
         $entry_error = True;
+        createLogs(LOG_TYPE_ERROR, "所属グループのリーダー変更に失敗");
     } else {
         $message = "所属グループのリーダーを変更しました";
+        createLogs(LOG_TYPE_INFO, "所属グループのリーダーを変更");
     }
 
 }
@@ -191,7 +197,7 @@ $total_pages = ceil($total_users / $limit);
     </div>
     <div class="summary-area">
         <div class="summary">
-            所属グループのリーダーを変更します
+            <?php echo $screen_remarks; ?>
         </div>
     </div>
 

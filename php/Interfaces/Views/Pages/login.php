@@ -1,19 +1,27 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/base64Service.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/initialization.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/get_user.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-require $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/api_service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/base64Service.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-require $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/initialization.php';
-
-session_start();
-
-//画面名
-$screen_title = "ログイン";
+$_SESSION['output_logs'] = 1;
 
 // 初期設定
 initialization();
+
+//画面名
+$screen_items = getScreen( basename(__FILE__));
+$screen_title = $screen_items['name'];
+$screen_remarks = $screen_items['remarks'];
 
 // フォント読込
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/font/basic_font.php';
@@ -28,6 +36,7 @@ $lockout = False;
 $login_check_message = '';
 $master_setting_login_failure_limit = null;
 $master_setting_maintenance = 0;
+$_SESSION['output_logs'] = 0;
 
 // マスター設定
 $master_setting_api_result = apiCallMasterSettingRefer();
@@ -37,6 +46,9 @@ foreach ($master_setting_api_result['data']['setting_list'] as $setting) {
     }
     if ($setting['setting_key'] == 'maintenance') {
         $master_setting_maintenance = $setting['setting_value'];
+    }
+    if ($setting['setting_key'] == 'output_logs') {
+        $_SESSION['output_logs'] = $setting['setting_value'];
     }
 }
 
@@ -61,47 +73,17 @@ if (isset($_GET['user_name']) and isset($_GET['password'])) {
     } else {
         unset($_SESSION['error_cnt']);
         unset($_SESSION['account_lockout']);
-        $user_refer_api_result = apiCallUserRefer(null, $user_name);
 
-        $_SESSION['user_id'] = null;
-        $_SESSION['user_name'] = null;
-        $_SESSION['user_password'] = null;
-        $_SESSION['user_permission'] = null;
-        $_SESSION['user_approval_flg'] = null;
-        $_SESSION['user_delete_flg'] = null;
-
-        $_SESSION['user_settings'] = null;
-        $_SESSION['user_groups_id'] = null;
-        $_SESSION['user_group_leader'] = null;
-        $_SESSION['user_group_approval_flg'] = null;
-
-        foreach ($user_refer_api_result['data']['user'] as $user) {
-            $userInfo = $user['user_info'];
-            $userSettings = $user['user_setting'];
-            $groupInfoList = $user['group_info'];
-
-            $_SESSION['user_id'] = $userInfo['user_id'];
-            $_SESSION['user_name'] = $userInfo['user_name'];
-            $_SESSION['user_password'] = $userInfo['password'];
-            $_SESSION['user_permission'] = $userInfo['permission'];
-            $_SESSION['user_approval_flg'] = $userInfo['approval'];
-            $_SESSION['user_delete_flg'] = $userInfo['delete'];
-
-            $_SESSION['user_setting'] = $userSettings;
-
-            foreach ($groupInfoList as $groupInfo) {
-                $_SESSION['user_groups_id'] = $groupInfo['groups_id'];
-                $_SESSION['user_group_leader'] = $groupInfo['leader'];
-                $_SESSION['user_group_approval_flg'] = $groupInfo['approval'];
-            }
-        }
+        getUser($user_name);
 
         if ($master_setting_maintenance == "1") {
             if ($_SESSION['user_permission'] != 2) {
+                createLogs(LOG_TYPE_INFO, "ログイン失敗 - メンテナンス");
                 echo "<script>window.location.href = 'maintenance.php';</script>";
             }
         }
 
+        createLogs(LOG_TYPE_INFO, "ログイン");
         echo "<script>window.location.href = 'home.php';</script>";
     }
 }
@@ -122,52 +104,23 @@ if (isset($_POST['login-btn'])) {
     } else {
         unset($_SESSION['error_cnt']);
         unset($_SESSION['account_lockout']);
-        $user_refer_api_result = apiCallUserRefer(null, $user_name);
 
-        $_SESSION['user_id'] = null;
-        $_SESSION['user_name'] = null;
-        $_SESSION['user_password'] = null;
-        $_SESSION['user_permission'] = null;
-        $_SESSION['user_approval_flg'] = null;
-        $_SESSION['user_delete_flg'] = null;
-
-        $_SESSION['user_settings'] = null;
-        $_SESSION['user_groups_id'] = null;
-        $_SESSION['user_group_leader'] = null;
-        $_SESSION['user_group_approval_flg'] = null;
-
-        foreach ($user_refer_api_result['data']['user'] as $user) {
-            $userInfo = $user['user_info'];
-            $userSettings = $user['user_setting'];
-            $groupInfoList = $user['group_info'];
-
-            $_SESSION['user_id'] = $userInfo['user_id'];
-            $_SESSION['user_name'] = $userInfo['user_name'];
-            $_SESSION['user_password'] = $userInfo['password'];
-            $_SESSION['user_permission'] = $userInfo['permission'];
-            $_SESSION['user_approval_flg'] = $userInfo['approval'];
-            $_SESSION['user_delete_flg'] = $userInfo['delete'];
-
-            $_SESSION['user_setting'] = $userSettings;
-
-            foreach ($groupInfoList as $groupInfo) {
-                $_SESSION['user_groups_id'] = $groupInfo['groups_id'];
-                $_SESSION['user_group_leader'] = $groupInfo['leader'];
-                $_SESSION['user_group_approval_flg'] = $groupInfo['approval'];
-            }
-        }
+        getUser($user_name);
 
         if ($master_setting_maintenance == "1") {
             if ($_SESSION['user_permission'] != 2) {
+                createLogs(LOG_TYPE_INFO, "ログイン失敗 - メンテナンス");
                 echo "<script>window.location.href = 'maintenance.php';</script>";
             }
         }
 
+        createLogs(LOG_TYPE_INFO, "ログイン");
         echo "<script>window.location.href = 'home.php';</script>";
     }
 }
 if (isset($_POST['user-entry-btn'])) {
-    echo "<script>window.location.href = 'user_entry.php';</script>";
+    createLogs(LOG_TYPE_INFO, "画面遷移 -> 新規登録");
+    echo "<script>window.location.href = 'user_group_user_entry.php';</script>";
 }
 
 // アカウントロック判定
@@ -175,6 +128,7 @@ $disabled = "";
 if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
     $_SESSION['account_lockout'] = True;
     $disabled = "disabled";
+    createLogs(LOG_TYPE_ERROR, "アカウントロック");
 }
 ?>
 <!DOCTYPE html>
@@ -246,7 +200,7 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                                 <div class="form-area">
                                     <div class="login-form-btn">
                                         <button type="submit" <?php echo $disabled; ?>
-                                                class="btn btn-primary date-btn-item" name="login-btn">
+                                                class="btn btn-primary date-btn-item" name="login-btn" id="login-btn">
                                             ログイン
                                         </button>
                                     </div>
@@ -296,8 +250,8 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
     </div>
     <form action="" method="POST">
         <button type="button" name="admin-btn" id="admin-btn">管理者</button>
-        <button type="button" name="user-btn" id="user1-btn">グループ未所属ユーザー</button>
-        <button type="button" name="user-btn" id="user2-btn">グループ所属ユーザー</button>
+        <button type="button" name="user-btn" id="user1-btn">グループ所属ユーザー</button>
+        <button type="button" name="user-btn" id="user2-btn">グループ未所属ユーザー</button>
     </form>
 </main>
 
@@ -308,16 +262,20 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
     document.getElementById('admin-btn').addEventListener('click', function () {
         document.getElementById('user-name').value = 'admin';
         document.getElementById('password').value = 'adminadmin';
+        document.getElementById('login-btn').click();
+
     });
 
     document.getElementById('user1-btn').addEventListener('click', function () {
-        document.getElementById('user-name').value = 'hoge001';
+        document.getElementById('user-name').value = 'user001';
         document.getElementById('password').value = '1234567890';
+        document.getElementById('login-btn').click();
     });
 
     document.getElementById('user2-btn').addEventListener('click', function () {
-        document.getElementById('user-name').value = 'hoge002';
+        document.getElementById('user-name').value = 'user004';
         document.getElementById('password').value = '1234567890';
+        document.getElementById('login-btn').click();
     });
 </script>
 </body>
