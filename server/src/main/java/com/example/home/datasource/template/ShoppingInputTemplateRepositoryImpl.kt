@@ -11,7 +11,9 @@ import com.example.home.domain.value_object.shopping.ShoppingRemarks
 import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.*
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsTmpShoppingEntry
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsTmpShoppingInput
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsTmpShoppingSearch
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
@@ -23,19 +25,26 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
         return transaction {
             TbTsTmpShoppingInput.select {
                 Op.build {
-                    var condition: Op<Boolean> = TbTsTmpShoppingInput.deletedFlg eq 0
-                    groupsId?.value?.let { condition = condition and (TbTsTmpShoppingInput.groupsId eq it) }
-                    templateId?.value?.let {
-                        condition = condition and (TbTsTmpShoppingInput.templateId eq it)
+                    var condition: Op<Boolean>? = null
+                    groupsId?.value?.let {
+                        condition = (condition?.and(TbTsTmpShoppingInput.groupsId eq it)) ?: (TbTsTmpShoppingInput.groupsId eq it)
                     }
-                    condition
+                    templateId?.value?.let {
+                        condition = (condition?.and(TbTsTmpShoppingInput.templateId eq it)) ?: (TbTsTmpShoppingInput.templateId eq it)
+                    }
+                    condition ?: Op.TRUE
                 }
             }
-                .orderBy(TbTsTmpShoppingInput.id to SortOrder.ASC)
+                .orderBy(
+                    TbTsTmpShoppingInput.deletedFlg to SortOrder.ASC,
+                    TbTsTmpShoppingInput.templateNo to SortOrder.ASC,
+                    TbTsTmpShoppingInput.tmpiUseFlg to SortOrder.DESC
+                )
                 .map {
                     ShoppingInputTemplate(
                         TmpId(it[TbTsTmpShoppingInput.id]),
                         GroupsId(it[TbTsTmpShoppingInput.groupsId]),
+                        TemplateNo(it[TbTsTmpShoppingInput.templateNo]),
                         TemplateId(it[TbTsTmpShoppingInput.templateId]),
                         TemplateName(it[TbTsTmpShoppingInput.tmpiName]),
                         MemberId(it[TbTsTmpShoppingInput.tmpiMemberId]),
@@ -54,6 +63,7 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
 
     override fun save(
         groupsId: GroupsId,
+        templateNo: TemplateNo,
         templateId: TemplateId,
         templateName: TemplateName,
         memberId: MemberId,
@@ -68,6 +78,7 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
         return transaction {
             TbTsTmpShoppingInput.insert {
                 it[TbTsTmpShoppingInput.groupsId] = groupsId.value
+                it[TbTsTmpShoppingInput.templateNo] = templateNo.value
                 it[TbTsTmpShoppingInput.templateId] = templateId.value
                 it[tmpiName] = templateName.value
                 it[tmpiMemberId] = memberId.value
@@ -83,6 +94,7 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
 
             val shoppingInputTemplate = TbTsTmpShoppingInput.select {
                 (TbTsTmpShoppingInput.groupsId eq groupsId.value) and
+                        (TbTsTmpShoppingInput.templateNo eq templateNo.value) and
                         (TbTsTmpShoppingInput.templateId eq templateId.value) and
                         (TbTsTmpShoppingInput.tmpiName eq templateName.value) and
                         (TbTsTmpShoppingInput.tmpiMemberId eq memberId.value) and
@@ -99,6 +111,7 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
                 ShoppingInputTemplate(
                     TmpId(it[TbTsTmpShoppingInput.id]),
                     GroupsId(it[TbTsTmpShoppingInput.groupsId]),
+                    TemplateNo(it[TbTsTmpShoppingInput.templateNo]),
                     TemplateId(it[TbTsTmpShoppingInput.templateId]),
                     TemplateName(it[TbTsTmpShoppingInput.tmpiName]),
                     MemberId(it[TbTsTmpShoppingInput.tmpiMemberId]),
@@ -117,6 +130,7 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
 
     override fun update(
         groupsId: GroupsId,
+        templateNo: TemplateNo?,
         templateId: TemplateId,
         templateName: TemplateName?,
         memberId: MemberId?,
@@ -133,6 +147,10 @@ class ShoppingInputTemplateRepositoryImpl : ShoppingInputTemplateRepository {
                 (TbTsTmpShoppingInput.groupsId eq groupsId.value) and
                         (TbTsTmpShoppingInput.templateId eq templateId.value)
             }) {
+                if (templateNo != null) {
+                    it[TbTsTmpShoppingInput.templateNo] = templateNo.value
+                }
+
                 if (templateName != null) {
                     it[tmpiName] = templateName.value
                 }

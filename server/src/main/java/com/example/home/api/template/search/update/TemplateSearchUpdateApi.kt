@@ -15,6 +15,7 @@ import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.TemplateId
 import com.example.home.domain.value_object.template.TemplateName
+import com.example.home.domain.value_object.template.TemplateNo
 import com.example.home.domain.value_object.template.TemplateUseFlg
 import com.example.home.service.template.ShoppingSearchTemplateService
 import jakarta.servlet.http.HttpServletResponse
@@ -42,23 +43,23 @@ class TemplateSearchUpdateApi(
 
         // リクエスト取得
         val requestGroupsId = GroupsId(request.groupsId)
+        val requestTemplateNo = TemplateNo(request.templateNo)
         val requestTemplateId = TemplateId(request.templateId)
+        val requestTemplateName =TemplateName(request.templateName)
 
-        val requestTemplateName =
-            if (request.templateName == null) null else request.templateName.let { TemplateName(it) }
-        val requestMemberId = if (request.memberId == 0) null else request.memberId?.let { MemberId(it) }
-        val requestCategoryId = if (request.categoryId == 0) null else request.categoryId?.let { CategoryId(it) }
-        val requestType = if (request.type == 0) null else request.type?.let { ShoppingType(it) }
-        val requestPayment = if (request.payment == 0) null else request.payment?.let { ShoppingPayment(it) }
-        val requestSettlement =
-            if (request.settlement == 0) null else request.settlement?.let { ShoppingSettlement(it) }
-        val requestMinAmount = if (request.minAmount == 0) null else request.minAmount?.let { Amount(it) }
-        val requestMaxAmount = if (request.maxAmount == 0) null else request.maxAmount?.let { Amount(it) }
-        val requestRemarks = if (request.remarks == null) null else request.remarks.let { ShoppingRemarks(it) }
-        val requestUseFlg = if (request.use == 0) null else request.use?.let { TemplateUseFlg(it) }
+        val requestMemberId = request.memberId?.let { MemberId(it) }
+        val requestCategoryId = request.categoryId?.let { CategoryId(it) }
+        val requestType = request.type?.let { ShoppingType(it) }
+        val requestPayment = request.payment?.let { ShoppingPayment(it) }
+        val requestSettlement = request.settlement?.let { ShoppingSettlement(it) }
+        val requestMinAmount = request.minAmount?.let { Amount(it) }
+        val requestMaxAmount = request.maxAmount?.let { Amount(it) }
+        val requestRemarks = request.remarks?.let { ShoppingRemarks(it) }
+        val requestUseFlg = TemplateUseFlg(request.use)
 
         val serviceExecResult = shoppingSearchTemplateService.update(
             requestGroupsId,
+            requestTemplateNo,
             requestTemplateId,
             requestTemplateName,
             requestMemberId,
@@ -88,9 +89,9 @@ class TemplateSearchUpdateApi(
                 parameter = "-"
                 errorMessage = ResponseCode.重複するテンプレートID.message
             }
-            if (serviceExecResult.result == ResponseCode.データ不在エラー.code) {
+            if (serviceExecResult.result == ResponseCode.最小金額が最大金額より高い.code) {
                 parameter = "-"
-                errorMessage = ResponseCode.データ不在エラー.message
+                errorMessage = ResponseCode.最小金額が最大金額より高い.message
             }
             if (serviceExecResult.result == ResponseCode.存在しないメンバー.code) {
                 parameter = "-"

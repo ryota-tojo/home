@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -127,10 +127,10 @@ if (isset($_POST['update'])) {
     if ($status == 'error') {
         $message = $group_info_api_leader_change_result['data']['message'];
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "所属グループのリーダー変更に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "のリーダー変更に失敗");
     } else {
-        $message = "所属グループのリーダーを変更しました";
-        createLogs(LOG_TYPE_INFO, "所属グループのリーダーを変更");
+        $message = UI_ITEM_GROUP . "のリーダーを変更しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "のリーダーを変更");
     }
 
 }
@@ -206,7 +206,7 @@ $total_pages = ceil($total_users / $limit);
             <?php
             //
             if ($user_id != null) {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_update.php?$url_param'>ユーザー更新</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_update.php?$url_param'>" . UI_ITEM_USER . "更新</a></div>";
             }
             ?>
         </div>
@@ -229,7 +229,7 @@ $total_pages = ceil($total_users / $limit);
             <div class="center">
                 <form id="leader-form" action="" method="post">
                     <div class="form-area">
-                        <h4 class="">所属グループ：<?php echo $group_name; ?></h4><br>
+                        <h4 class=""><?php echo UI_ITEM_GROUP; ?>：<?php echo $group_name; ?></h4><br>
 
                         <h6 class="form-title"><?php echo "リーダー情報"; ?></h6>
                         <hr>
@@ -247,7 +247,7 @@ $total_pages = ceil($total_users / $limit);
                                         echo "value='{$leader_name}'";
                                         ?>
                                     >
-                                    ユーザーID：
+                                    <?php echo UI_ITEM_USER_ID; ?>：
                                     <div class="user-id-label"><?= $leader_id ?></div>
                                     <div class="user-name-label"><?= $leader_name ?></div>
                                 </label>
@@ -257,7 +257,7 @@ $total_pages = ceil($total_users / $limit);
 
                         <div style="display: flex;">
                             <h6 class="form-title" style="margin-top: 20px"><?php echo "新リーダー情報"; ?></h6>
-                            <div class='disabled-comment' style="margin-top: 25px;">※ユーザーをクリックしてください
+                            <div class='disabled-comment' style="margin-top: 25px;">※<?php echo UI_ITEM_USER; ?>をクリックしてください
                             </div>
                         </div>
                         <hr>
@@ -275,7 +275,7 @@ $total_pages = ceil($total_users / $limit);
                                         echo "value=''";
                                         ?>
                                     >
-                                    ユーザーID：
+                                    <?php echo UI_ITEM_USER_ID; ?>：
                                     <div class="user-id-label" id="new-leader-id-label"></div>
                                     <div class="user-name-label" id="new-leader-name-label"></div>
                                 </label>
@@ -308,12 +308,12 @@ $total_pages = ceil($total_users / $limit);
             <thead class="table-dark">
             <tr>
                 <th>#</th>
-                <th>ユーザー名</th>
-                <th>権限</th>
-                <th>承認</th>
-                <th>削除</th>
-                <th>リーダー</th>
-                <th>グループ承認</th>
+                <th><?php echo UI_ITEM_USER_NAME; ?></th>
+                <th><?php echo UI_ITEM_USER_PERMISSION; ?></th>
+                <th><?php echo UI_ITEM_USER_APPROVAL; ?></th>
+                <th><?php echo UI_ITEM_USER_DELETED; ?></th>
+                <th><?php echo UI_ITEM_GROUP_INFO_LEADER; ?></th>
+                <th><?php echo UI_ITEM_GROUP_INFO_APPROVAL; ?></th>
             </tr>
             </thead>
             <tbody>
@@ -326,26 +326,33 @@ $total_pages = ceil($total_users / $limit);
                 $user_id = $group['user_id'];
                 $user_name = $group['user_name'];
                 $user_permission = $group['user_permission'];
-                $user_approval = $group['user_approval'];
-                $user_deleted = $group['user_deleted'];
-                $group_leader = $group['group_leader'];
-                $group_approval = $group['group_approval'];
+                $user_approval_value = $group['user_approval'];
+                $user_deleted_value = $group['user_deleted'];
+                $group_leader_value = $group['group_leader'];
+                $group_approval_value = $group['group_approval'];
 
-                if ($user_approval == 0 or $user_deleted == 1 or $group_approval == 0) {
+                if ($user_approval_value == 0 or $user_deleted_value == 1 or $group_approval_value == 0) {
                     $class = "class='lock-rows'";
                     $onclick = ""; // クリックなし
                 } else {
                     $class = "class='clickable-row'";
                     $onclick = "onclick=\"onRowClick('$user_id', '$user_name')\"";
                 }
+
+                $user_permission="";
+                $user_approval="";
+                $user_deleted="";
+                $group_leader="";
+                $group_approval="";
+
                 echo "<tr $class $onclick>";
                 echo "<td>$user_id</td>";
                 echo "<td>$user_name</td>";
                 echo "<td>$user_permission</td>";
-                echo "<td>$user_approval</td>";
-                echo "<td>$user_deleted</td>";
-                echo "<td>$group_leader</td>";
-                echo "<td>$group_approval</td>";
+                echo "<td>$user_approval_value</td>";
+                echo "<td>$user_deleted_value</td>";
+                echo "<td>$group_leader_value</td>";
+                echo "<td>$group_approval_value</td>";
                 echo "</tr>";
 
             }
@@ -428,7 +435,7 @@ $total_pages = ceil($total_users / $limit);
 </script>
 <script>
     function confirmLeaderChange() {
-        if (confirm("このユーザーをリーダーに設定しますか？")) {
+        if (confirm("この<?php echo UI_ITEM_USER; ?>をリーダーに設定しますか？")) {
             // フォームに entry を追加（なければ）
             let form = document.getElementById("leader-form");
             let hiddenEntry = document.createElement("input");

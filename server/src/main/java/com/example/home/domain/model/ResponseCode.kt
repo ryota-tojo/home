@@ -28,6 +28,11 @@ enum class ResponseCode(val status: String, val code: String, val message: Strin
         "TEMPLATE_ID_IS_DUPLICATION_ERROR",
         "既に登録されたテンプレートIDが指定されています"
     ),
+    最小金額が最大金額より高い(
+        "error",
+        "TEMPLATE_AMOUNT_IS_ILLEGAL",
+        "最小金額が最大金額を上回っています"
+    ),
     存在しないメンバー("error", "MEMBER_NOT_FOUND_ERROR", "存在しないメンバーが指定されています"),
     存在しないカテゴリー("error", "CATEGORY_NOT_FOUND_ERROR", "存在しないカテゴリーが指定されています"),
     存在しない購入種別("error", "SHOPPING_TYPE_NOT_FOUND_ERROR", "存在しない購入種別が指定されています"),

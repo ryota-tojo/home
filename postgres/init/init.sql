@@ -111,7 +111,8 @@ CREATE TABLE ts_members (
 -- 購入データ入力テンプレート
 CREATE TABLE ts_tmp_shopping_input (
     id SERIAL NOT NULL,
-    groups_id VARCHAR(64), 
+    groups_id VARCHAR(64),
+    template_no INTEGER, 
     template_id VARCHAR(64),
     tmpi_name VARCHAR(64), 
     tmpi_member_id INTEGER,
@@ -130,6 +131,7 @@ CREATE TABLE ts_tmp_shopping_input (
 CREATE TABLE ts_tmp_shopping_search (
     id SERIAL NOT NULL,
     groups_id VARCHAR(64), 
+    template_no INTEGER, 
     template_id VARCHAR(64),
     tmps_name VARCHAR(64), 
     tmps_member_id INTEGER,
@@ -149,6 +151,7 @@ CREATE TABLE ts_tmp_shopping_search (
 CREATE TABLE ts_tmp_shopping_entry (
     id SERIAL NOT NULL,
     groups_id VARCHAR(64), 
+    template_no INTEGER, 
     template_id VARCHAR(64),
     tmpe_name VARCHAR(64), 
     tmpe_member_id INTEGER,

@@ -2,13 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/member/get_max_member_no.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/member/import_member.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -62,31 +62,20 @@ $entry_error = False;
 // マスター設定
 // なし
 
+// ボタン押下時の処理
 if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $member_name = $_POST['member-name'];
 
-    $member_max_no = getMaxMemberNo($_SESSION['user_groups_id']);
-    $member_new_no = $member_max_no + 1;
+    $result_data = memberPostActionForEntryEvent($_SESSION['user_groups_id'],$member_name);
+    $result = json_decode($result_data, true);
 
-    $result = apiCallMemberCreate($_SESSION['user_groups_id'],$member_new_no,$member_name);
-
-    if($result['status']!='error'){
-        $message = "メンバーを登録しました";
-        createLogs(LOG_TYPE_INFO, "メンバー登録 - メンバー登録");
-    } else {
-        $message = "メンバーの登録に失敗しました";
+    if($result['status']=='error'){
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "メンバー登録 - メンバー登録失敗");
     }
+    $message = $result['message'];
 }
-
-$member_api_refer_result = apiCallMemberRefer(null, $_SESSION['user_groups_id']);
-if ($member_api_refer_result['status'] != "error") {
-    $categories_data = $member_api_refer_result['data']['member_list'];
-}
-
 ?>
 
 <main>
@@ -102,7 +91,7 @@ if ($member_api_refer_result['status'] != "error") {
     <div class="btn-area">
         <div class="btn-center-area">
             <div class='btn-item'><a class='link-btn'
-                                     href='/Interfaces/Views/Pages/user/group/setting/member/user_group_member_list.php'>メンバー一覧</a>
+                                     href='/Interfaces/Views/Pages/user/group/setting/member/user_group_member_list.php'><?php echo UI_ITEM_MEMBER; ?>一覧</a>
             </div>
         </div>
     </div>
@@ -130,14 +119,14 @@ if ($member_api_refer_result['status'] != "error") {
                         <hr>
 
                         <div class="pc-form">
-                            <!-- メンバー名 -->
+                            <!-- 購入者名 -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">メンバー名</label>
+                                    <label class="item-label"><?php echo UI_ITEM_MEMBER_NAME; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input type="text" required minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="member-name"
-                                           placeholder="メンバー名を入力してください"
+                                           placeholder="<?php echo UI_ITEM_MEMBER_NAME; ?>を入力してください"
                                         <?php $member_name = $_POST['member-name'] ?? '';
                                         if($entry_error == True){echo "value='{$member_name}'";}
                                          ?>

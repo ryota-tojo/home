@@ -11,29 +11,16 @@ import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.TemplateId
 import com.example.home.domain.value_object.template.TemplateName
+import com.example.home.domain.value_object.template.TemplateNo
 import com.example.home.domain.value_object.template.TemplateUseFlg
 
 interface ShoppingSearchTemplateRepository {
     fun refer(groupsId: GroupsId? = null, templateId: TemplateId? = null): List<ShoppingSearchTemplate>
     fun save(
         groupsId: GroupsId,
+        templateNo: TemplateNo,
         templateId: TemplateId,
         templateName: TemplateName,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        shoppingType: ShoppingType,
-        shoppingPayment: ShoppingPayment,
-        shoppingSettlement: ShoppingSettlement,
-        shoppingMinAmount: Amount,
-        shoppingMaxAmount: Amount,
-        shoppingRemarks: ShoppingRemarks,
-        templateUseFlg: TemplateUseFlg,
-    ): ShoppingSearchTemplate
-
-    fun update(
-        groupsId: GroupsId,
-        templateId: TemplateId,
-        templateName: TemplateName? = null,
         memberId: MemberId? = null,
         categoryId: CategoryId? = null,
         shoppingType: ShoppingType? = null,
@@ -42,7 +29,23 @@ interface ShoppingSearchTemplateRepository {
         shoppingMinAmount: Amount? = null,
         shoppingMaxAmount: Amount? = null,
         shoppingRemarks: ShoppingRemarks? = null,
-        templateUseFlg: TemplateUseFlg? = null
+        templateUseFlg: TemplateUseFlg,
+    ): ShoppingSearchTemplate
+
+    fun update(
+        groupsId: GroupsId,
+        templateNo: TemplateNo,
+        templateId: TemplateId,
+        templateName: TemplateName,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        shoppingType: ShoppingType? = null,
+        shoppingPayment: ShoppingPayment? = null,
+        shoppingSettlement: ShoppingSettlement? = null,
+        shoppingMinAmount: Amount? = null,
+        shoppingMaxAmount: Amount? = null,
+        shoppingRemarks: ShoppingRemarks? = null,
+        templateUseFlg: TemplateUseFlg
     ): Int
 
     fun usage(

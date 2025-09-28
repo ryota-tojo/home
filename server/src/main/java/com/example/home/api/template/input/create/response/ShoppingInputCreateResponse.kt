@@ -25,6 +25,9 @@ data class ShoppingInputCreateResponse(
         @JsonProperty("groups_id")
         val groupsId: String? = null,
 
+        @JsonProperty("template_no")
+        val templateNo: String? = null,
+
         @JsonProperty("template_id")
         val templateId: String? = null,
 

@@ -73,6 +73,7 @@ class TemplateInputReferApi(
             ShoppingInputReferResponse.TemplateObject(
                 template.id.value,
                 template.groupsId.value,
+                template.templateNo.value.toString(),
                 template.templateId.value,
                 template.templateName.value,
                 template.memberId.value,

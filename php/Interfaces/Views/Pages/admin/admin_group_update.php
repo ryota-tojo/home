@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -113,11 +113,11 @@ if (isset($_POST['group_entry'])) {
     if ($status != "success") {
 
         $entry_error = True;
-        $message = "所属グループの更新に失敗しました";
-        createLogs(LOG_TYPE_ERROR, "所属グループの更新に失敗");
+        $message = UI_ITEM_GROUP . "の更新に失敗しました";
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "の更新に失敗");
     } else {
-        $message = "所属グループを更新しました";
-        createLogs(LOG_TYPE_INFO, "所属グループを更新");
+        $message = UI_ITEM_GROUP . "を更新しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "を更新");
     }
 }
 
@@ -154,12 +154,12 @@ if (isset($_POST['setting_entry'])) {
 
     if (!$all_success) {
         $error_keys_str = implode(', ', $error_keys);
-        $message = "所属グループ設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
+        $message = UI_ITEM_GROUP . "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "所属グループ設定の更新に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "設定の更新に失敗");
     } else {
-        $message = "所属グループ設定が正常に更新されました。";
-        createLogs(LOG_TYPE_INFO, "所属グループ設定を更新");
+        $message = UI_ITEM_GROUP . "設定が正常に更新されました。";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "設定を更新");
     }
 }
 
@@ -197,13 +197,13 @@ if (isset($_POST['user_approval'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを承認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を承認しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー承認 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "承認 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -237,13 +237,13 @@ if (isset($_POST['user_un_approval'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを否認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を否認しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー否認 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "否認 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -277,13 +277,13 @@ if (isset($_POST['user_deleted'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを除籍しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー除籍 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を除籍しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "除籍 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー除籍 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "除籍 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -373,13 +373,13 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                     <form action="" method="post">
 
                         <div class="settings-section">
-                            <h4 class="settings-title">所属グループ情報</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_GROUP_INFO; ?></h4>
                             <hr>
 
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループID
+                                        <?php echo UI_ITEM_GROUPS_ID; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -398,7 +398,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループ名
+                                        <?php echo UI_ITEM_GROUP_NAME; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -413,7 +413,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループパスワード
+                                        <?php echo UI_ITEM_GROUP_PASSWORD; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -432,7 +432,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="group_entry">
-                                        所属グループ情報更新
+                                        <?php echo UI_ITEM_GROUP_INFO; ?>更新
                                     </button>
                                 </div>
                             </div>
@@ -442,13 +442,13 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
 
                     <form action="" method="post">
                         <div class="settings-section">
-                            <h4 class="settings-title">所属グループ設定</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_GROUP; ?>設定</h4>
                             <hr>
 
                             <div style='display: none' class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループID
+                                        <?php echo UI_ITEM_GROUPS_ID; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -543,7 +543,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="setting_entry">
-                                        所属グループ設定更新
+                                        <?php echo UI_ITEM_GROUP; ?>設定更新
                                     </button>
                                 </div>
                             </div>
@@ -565,27 +565,27 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
         <div class="btn-left-area">
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="user_assign">
-                    ユーザーを配属する
+                    <?php echo UI_ITEM_USER; ?>を配属する
                 </button>
             </div>
         </div>
         <div class="btn-right-area">
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="user_approval"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ 既に承認済みのユーザー')">
-                    選択ユーザーを承認
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ リーダー<?php echo UI_ITEM_USER; ?>\n・ 既に承認済みの<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を承認
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-warning" name="user_un_approval"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ 既に未承認のユーザー')">
-                    選択ユーザーを否認
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ リーダー<?php echo UI_ITEM_USER; ?>\n・ 既に未承認の<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を否認
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-danger" name="user_deleted"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ 承認済みのユーザー')">
-                    選択ユーザーを除籍
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ リーダー<?php echo UI_ITEM_USER; ?>\n・ 承認済みの<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を除籍
                 </button>
             </div>
         </div>
@@ -598,12 +598,12 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                 <tr>
                     <th><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
                     <th>#</th>
-                    <th>氏名</th>
-                    <th>権限</th>
-                    <th>承認</th>
-                    <th>削除</th>
-                    <th>リーダー</th>
-                    <th>所属グループ承認</th>
+                    <th><?php echo UI_ITEM_USER_NAME; ?></th>
+                    <th><?php echo UI_ITEM_USER_PERMISSION; ?></th>
+                    <th><?php echo UI_ITEM_USER_APPROVAL; ?></th>
+                    <th><?php echo UI_ITEM_USER_DELETED; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_LEADER; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_APPROVAL; ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -621,12 +621,20 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
 
                     foreach ($users_data as $user) {
                         $user_name = $user['user_info']['user_name'];
-                        $permission = $user['user_info']['permission'];
-                        $approval = $user['user_info']['approval'];
-                        $deleted = $user['user_info']['delete'];
+
+                        if ($user['user_info']['permission'] == "0") {
+                            $permission = "一般";
+                        } else if ($user['user_info']['permission'] == "1") {
+                            $permission = "一般管理者";
+                        } else {
+                            $permission = "管理者";
+                        }
+
+                        $approval = $user['user_info']['approval'] == "0" ? "未承認" : "承認";
+                        $deleted = $user['user_info']['delete'] == "0" ? "-" : "削除";
                     }
 
-                    $leader = $group_info['leader'] == "0" ? "-" : "リーダー";
+                    $leader = $group_info['leader'] == "0" ? "一般" : "リーダー";
                     $group_approval = $group_info['approval'] == "0" ? "未承認" : "承認";
 
                     echo "<tr style='cursor: pointer;' onclick=\"window.location='/Interfaces/Views/Pages/admin/admin_user_update.php?screen={$screen}&groups_id={$groups_id}&user_id={$user_id}'\">";

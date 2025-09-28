@@ -9,8 +9,8 @@ import com.example.home.domain.value_object.etc.YYYY
 import com.example.home.domain.value_object.group.GroupsId
 
 interface BudgetsRepository {
-    fun refer(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryNo: CategoryId? = null): List<Budgets>
-    fun save(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryNo: CategoryId, amount: Amount): Budgets
+    fun refer(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryId: CategoryId? = null): List<Budgets>
+    fun save(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryId: CategoryId, amount: Amount): Budgets
     fun update(
         groupsId: GroupsId,
         yyyy: YYYY? = null,
@@ -32,5 +32,5 @@ interface BudgetsRepository {
         mm: MM
     ): Int
 
-    fun delete(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryNo: CategoryId? = null): Int
+    fun delete(groupsId: GroupsId, yyyy: YYYY? = null, mm: MM? = null, categoryId: CategoryId? = null): Int
 }

@@ -2,13 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/category/get_max_category_no.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/category/import_category.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -26,7 +26,9 @@ if (!isset($_GET['category_id'])) {
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
 $category_id = $_GET['category_id'];
-
+if (!isExistCategory($category_id, $_SESSION['user_groups_id'])) {
+    echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
+}
 
 ob_start();
 ?>
@@ -72,28 +74,22 @@ if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $post_category_id = $_POST['category-id'];
-    $post_new_category_name = $_POST['new-category-name'];
+    $post_new_category_name = $_POST['category-name'];
+    $post_status = $_POST['status'] ?? '';
 
-    $result = apiCallCategoryUpdate($post_category_id,null,$post_new_category_name);
+    $result = categoryPostActionForUpdateEvent($post_category_id, $post_new_category_name, $post_status);
+    $data = json_decode($result, True);
 
-    if($result['status']!='error'){
-        $message = "カテゴリー情報を変更しました";
-        createLogs(LOG_TYPE_INFO, "カテゴリー変更 - カテゴリー変更");
-    } else {
-        $message = "カテゴリー情報の変更に失敗しました";
+    if ($data['status'] == 'error') {
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "カテゴリー変更 - カテゴリー変更失敗");
     }
+    $message = $data['message'];
 }
 
-$category_name="";
-$category_api_refer_result = apiCallCategoryRefer($category_id, $_SESSION['user_groups_id']);
-if ($category_api_refer_result['status'] != "error") {
-    $categories_data = $category_api_refer_result['data']['category_list'];
-}
-foreach ($categories_data as $category_data){
-    $category_name = $category_data['category_name'];
-}
+
+$category_data = getCategory($category_id, $_SESSION['user_groups_id']);
+$category_name = $category_data['category_name'];
+$category_status = $category_data['delete_flag'];
 
 ?>
 
@@ -110,7 +106,8 @@ foreach ($categories_data as $category_data){
     <div class="btn-area">
         <div class="btn-center-area">
             <div class='btn-item'><a class='link-btn'
-                                     href='/Interfaces/Views/Pages/user/group/setting/category/user_group_category_list.php'>カテゴリー一覧</a>
+                                     href='/Interfaces/Views/Pages/user/group/setting/category/user_group_category_list.php'><?php echo UI_ITEM_CATEGORY; ?>
+                    一覧</a>
             </div>
         </div>
     </div>
@@ -141,51 +138,75 @@ foreach ($categories_data as $category_data){
                             <!-- カテゴリーID -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">カテゴリーID</label>
+                                    <label class="item-label"><?php echo UI_ITEM_CATEGORY; ?>ID</label>
                                 </div>
-                                <div class="input-group form-item"">
-                                    <input type="text" style="display: none" minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="category-id"
-                                           placeholder="カテゴリー名を入力してください"
-                                        <?php echo "value='{$category_id}'"; ?>
-                                    >
-                                    <input type="text" disabled minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name=""
-                                           placeholder="カテゴリー名を入力してください"
-                                        <?php echo "value='{$category_id}'"; ?>
-                                    >
-                                </div>
+                                <div class="input-group form-item"
+                                ">
+                                <input type="text" style="display: none" minlength="1" maxlength="64"
+                                       oninput="this.value = this.value.replace(/,/g, '');" class="form-control"
+                                       name="category-id"
+                                    <?php echo "value='{$category_id}'"; ?>
+                                >
+                                <input type="text" disabled minlength="1" maxlength="64"
+                                       oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name=""
+                                    <?php echo "value='{$category_id}'"; ?>
+                                >
                             </div>
+                        </div>
 
-                            <!-- カテゴリー名 -->
-                            <div class="form-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">カテゴリー名</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input disabled type="text" required minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="category-name"
-                                           placeholder="カテゴリー名を入力してください"
-                                        <?php echo "value='{$category_name}'"; ?>
-                                    >
-                                </div>
+                        <!-- カテゴリー名 -->
+                        <div class="form-item">
+                            <div class="form-item-label">
+                                <label class="item-label"><?php echo UI_ITEM_CATEGORY_NAME; ?></label>
                             </div>
+                            <div class="input-group form-item">
+                                <input type="text" required minlength="1" maxlength="64"
+                                       oninput="this.value = this.value.replace(/,/g, '');" class="form-control"
+                                       name="category-name"
+                                       placeholder="<?php echo UI_ITEM_CATEGORY_NAME; ?>を入力してください"
+                                    <?php
 
-                            <!-- 変更後カテゴリー名 -->
-                            <div class="form-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">変更後カテゴリー名</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input type="text" required minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="new-category-name"
-                                           placeholder="変更後のカテゴリー名を入力してください"
-                                        <?php
-
-                                        if($entry_error == True){
-                                            if(isset($_POST['new-category-name'])){
-                                                echo "value={$_POST['new-category-name']}";
-                                            }
-                                        } ?>
-                                    >
-                                </div>
+                                    if ($entry_error == True) {
+                                        if (isset($_POST['category-name'])) {
+                                            echo "value={$_POST['category-name']}";
+                                        }
+                                    }else{
+                                        echo "value={$category_name}";
+                                    } ?>
+                                >
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="form-item">
+                        <div class="form-item-label">
+                            <label class="item-label"><?php echo UI_ITEM_CATEGORY_STATUS; ?></label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status"
+                                   id="statusButton1" value="0"
+                                <?php
+                                if ($category_status == "0") {
+                                    echo "checked";
+                                }
+                                ?>
+                            >
+                            <label class="form-check-label" for="statusButton1">
+                                有効
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="status"
+                                   id="statusButton2" value="1"
+                                <?php
+                                if ($category_status == "1") {
+                                    echo "checked";
+                                }
+                                ?>
+                            >
+                            <label class="form-check-label" for="statusButton2">
+                                無効
+                            </label>
                         </div>
                     </div>
 

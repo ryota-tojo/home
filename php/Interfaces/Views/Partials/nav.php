@@ -3,9 +3,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/ui_items_config.php';
+
 // ユーザー情報最新化
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/get_user.php';
-getUser($_SESSION['user_name']);
+getCurrentUser($_SESSION['user_name']);
 
 // 管理者判定
 $admin_flag = 0;
@@ -50,25 +53,25 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--                    <li class="nav-item dropdown">-->
-<!--                        <a class="nav-link dropdown-toggle menu-font" href="#" role="button" data-bs-toggle="dropdown"-->
-<!--                           aria-expanded="false">-->
-<!--                            テンプレート-->
-<!--                        </a>-->
-<!--                        <ul class="dropdown-menu drop-font">-->
-<!--                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">テスト用ページ</a></li>-->
-<!--                            <li><a class="dropdown-item"-->
-<!--                                   href="/Interfaces/Views/Pages/home_setting_tmp.php">設定フォーム</a></li>-->
-<!--                            <li><a class="dropdown-item"-->
-<!--                                   href="/Interfaces/Views/Pages/home_input_tmp.php">入力フォーム</a></li>-->
-<!--                        </ul>-->
-<!--                    </li>-->
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle menu-font" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false" aria-haspopup="true">
+                            テンプレート
+                        </a>
+                        <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
+                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">テスト用ページ</a></li>
+                            <li><a class="dropdown-item"
+                                   href="/Interfaces/Views/Pages/home_setting_tmp.php">設定フォーム</a></li>
+                            <li><a class="dropdown-item"
+                                   href="/Interfaces/Views/Pages/home_input_tmp.php">入力フォーム</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle menu-font" href="#" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             マスタ設定
                         </a>
-                        <ul class="dropdown-menu drop-font">
+                        <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                             <li><a class="dropdown-item"
                                    href="/Interfaces/Views/Pages/admin/admin_master_setting_system.php">システム設定</a>
                             </li>
@@ -81,16 +84,16 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                            aria-expanded="false">
                             データ管理
                         </a>
-                        <ul class="dropdown-menu drop-font">
-                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_user_control.php">ユーザー管理</a>
+                        <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
+                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_user_control.php"><?php echo UI_ITEM_USER . "管理"; ?></a>
                             </li>
-                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_group_control.php">所属グループ管理</a>
-                            </li>
-                            <li><a class="dropdown-item"
-                                   href="/Interfaces/Views/Pages/admin/admin_user_setting_all_apply.php">ユーザー設定一括反映</a>
+                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_group_control.php"><?php echo UI_ITEM_GROUP . "管理"; ?></a>
                             </li>
                             <li><a class="dropdown-item"
-                                   href="/Interfaces/Views/Pages/admin/admin_group_setting_all_apply.php">所属グループ設定一括反映</a>
+                                   href="/Interfaces/Views/Pages/admin/admin_user_setting_all_apply.php"><?php echo UI_ITEM_USER . "設定一括反映"; ?></a>
+                            </li>
+                            <li><a class="dropdown-item"
+                                   href="/Interfaces/Views/Pages/admin/admin_group_setting_all_apply.php"><?php echo UI_ITEM_GROUP . "設定一括反映"; ?></a>
                             </li>
                         </ul>
                     </li>
@@ -99,8 +102,8 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                            aria-expanded="false">
                             運用管理
                         </a>
-                        <ul class="dropdown-menu drop-font">
-                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_notice_entry.php">お知らせ登録</a>
+                        <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
+                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_notice_entry.php"><?php echo UI_ITEM_NOTICE . "登録"; ?></a>
                             </li>
                             <li><a class="dropdown-item" href="/Interfaces/Views/Pages/admin/admin_maintenance.php">メンテナンス</a>
                             </li>
@@ -113,7 +116,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                            aria-expanded="false">
                             データベース管理
                         </a>
-                        <ul class="dropdown-menu drop-font">
+                        <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                             <li><a class="dropdown-item" href="#">バックアップ</a></li>
                             <li><a class="dropdown-item" href="#">初期化</a></li>
                         </ul>
@@ -170,9 +173,9 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                所属グループ
+                                <?php echo UI_ITEM_GROUP; ?>
                             </a>
-                            <ul class="dropdown-menu drop-font">
+                            <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                                 <li><a class="dropdown-item"
                                        href="/Interfaces/Views/Pages/user/un_group/user_group_entry.php">新規登録</a>
                                 </li>
@@ -191,16 +194,33 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    グループ管理
+                                    <?php echo UI_ITEM_GROUP . "管理"; ?>
                                 </a>
-                                <ul class="dropdown-menu drop-font">
-                                    <li><a class="dropdown-item" href="/Interfaces/Views/Pages/user/group/setting/config/user_group_config.php">設定</a></li>
+                                <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                                     <li><a class="dropdown-item"
-                                           href="/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php">ユーザー一覧</a></li>
+                                           href="/Interfaces/Views/Pages/test.php">テスト</a>
+                                    </li>
                                     <li><a class="dropdown-item"
-                                           href="/Interfaces/Views/Pages/user/group/setting/category/user_group_category_list.php">カテゴリー一覧</a></li>
+                                           href="/Interfaces/Views/Pages/user/group/setting/config/user_group_config.php">設定</a>
+                                    </li>
                                     <li><a class="dropdown-item"
-                                           href="/Interfaces/Views/Pages/user/group/setting/member/user_group_member_list.php">メンバー一覧</a></li>
+                                           href="/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php"><?php echo UI_ITEM_USER . "一覧"; ?></a>
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="/Interfaces/Views/Pages/user/group/setting/member/user_group_member_list.php"><?php echo UI_ITEM_MEMBER . "一覧"; ?></a>
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="/Interfaces/Views/Pages/user/group/setting/category/user_group_category_list.php"><?php echo UI_ITEM_CATEGORY . "一覧"; ?></a>
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="/Interfaces/Views/Pages/user/group/setting/template/entry_template/user_group_entry_template_list.php"><?php echo UI_ITEM_ENTRY_TEMPLATE . "一覧"; ?></a>
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="/Interfaces/Views/Pages/user/group/setting/template/input_template/user_group_input_template_list.php"><?php echo UI_ITEM_INPUT_TEMPLATE . "一覧"; ?></a>
+                                    </li>
+                                    <li><a class="dropdown-item"
+                                           href="/Interfaces/Views/Pages/user/group/setting/template/search_template/user_group_search_template_list.php"><?php echo UI_ITEM_SEARCH_TEMPLATE . "一覧"; ?></a>
+                                    </li>
                                 </ul>
                             </li>
                         <?php } ?>
@@ -208,25 +228,25 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                予算
+                                <?php echo UI_ITEM_BUDGETS; ?>
                             </a>
-                            <ul class="dropdown-menu drop-font">
-                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">入力</a></li>
-                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">一覧</a></li>
+                            <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
+                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/user/group/budgets/budget_input.php">入力</a></li>
+                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/user/group/budgets/budget_list.php">一覧</a></li>
                             </ul>
                         </li>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                データ入力
+                                <?php echo UI_ITEM_SHOPPING . "入力"; ?>
                             </a>
-                            <ul class="dropdown-menu drop-font">
+                            <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                                 <?php if ($_SESSION['user_group_leader'] == 1) { ?>
                                     <li><a class="dropdown-item"
-                                           href="/Interfaces/Views/Pages/test.php">テンプレート入力</a></li>
+                                           href="/Interfaces/Views/Pages/user/group/shopping_data_input/template_input.php"><?php echo UI_ITEM_ENTRY_TEMPLATE . "入力"; ?></a></li>
                                 <?php } ?>
-                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">購入データ入力</a>
+                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/user/group/shopping_data_input/shopping_input.php"><?php echo UI_ITEM_SHOPPING . "入力"; ?></a>
                                 </li>
                             </ul>
                         </li>
@@ -234,14 +254,14 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                データ管理
+                                <?php echo UI_ITEM_SHOPPING . "管理"; ?>
                             </a>
-                            <ul class="dropdown-menu drop-font">
+                            <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                                 <li><a class="dropdown-item"
-                                       href="/Interfaces/Views/Pages/test.php">購入データ一覧</a></li>
-                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">データ確定</a>
+                                       href="/Interfaces/Views/Pages/test.php"><?php echo UI_ITEM_SHOPPING . "一覧"; ?></a></li>
+                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php"><?php echo UI_ITEM_SHOPPING . "確定"; ?></a>
                                 </li>
-                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">コメント一覧</a>
+                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php"><?php echo UI_ITEM_COMMENT . "一覧"; ?></a>
                                 </li>
                             </ul>
                         </li>
@@ -249,9 +269,9 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                データ分析
+                                <?php echo UI_ITEM_SHOPPING . "分析"; ?>
                             </a>
-                            <ul class="dropdown-menu drop-font">
+                            <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
                                 <li><a class="dropdown-item"
                                        href="/Interfaces/Views/Pages/test.php">予実対比</a></li>
                                 <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">前年対比</a>
@@ -263,18 +283,17 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
                 <?php } ?>
 
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                その他
-                            </a>
-                            <ul class="dropdown-menu drop-font">
-                                <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php">ユーザー設定</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle menu-font" href="#" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            その他
+                        </a>
+                        <ul class='dropdown-menu dropdown-main-menu' id='dropdown-menu' aria-labelledby='navbarDropdown'>
+                            <li><a class="dropdown-item" href="/Interfaces/Views/Pages/test.php"><?php echo UI_ITEM_USER . "設定"; ?></a>
+                            </li>
+                        </ul>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link menu-font" href="/Interfaces/Views/Pages/logout.php">
                             ログアウト
@@ -304,7 +323,7 @@ foreach ($master_setting_refer_api_result['data']['setting_list'] as $setting) {
 <?php } ?>
 
 <?php
-
+//echo "<br><br><br><br>";
 // 共通フォント読込
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Assets/CSS/font/basic_font.php';
 

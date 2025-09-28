@@ -21,6 +21,7 @@ import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.TemplateId
 import com.example.home.domain.value_object.template.TemplateName
+import com.example.home.domain.value_object.template.TemplateNo
 import com.example.home.domain.value_object.template.TemplateUseFlg
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
@@ -50,6 +51,7 @@ class ShoppingInputTemplateService(
 
     fun save(
         groupsId: GroupsId,
+        templateNo: TemplateNo,
         templateId: TemplateId,
         templateName: TemplateName,
         memberId: MemberId,
@@ -93,6 +95,7 @@ class ShoppingInputTemplateService(
         }
         val template = shoppingInputTemplateRepository.save(
             groupsId,
+            templateNo,
             templateId,
             templateName,
             memberId,
@@ -112,6 +115,7 @@ class ShoppingInputTemplateService(
 
     fun update(
         groupsId: GroupsId,
+        templateNo: TemplateNo?=null,
         templateId: TemplateId,
         templateName: TemplateName? = null,
         memberId: MemberId? = null,
@@ -147,6 +151,7 @@ class ShoppingInputTemplateService(
         }
         val updateRows = shoppingInputTemplateRepository.update(
             groupsId,
+            templateNo,
             templateId,
             templateName,
             memberId,

@@ -2,19 +2,53 @@
 
 use Application\Services\ApiService;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/api_routes.php';
 
-function apiCallTemplateEntryRefer($category_id = null, $groups_id = null, $category_no = null, $offset = null, $limit = null)
+function apiCallEntryTemplateRefer($groups_id = null, $template_id = null)
 {
 
-    $http_method = API_CATEGORY_REFER['HTTP_METHOD'];
-    $api_path = API_CATEGORY_REFER['API_PATH'];
+    $http_method = API_ENTRY_TEMPLATE_REFER['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_REFER['API_PATH'];
     $request_parameter = [
+        "groups_id" => $groups_id,
+        "template_id" => $template_id
+    ];
+
+    $api_service = new ApiService($api_path);
+    $response = $api_service->httpRequest($http_method, $request_parameter);
+
+    $data = json_decode($response, true);
+
+    $response_status = $data['status'];
+    $response_message = $data['message'];
+    $response_data = $data['data'];
+
+    return [
+        "status" => $response_status,
+        "message" => $response_message,
+        "data" => $response_data
+    ];
+}
+
+function apiCallEntryTemplateCreate($groups_id, $template_no, $template_id, $template_name, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks, $use
+)
+{
+
+    $http_method = API_ENTRY_TEMPLATE_CREATE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_CREATE['API_PATH'];
+    $request_parameter = [
+        "groups_id" => $groups_id,
+        "template_no" => $template_no,
+        "template_id" => $template_id,
+        "template_name" => $template_name,
+        "member_id" => $member_id,
         "category_id" => $category_id,
-        "groups_id" => $groups_id,
-        "category_no" => $category_no,
-        "offset" => $offset,
-        "limit" => $limit,
+        "type" => $type,
+        "payment" => $payment,
+        "settlement" => $settlement,
+        "amount" => $amount,
+        "remarks" => $remarks,
+        "use" => $use,
     ];
 
     $api_service = new ApiService($api_path);
@@ -33,15 +67,25 @@ function apiCallTemplateEntryRefer($category_id = null, $groups_id = null, $cate
     ];
 }
 
-function apiCallTemplateEntryCount($category_id = null, $groups_id = null, $category_no = null)
+function apiCallEntryTemplateUpdate($groups_id, $template_id, $template_no=null, $template_name = null, $member_id = null, $category_id = null, $type = null, $payment = null, $settlement = null, $amount = null, $remarks = null, $use = null
+)
 {
 
-    $http_method = API_CATEGORY_COUNT['HTTP_METHOD'];
-    $api_path = API_CATEGORY_COUNT['API_PATH'];
+    $http_method = API_ENTRY_TEMPLATE_UPDATE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_UPDATE['API_PATH'];
     $request_parameter = [
+        "groups_id" => $groups_id,
+        "template_no" => $template_no,
+        "template_id" => $template_id,
+        "template_name" => $template_name,
+        "member_id" => $member_id,
         "category_id" => $category_id,
-        "groups_id" => $groups_id,
-        "category_no" => $category_no,
+        "type" => $type,
+        "payment" => $payment,
+        "settlement" => $settlement,
+        "amount" => $amount,
+        "remarks" => $remarks,
+        "use" => $use,
     ];
 
     $api_service = new ApiService($api_path);
@@ -60,15 +104,14 @@ function apiCallTemplateEntryCount($category_id = null, $groups_id = null, $cate
     ];
 }
 
-function apiCallTemplateEntryCreate($groups_id = null, $category_no = null, $category_name = null)
+function apiCallEntryTemplateUsage($groups_id, $template_id)
 {
 
-    $http_method = API_CATEGORY_CREATE['HTTP_METHOD'];
-    $api_path = API_CATEGORY_CREATE['API_PATH'];
+    $http_method = API_ENTRY_TEMPLATE_USAGE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_USAGE['API_PATH'];
     $request_parameter = [
         "groups_id" => $groups_id,
-        "category_no" => $category_no,
-        "category_name" => $category_name,
+        "template_id" => $template_id
     ];
 
     $api_service = new ApiService($api_path);
@@ -87,41 +130,14 @@ function apiCallTemplateEntryCreate($groups_id = null, $category_no = null, $cat
     ];
 }
 
-function apiCallTemplateEntryUpdate($category_id = null, $category_no = null, $category_name = null)
+function apiCallEntryTemplateUnUsage($groups_id, $template_id)
 {
 
-    $http_method = API_CATEGORY_UPDATE['HTTP_METHOD'];
-    $api_path = API_CATEGORY_UPDATE['API_PATH'];
-    $request_parameter = [
-        "category_id" => $category_id,
-        "category_no" => $category_no,
-        "category_name" => $category_name,
-    ];
-
-    $api_service = new ApiService($api_path);
-    $response = $api_service->httpRequest($http_method, $request_parameter);
-
-    $data = json_decode($response, true);
-
-    $response_status = $data['status'];
-    $response_message = $data['message'];
-    $response_data = $data['data'];
-
-    return [
-        "status" => $response_status,
-        "message" => $response_message,
-        "data" => $response_data
-    ];
-}
-
-function apiCallTemplateEntryDelete($groups_id = null, $category_id = null)
-{
-
-    $http_method = API_CATEGORY_DELETE['HTTP_METHOD'];
-    $api_path = API_CATEGORY_DELETE['API_PATH'];
+    $http_method = API_ENTRY_TEMPLATE_UN_USAGE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_UN_USAGE['API_PATH'];
     $request_parameter = [
         "groups_id" => $groups_id,
-        "category_id" => $category_id
+        "template_id" => $template_id
     ];
 
     $api_service = new ApiService($api_path);
@@ -140,13 +156,14 @@ function apiCallTemplateEntryDelete($groups_id = null, $category_id = null)
     ];
 }
 
-function apiCallTemplateEntryDisable($category_id = null)
+function apiCallEntryTemplateDisable($groups_id, $template_id)
 {
 
-    $http_method = API_CATEGORY_DISABLE['HTTP_METHOD'];
-    $api_path = API_CATEGORY_DISABLE['API_PATH'];
+    $http_method = API_ENTRY_TEMPLATE_DISABLE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_DISABLE['API_PATH'];
     $request_parameter = [
-        "category_id" => $category_id
+        "groups_id" => $groups_id,
+        "template_id" => $template_id
     ];
 
     $api_service = new ApiService($api_path);
@@ -165,13 +182,14 @@ function apiCallTemplateEntryDisable($category_id = null)
     ];
 }
 
-function apiCallCategoryUnDisable($category_id = null)
+function apiCallEntryTemplateUnDisable($groups_id, $template_id)
 {
 
-    $http_method = API_CATEGORY_UN_DISABLE['HTTP_METHOD'];
-    $api_path = API_CATEGORY_UN_DISABLE['API_PATH'];
+    $http_method = API_ENTRY_TEMPLATE_UN_DISABLE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_UN_DISABLE['API_PATH'];
     $request_parameter = [
-        "category_id" => $category_id
+        "groups_id" => $groups_id,
+        "template_id" => $template_id
     ];
 
     $api_service = new ApiService($api_path);
@@ -189,3 +207,30 @@ function apiCallCategoryUnDisable($category_id = null)
         "data" => $response_data
     ];
 }
+
+function apiCallEntryTemplateDelete($groups_id, $template_id=null)
+{
+
+    $http_method = API_ENTRY_TEMPLATE_DELETE['HTTP_METHOD'];
+    $api_path = API_ENTRY_TEMPLATE_DELETE['API_PATH'];
+    $request_parameter = [
+        "groups_id" => $groups_id,
+        "template_id" => $template_id
+    ];
+
+    $api_service = new ApiService($api_path);
+    $response = $api_service->httpRequest($http_method, $request_parameter);
+
+    $data = json_decode($response, true);
+
+    $response_status = $data['status'];
+    $response_message = $data['message'];
+    $response_data = $data['data'];
+
+    return [
+        "status" => $response_status,
+        "message" => $response_message,
+        "data" => $response_data
+    ];
+}
+

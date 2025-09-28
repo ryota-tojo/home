@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -63,16 +63,16 @@ $entry_error = False;
 if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_setting_update.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/update_user_setting.php';
     $result=userSettingUpdate();
     $data = json_decode($result, true);
 
     if ($data['status'] != "success") {
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "ユーザー設定の一括反映に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "設定の一括反映に失敗");
     }
     $message = $data['message'];
-    createLogs(LOG_TYPE_INFO, "ユーザー設定一括反映");
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "設定一括反映");
 }
 
 ?>

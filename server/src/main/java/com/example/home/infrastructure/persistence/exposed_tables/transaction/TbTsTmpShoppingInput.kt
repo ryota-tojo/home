@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Table
 object TbTsTmpShoppingInput : Table("ts_tmp_shopping_input") {
     val id = integer("id").autoIncrement()
     val groupsId = varchar("groups_id", 64)
+    val templateNo = integer("template_no")
     val templateId = varchar("template_id", 64)
     val tmpiName = varchar("tmpi_name", 64)
     val tmpiMemberId = integer("tmpi_member_id")

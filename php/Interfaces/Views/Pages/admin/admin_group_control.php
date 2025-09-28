@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_delete.php';
@@ -132,16 +132,16 @@ if (isset($_POST['entry'])) {
         }
     }
 
-    $message = "所属グループ検索条件を変更しました";
-    createLogs(LOG_TYPE_INFO, "所属グループ検索条件変更");
+    $message = UI_ITEM_GROUP . "検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "検索条件変更");
 
 }
 if (isset($_POST['reset'])) {
     $entry_button_click_flg = True;
     $_SESSION['groups_id'] = null;
     $_SESSION['group_name'] = null;
-    $message = "所属グループ検索条件をリセットしました";
-    createLogs(LOG_TYPE_INFO, "所属グループ検索条件リセット");
+    $message = UI_ITEM_GROUP . "検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "検索条件リセット");
 
 }
 
@@ -170,13 +170,13 @@ if (isset($_POST['group_deleted'])) {
 
         }
 
-        $message = $suc_cnt . "件の所属グループを削除しました<br>" . $err_cnt . "件の所属グループの削除に失敗しました";
-        createLogs(LOG_TYPE_INFO, "所属グループ削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_GROUP . "を削除しました<br>" . $err_cnt . "件の" . UI_ITEM_GROUP . "の削除に失敗しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "所属グループが選択されていません";
+        $message = UI_ITEM_GROUP . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "所属グループ削除 - 所属グループ未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "削除 - " . UI_ITEM_GROUP . "未選択");
 
     }
 }
@@ -211,7 +211,7 @@ $total_pages = ceil($total_users / $limit);
             <?php
             //
             if ($group_file_flag or $screen == "group") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_entry.php?$url_param'>所属グループ登録</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_entry.php?$url_param'>" . UI_ITEM_GROUP . "登録</a></div>";
             }
             ?>
         </div>
@@ -269,7 +269,7 @@ $total_pages = ceil($total_users / $limit);
                                                        value="groups_id"
                                                     <?= ($_SESSION['group_search_type_flg'] === "groups_id" || !isset($_SESSION['group_search_type_flg'])) ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                       for="searchGroupId">所属グループIDで検索</label>
+                                                       for="searchGroupId"><?php echo UI_ITEM_GROUPS_ID; ?>で検索</label>
                                             </div>
                                             <div style='display:none' class="form-check">
                                                 <input class="form-check-input" type="radio" name="search_type"
@@ -284,7 +284,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- グループID -->
                                     <div class="form-item remarks-item" id="groupIdField">
                                         <div class="form-item-label">
-                                            <label class="item-label">所属グループID</label>
+                                            <label class="item-label"><?php echo UI_ITEM_GROUP; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="text" class="form-control" name="groups_id"
@@ -295,7 +295,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- グループ名 -->
                                     <div class="form-item remarks-item" id="groupNameField">
                                         <div class="form-item-label">
-                                            <label class="item-label">所属グループ名</label>
+                                            <label class="item-label"><?php echo UI_ITEM_GROUP_NAME; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="text" class="form-control" name="group_name"
@@ -353,8 +353,8 @@ $total_pages = ceil($total_users / $limit);
         <div class="btn-right-area">
             <div class="btn-item">
                 <button type="submit" class="btn btn-danger" name="group_deleted"
-                        onclick="return confirm('本当に実行しますか？\nグループに所属していたすべてのユーザーは未所属状態になります。')">
-                    選択所属グループを削除
+                        onclick="return confirm('本当に実行しますか？\n<?php echo UI_ITEM_GROUP; ?>に所属していたすべてのユーザーは未所属状態になります。')">
+                    <?php echo "選択" . UI_ITEM_GROUP . "を削除"; ?>
                 </button>
             </div>
         </div>
@@ -371,8 +371,8 @@ $total_pages = ceil($total_users / $limit);
                                onclick="event.stopPropagation(); toggleAll(this);"/>
                     </th>
                     <th>#</th>
-                    <th>所属グループID</th>
-                    <th>所属グループ名</th>
+                    <th><?php echo UI_ITEM_GROUPS_ID; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_NAME; ?></th>
                 </tr>
                 </thead>
                 <tbody>

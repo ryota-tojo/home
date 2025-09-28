@@ -82,7 +82,9 @@
     .category-item,
     .type-item,
     .payment-item,
-    .settlement-item {
+    .settlement-item,
+    .min-amount-item,
+    .max-amount-item{
         width: calc((100% - 30px) / 4); /* 余白を引いた後で4分割 */
         margin-left: 10px; /* 左余白 */
     }
@@ -92,7 +94,9 @@
     .amount-item {
         width: calc((100% - 30px) / 4); /* 全体の1/4の幅 */
     }
-
+    .min-amount-item {
+        margin-left: 0; /* 最初の要素だけ余白をなくす */
+    }
     .remarks-item {
         width: calc(100% - (100% - 30px) / 4 - 10px); /* 残りの幅 */
         margin-left: 10px; /* 左余白 */

@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_create.php';
@@ -169,8 +169,8 @@ if (isset($_POST['entry'])) {
         }
     }
 
-    $message = "ユーザー検索条件を変更しました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
+    $message = UI_ITEM_USER . "検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件変更");
 }
 if (isset($_POST['reset'])) {
     $_SESSION['search_user_id'] = null;
@@ -181,8 +181,8 @@ if (isset($_POST['reset'])) {
     $_SESSION['search_group_affiliation'] = -1;
     $_SESSION['user_search_type_flg'] = "user_id";
 
-    $message = "ユーザー検索条件をリセットしました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件リセット");
+    $message = UI_ITEM_USER . "検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件リセット");
 }
 
 $post_groups_id = '';
@@ -206,11 +206,11 @@ if (isset($_POST['group_entry'])) {
     if ($status != "success") {
         $entry_error = True;
         $message = $data['message'];
-        createLogs(LOG_TYPE_ERROR, "所属グループの作成に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "の作成に失敗");
 
     } else {
         $message = $data['message'];
-        createLogs(LOG_TYPE_INFO, "所属グループを作成");
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "を作成");
 
     }
 }
@@ -250,7 +250,7 @@ $total_pages = ceil($total_users / $limit);
             <?php
             //
             if ($group_file_flag OR $screen=="group") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_control.php?$url_param'>所属グループ管理</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_control.php?$url_param'>" . UI_ITEM_GROUP . "管理</a></div>";
             }
             ?>
         </div>
@@ -308,14 +308,14 @@ $total_pages = ceil($total_users / $limit);
                                                        value="user_id"
                                                     <?= ($_SESSION['user_search_type_flg'] === "user_id" || !isset($_SESSION['user_search_type_flg'])) ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                       for="searchUserId">ユーザーIDで検索</label>
+                                                       for="searchUserId"><?php echo UI_ITEM_USER_ID; ?>で検索</label>
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="search_type"
                                                        id="searchUserName"
                                                        value="wildcard"
                                                     <?= ($_SESSION['user_search_type_flg'] === "wildcard") ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="searchUserName">ユーザー情報で検索</label>
+                                                <label class="form-check-label" for="searchUserName"><?php echo UI_ITEM_USER; ?>情報で検索</label>
                                             </div>
                                         </div>
                                     </div>
@@ -323,7 +323,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- ユーザーID -->
                                     <div class="form-item remarks-item" id="userIdField">
                                         <div class="form-item-label">
-                                            <label class="item-label">ユーザーID</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_ID; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="number" class="form-control" name="user_id"
@@ -339,7 +339,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- ユーザー名 -->
                                     <div class="form-item remarks-item" id="userNameField">
                                         <div class="form-item-label">
-                                            <label class="item-label">ユーザー名</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_NAME; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="text" class="form-control" name="user_name"
@@ -350,7 +350,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 権限 -->
                                     <div class="form-item payment-item" id="permissionField">
                                         <div class="form-item-label">
-                                            <label class="item-label">権限</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_PERMISSION; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="permission">
@@ -373,7 +373,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 承認 -->
                                     <div class="form-item payment-item" id="approvalField">
                                         <div class="form-item-label">
-                                            <label class="item-label">承認</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_APPROVAL; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="approval">
@@ -393,7 +393,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 削除 -->
                                     <div class="form-item payment-item" id="deletedField">
                                         <div class="form-item-label">
-                                            <label class="item-label">削除</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_DELETED; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="deleted">
@@ -412,7 +412,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 所属グループ -->
                                     <div class="form-item payment-item" id="groupAffiliationField">
                                         <div class="form-item-label">
-                                            <label class="item-label">所属グループ</label>
+                                            <label class="item-label"><?php echo UI_ITEM_GROUP; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="group_affiliation">
@@ -468,18 +468,18 @@ $total_pages = ceil($total_users / $limit);
                     <form action="" method="post">
 
                         <div class="settings-section">
-                            <h4 class="settings-title">所属グループ情報</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_GROUP_INFO; ?></h4>
                             <hr>
 
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループID
+                                        <?php echo UI_ITEM_GROUPS_ID; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input required type="text"  minlength="4" maxlength="32" class="form-control" name="groups-id" placeholder="※所属グループIDを入力してください"
+                                    <input required type="text"  minlength="4" maxlength="32" class="form-control" name="groups-id" placeholder="※<?php echo UI_ITEM_GROUPS_ID; ?>を入力してください"
                                         <?php
                                         echo "value='$post_groups_id'";
                                         ?>
@@ -489,12 +489,12 @@ $total_pages = ceil($total_users / $limit);
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループ名
+                                        <?php echo UI_ITEM_GROUP_NAME; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input required type="text" minlength="4" maxlength="32" class="form-control" name="group-name" placeholder="※所属グループ名を入力してください"
+                                    <input required type="text" minlength="4" maxlength="32" class="form-control" name="group-name" placeholder="※<?php echo UI_ITEM_GROUP_NAME; ?>を入力してください"
                                         <?php
                                         echo "value='$post_group_name'";
                                         ?>
@@ -504,12 +504,12 @@ $total_pages = ceil($total_users / $limit);
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループパスワード
+                                        <?php echo UI_ITEM_GROUP_PASSWORD; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input required type="password" minlength="4" maxlength="64" class="form-control" name="group-password" placeholder="※所属グループパスワードを入力してください"
+                                    <input required type="password" minlength="4" maxlength="64" class="form-control" name="group-password" placeholder="※<?php echo UI_ITEM_GROUP_PASSWORD; ?>を入力してください"
                                         <?php
                                         echo "value='$post_group_password'";
                                         ?>
@@ -519,12 +519,12 @@ $total_pages = ceil($total_users / $limit);
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        リーダーユーザーID
+                                        <?php echo UI_ITEM_USER_ID . "(リーダー)"; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input disabled required type="text" class="form-control" id="new-leader-id-label" placeholder="※ユーザーをクリックしてください"
+                                    <input disabled required type="text" class="form-control" id="new-leader-id-label" placeholder="※<?php echo UI_ITEM_USER; ?>をクリックしてください"
                                         <?php
                                         echo "value='$post_new_leader_id'";
                                         ?>
@@ -539,12 +539,12 @@ $total_pages = ceil($total_users / $limit);
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        リーダーユーザー名
+                                        <?php echo UI_ITEM_USER_NAME . "(リーダー)"; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
-                                    <input disabled type="text" class="form-control" id="new-leader-name-label" placeholder="※ユーザーをクリックしてください"
+                                    <input disabled type="text" class="form-control" id="new-leader-name-label" placeholder="※<?php echo UI_ITEM_USER; ?>をクリックしてください"
                                         <?php
                                         echo "value='$post_new_leader_name'";
                                         ?>
@@ -563,7 +563,7 @@ $total_pages = ceil($total_users / $limit);
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="group_entry">
-                                        所属グループ登録
+                                        <?php echo UI_ITEM_GROUP; ?>登録
                                     </button>
                                 </div>
                             </div>
@@ -587,12 +587,12 @@ $total_pages = ceil($total_users / $limit);
                 <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>氏名</th>
-                    <th>権限</th>
-                    <th>承認</th>
-                    <th>削除</th>
-                    <th>所属グループ</th>
-                    <th>リーダーフラグ</th>
+                    <th><?php echo UI_ITEM_USER_NAME; ?></th>
+                    <th><?php echo UI_ITEM_USER_PERMISSION; ?></th>
+                    <th><?php echo UI_ITEM_USER_APPROVAL; ?></th>
+                    <th><?php echo UI_ITEM_USER_DELETED; ?></th>
+                    <th><?php echo UI_ITEM_GROUP; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_LEADER; ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -634,7 +634,13 @@ $total_pages = ceil($total_users / $limit);
                     foreach ($user['group_info'] as $group) {
                         $group_name = $group['groups_id'];
                         $group_leader = $group['leader'];
+                        if($group['leader'] == 0){
+                            $group_leader = "一般";
+                        }else{
+                            $group_leader = "リーダー";
+                        }
                     }
+
 
                     if ($group_name != "-" or $deleted_value == 1 or $approval_value == 0) {
                         $class = "class='lock-rows'";

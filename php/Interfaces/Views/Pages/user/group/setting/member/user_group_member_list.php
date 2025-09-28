@@ -2,13 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/member/get_max_member_no.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/member/import_member.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -76,160 +76,77 @@ $entry_error = False;
 // ボタン押下時の処理
 if (isset($_POST['change_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
 
-        $count_result = apiCallMemberCount(null, $_SESSION['user_groups_id']);
-        $member_max_count = $count_result['data']['recode_count'];
-        $member_checked_count = count($selected_datas);
+    if (isset($_POST['selected_datas'])) {
 
-        if ($member_max_count == $member_checked_count) {
-            $cnt = 0;
-            foreach ($selected_datas as $data) {
-
-                $array = explode("\t", $data);
-                $post_member_id = $array[0];
-                $post_groups_id = $array[1];
-                $post_member_no = $array[2];
-                $post_member_name = $array[3];
-                $post_delete_flag = $array[4];
-
-                if ($post_member_no != 999) {
-                    $cnt++;
-                    apiCallMemberUpdate($post_member_id, $cnt);
-                    $suc_cnt += 1;
-                }
-            }
-
-            $message = $suc_cnt . "件のメンバーを入替ました<br>" . $err_cnt . "件のメンバーをスキップしました";
-            createLogs(LOG_TYPE_INFO, "メンバー入替 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
-        } else {
-            $message = "メンバーがすべて選択されていません";
+        $result_data = membersPostActionForSortEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
             $entry_error = true;
-            createLogs(LOG_TYPE_ERROR, "メンバー入替 - メンバー選択数不一致");
         }
+        $message = $result['message'];
     } else {
-        $message = "メンバーが選択されていません";
+        $message = UI_ITEM_MEMBER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "メンバー入替 - メンバー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_MEMBER . "入替 - " . UI_ITEM_MEMBER . "未選択");
     }
 }
 
 if (isset($_POST['on_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
 
-        foreach ($selected_datas as $data) {
-            $array = explode("\t", $data);
+    if (isset($_POST['selected_datas'])) {
 
-            $post_member_id = $array[0];
-            $post_groups_id = $array[1];
-            $post_member_no = $array[2];
-            $post_member_name = $array[3];
-            $post_delete_flag = $array[4];
-
-            if ($post_delete_flag == "0") {
-                $err_cnt += 1;
-                continue;
-            }
-
-            $member_max_no = getMaxMemberNo($_SESSION['user_groups_id']);
-            $member_new_no = $member_max_no + 1;
-
-            apiCallMemberUnDisable($post_member_id);
-            apiCallMemberUpdate($post_member_id, $member_new_no);
-            $suc_cnt += 1;
+        $result_data = membersPostActionForActivateEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のメンバーを有効化しました<br>" . $err_cnt . "件のメンバーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "メンバー有効化 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "メンバーが選択されていません";
+        $message = UI_ITEM_MEMBER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "メンバー有効化 - メンバー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_MEMBER . "有効化 - " . UI_ITEM_MEMBER . "未選択");
     }
 }
 
 if (isset($_POST['off_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
 
-        foreach ($selected_datas as $data) {
-            $array = explode("\t", $data);
+    if (isset($_POST['selected_datas'])) {
 
-            $post_member_id = $array[0];
-            $post_groups_id = $array[1];
-            $post_member_no = $array[2];
-            $post_member_name = $array[3];
-            $post_delete_flag = $array[4];
-
-            if ($post_delete_flag == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallMemberDisable($post_member_id);
-            apiCallMemberUpdate($post_member_id, 999);
-            $suc_cnt += 1;
+        $result_data = membersPostActionForDeactivateEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のメンバーを無効化しました<br>" . $err_cnt . "件のメンバーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "メンバー無効化 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "メンバーが選択されていません";
+        $message = UI_ITEM_MEMBER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "メンバー無効化 - メンバー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_MEMBER . "無効化 - " . UI_ITEM_MEMBER . "未選択");
     }
 }
 
 if (isset($_POST['delete_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
 
-        foreach ($selected_datas as $data) {
-            $array = explode("\t", $data);
+    if (isset($_POST['selected_datas'])) {
 
-            $post_member_id = $array[0];
-            $post_groups_id = $array[1];
-            $post_member_no = $array[2];
-            $post_member_name = $array[3];
-            $post_delete_flag = $array[4];
-
-            if ($post_delete_flag == "0") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallMemberDelete(null, $post_member_id);
-            $suc_cnt += 1;
+        $result_data = membersPostActionForDeleteEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のメンバーを削除しました<br>" . $err_cnt . "件のメンバーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "メンバー削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "メンバーが選択されていません";
+        $message = UI_ITEM_MEMBER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "メンバー削除 - メンバー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_MEMBER . "削除 - " . UI_ITEM_MEMBER . "未選択");
     }
 }
 
-$member_api_refer_result = apiCallMemberRefer(null, $_SESSION['user_groups_id']);
-if ($member_api_refer_result['status'] != "error") {
-    $members_data = $member_api_refer_result['data']['member_list'];
-}
+$members_data = getMemberList($_SESSION['user_groups_id']);
 
 ?>
 
@@ -246,7 +163,7 @@ if ($member_api_refer_result['status'] != "error") {
     <div class="btn-area">
         <div class="btn-center-area">
             <div class='btn-item'><a class='link-btn'
-                                     href='/Interfaces/Views/Pages/user/group/setting/member/user_group_member_entry.php'>メンバー登録</a>
+                                     href='/Interfaces/Views/Pages/user/group/setting/member/user_group_member_entry.php'><?php echo UI_ITEM_MEMBER; ?>登録</a>
             </div>
         </div>
     </div>
@@ -293,19 +210,19 @@ if ($member_api_refer_result['status'] != "error") {
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="on_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のメンバーはスキップされます。\n・ 既に有効化のメンバー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_MEMBER; ?>はスキップされます。\n・ 既に有効化の<?php echo UI_ITEM_MEMBER; ?>')">
                     有効化
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-warning" name="off_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のメンバーはスキップされます。\n・ 既に無効化のメンバー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_MEMBER; ?>はスキップされます。\n・ 既に無効化の<?php echo UI_ITEM_MEMBER; ?>')">
                     無効化
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-danger" name="delete_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のメンバーはスキップされます。\n・ 有効化のメンバー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_MEMBER; ?>はスキップされます。\n・ 有効化の<?php echo UI_ITEM_MEMBER; ?>')">
                     削除
                 </button>
             </div>
@@ -321,9 +238,9 @@ if ($member_api_refer_result['status'] != "error") {
                 <thead class="table-dark">
                 <tr>
                     <th><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
-                    <th>#</th>
-                    <th>メンバー名</th>
-                    <th>ステータス</th>
+                    <th><?php echo UI_ITEM_MEMBER_NO; ?></th>
+                    <th><?php echo UI_ITEM_MEMBER_NAME; ?></th>
+                    <th><?php echo UI_ITEM_MEMBER_STATUS; ?></th>
                 </tr>
                 </thead>
                 <tbody id="sortable-table">

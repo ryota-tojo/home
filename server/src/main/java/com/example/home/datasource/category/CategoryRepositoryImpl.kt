@@ -8,6 +8,7 @@ import com.example.home.domain.value_object.category.CategoryName
 import com.example.home.domain.value_object.category.CategoryNo
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsCategorys
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -34,7 +35,10 @@ class CategoryRepositoryImpl : CategoryRepository {
                 .select {
                     condition
                 }
-                .orderBy(TbTsCategorys.categoryNo to SortOrder.ASC)
+                .orderBy(
+                    TbTsCategorys.deletedFlg to SortOrder.ASC,
+                    TbTsCategorys.categoryNo to SortOrder.ASC
+                )
                 .apply { limit?.let { limit(it, offset = offset ?: 0) } }
                 .map {
                     Category(
@@ -124,17 +128,13 @@ class CategoryRepositoryImpl : CategoryRepository {
         }
     }
 
-    override fun delete(groupsId: GroupsId?, categoryId: CategoryId?): Int {
+    override fun delete(groupsId: GroupsId, categoryId: CategoryId?): Int {
         return transaction {
-            val condition = if (groupsId != null) {
-                TbTsCategorys.groupsId eq groupsId.value
-            } else {
-                if (categoryId != null) {
-                    TbTsCategorys.categoryId eq categoryId.value
-                } else {
-                    return@transaction 0
-                }
+            val condition =when(categoryId){
+                null -> TbTsCategorys.groupsId eq groupsId.value
+                else -> (TbTsCategorys.groupsId eq groupsId.value) and (TbTsCategorys.categoryId eq categoryId.value)
             }
+
             val deleteRows = TbTsCategorys.deleteWhere { condition }
             return@transaction deleteRows
         }

@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
@@ -39,7 +39,7 @@ function groupCreate($user_id, $groups_id, $group_name, $group_password){
         return json_encode($data);
     }
 
-    $group_setting_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/InitializationConfig/group_setting_items.php';
+    $group_setting_items = require $_SERVER['DOCUMENT_ROOT'] . '/Config/InitializationConfig/group_setting_items.php';
     foreach ($group_setting_items as [$key,$value]) {
         $result = apiCallGroupCreateSetting($groups_id,$key,$value);
         if ($result['status'] !== 'success') {

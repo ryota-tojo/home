@@ -2,13 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/member/get_max_member_no.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/member/import_member.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -25,8 +25,11 @@ if ($_SESSION['user_groups_id'] == null or $_SESSION['user_group_approval_flg'] 
 if (!isset($_GET['member_id'])) {
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
-$member_id = $_GET['member_id'];
 
+$member_id = $_GET['member_id'];
+if (!isExistMember($member_id, $_SESSION['user_groups_id'])) {
+    echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
+}
 
 ob_start();
 ?>
@@ -72,28 +75,21 @@ if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $post_member_id = $_POST['member-id'];
-    $post_new_member_name = $_POST['new-member-name'];
+    $post_new_member_name = $_POST['member-name'];
+    $post_status = $_POST['status'] ?? '';
 
-    $result = apiCallMemberUpdate($post_member_id,null,$post_new_member_name);
+    $result_data = memberPostActionForUpdateEvent($post_member_id, $post_new_member_name, $post_status);
+    $result = json_decode($result_data, True);
 
-    if($result['status']!='error'){
-        $message = "メンバー情報を変更しました";
-        createLogs(LOG_TYPE_INFO, "メンバー変更 - メンバー変更");
-    } else {
-        $message = "メンバー情報の変更に失敗しました";
+    if ($result['status'] == 'error') {
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "メンバー変更 - メンバー変更失敗");
     }
+    $message = $result['message'];
 }
 
-$member_name="";
-$member_api_refer_result = apiCallMemberRefer($member_id, $_SESSION['user_groups_id']);
-if ($member_api_refer_result['status'] != "error") {
-    $categories_data = $member_api_refer_result['data']['member_list'];
-}
-foreach ($categories_data as $member_data){
-    $member_name = $member_data['member_name'];
-}
+$members_data = getMember($member_id, $_SESSION['user_groups_id']);
+$member_name = $members_data['member_name'];
+$member_status = $members_data['delete_flag'];
 
 ?>
 
@@ -110,7 +106,8 @@ foreach ($categories_data as $member_data){
     <div class="btn-area">
         <div class="btn-center-area">
             <div class='btn-item'><a class='link-btn'
-                                     href='/Interfaces/Views/Pages/user/group/setting/member/user_group_member_list.php'>メンバー一覧</a>
+                                     href='/Interfaces/Views/Pages/user/group/setting/member/user_group_member_list.php'><?php echo UI_ITEM_MEMBER; ?>
+                    一覧</a>
             </div>
         </div>
     </div>
@@ -138,53 +135,77 @@ foreach ($categories_data as $member_data){
                         <hr>
 
                         <div class="pc-form">
-                            <!-- メンバーID -->
+                            <!-- 購入者ID -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">メンバーID</label>
+                                    <label class="item-label"><?php echo UI_ITEM_MEMBER; ?>ID</label>
                                 </div>
-                                <div class="input-group form-item"">
-                                    <input type="text" style="display: none" minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="member-id"
-                                           placeholder="メンバー名を入力してください"
-                                        <?php echo "value='{$member_id}'"; ?>
-                                    >
-                                    <input type="text" disabled minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name=""
-                                           placeholder="メンバー名を入力してください"
-                                        <?php echo "value='{$member_id}'"; ?>
-                                    >
-                                </div>
+                                <div class="input-group form-item"
+                                ">
+                                <input type="text" style="display: none" minlength="1" maxlength="64"
+                                       oninput="this.value = this.value.replace(/,/g, '');" class="form-control"
+                                       name="member-id"
+                                    <?php echo "value='{$member_id}'"; ?>
+                                >
+                                <input type="text" disabled minlength="1" maxlength="64"
+                                       oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name=""
+                                    <?php echo "value='{$member_id}'"; ?>
+                                >
                             </div>
+                        </div>
 
-                            <!-- メンバー名 -->
-                            <div class="form-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">メンバー名</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input disabled type="text" required minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="member-name"
-                                           placeholder="メンバー名を入力してください"
-                                        <?php echo "value='{$member_name}'"; ?>
-                                    >
-                                </div>
+                        <!-- 購入者名 -->
+                        <div class="form-item">
+                            <div class="form-item-label">
+                                <label class="item-label"><?php echo UI_ITEM_MEMBER_NAME; ?></label>
                             </div>
+                            <div class="input-group form-item">
+                                <input type="text" required minlength="1" maxlength="64"
+                                       oninput="this.value = this.value.replace(/,/g, '');" class="form-control"
+                                       name="member-name"
+                                       placeholder="<?php echo UI_ITEM_MEMBER_NAME; ?>を入力してください"
+                                    <?php
 
-                            <!-- 変更後メンバー名 -->
-                            <div class="form-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">変更後メンバー名</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input type="text" required minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="new-member-name"
-                                           placeholder="変更後のメンバー名を入力してください"
-                                        <?php
+                                    if ($entry_error == True) {
+                                        if (isset($_POST['member-name'])) {
+                                            echo "value={$_POST['member-name']}";
+                                        }
+                                    }else{
+                                        echo "value='{$member_name}'";
+                                    } ?>
+                                >
+                            </div>
+                        </div>
 
-                                        if($entry_error == True){
-                                            if(isset($_POST['new-member-name'])){
-                                                echo "value={$_POST['new-member-name']}";
-                                            }
-                                        } ?>
-                                    >
-                                </div>
+                        <div class="form-item">
+                            <div class="form-item-label">
+                                <label class="item-label"><?php echo UI_ITEM_MEMBER_STATUS; ?></label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status"
+                                       id="statusButton1" value="0"
+                                    <?php
+                                    if ($member_status == "0") {
+                                        echo "checked";
+                                    }
+                                    ?>
+                                >
+                                <label class="form-check-label" for="statusButton1">
+                                    有効
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status"
+                                       id="statusButton2" value="1"
+                                    <?php
+                                    if ($member_status == "1") {
+                                        echo "checked";
+                                    }
+                                    ?>
+                                >
+                                <label class="form-check-label" for="statusButton2">
+                                    無効
+                                </label>
                             </div>
                         </div>
                     </div>

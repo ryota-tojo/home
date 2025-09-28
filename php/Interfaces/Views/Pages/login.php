@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/base64Service.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
@@ -74,7 +74,7 @@ if (isset($_GET['user_name']) and isset($_GET['password'])) {
         unset($_SESSION['error_cnt']);
         unset($_SESSION['account_lockout']);
 
-        getUser($user_name);
+        getCurrentUser($user_name);
 
         if ($master_setting_maintenance == "1") {
             if ($_SESSION['user_permission'] != 2) {
@@ -105,7 +105,7 @@ if (isset($_POST['login-btn'])) {
         unset($_SESSION['error_cnt']);
         unset($_SESSION['account_lockout']);
 
-        getUser($user_name);
+        getCurrentUser($user_name);
 
         if ($master_setting_maintenance == "1") {
             if ($_SESSION['user_permission'] != 2) {
@@ -120,7 +120,7 @@ if (isset($_POST['login-btn'])) {
 }
 if (isset($_POST['user-entry-btn'])) {
     createLogs(LOG_TYPE_INFO, "画面遷移 -> 新規登録");
-    echo "<script>window.location.href = 'user_group_user_entry.php';</script>";
+    echo "<script>window.location.href = 'user_entry.php';</script>";
 }
 
 // アカウントロック判定
@@ -160,12 +160,12 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                             <div class="login-form">
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        ユーザー名
+                                        <?php echo UI_ITEM_USER_NAME; ?>
                                     </div>
                                     <div class="login-form-input">
                                         <input type="text" required <?php echo $disabled; ?> maxlength="64"
                                                class="form-control" name="user-name" id="user-name"
-                                               placeholder="ユーザー名を入力してください"
+                                               placeholder="<?php echo UI_ITEM_USER_NAME; ?>を入力してください"
                                             <?php $user_name = $_POST['user-name'] ?? '';
                                             echo "value='{$user_name}'"; ?>
                                         >
@@ -174,14 +174,14 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
 
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        パスワード
+                                        <?php echo UI_ITEM_USER_PASSWORD; ?>
                                     </div>
                                     <div class="login-form-input">
                                         <input type="password" required <?php echo $disabled; ?> maxlength="64"
                                                class="form-control"
                                                name="password"
                                                id="password"
-                                               placeholder="パスワードを入力してください">
+                                               placeholder="<?php echo UI_ITEM_USER_PASSWORD; ?>を入力してください">
                                     </div>
                                 </div>
 
@@ -220,7 +220,7 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                             <div class="form-area">
                                 <div class="login-form-btn">
                                     <p class="login-form-summary">
-                                        ユーザーはグループに所属する必要があります。<br>
+                                        <?php echo UI_ITEM_USER; ?>はグループに所属する必要があります。<br>
                                         はじめての方はログイン後、グループに所属してください。<br>
                                     </p>
                                 </div>
@@ -230,7 +230,7 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                                 <div class="login-form-btn">
                                     <button type="submit" <?php echo $disabled; ?> class="btn btn-primary date-btn-item"
                                             name="user-entry-btn">
-                                        ユーザー新規登録申請
+                                        <?php echo UI_ITEM_USER; ?>新規登録申請
                                     </button>
                                 </div>
                             </div>
@@ -239,7 +239,7 @@ if ($_SESSION['error_cnt'] >= $master_setting_login_failure_limit) {
                 </div>
                 <div class="support-bl1">
                     <div class="support-bl2">
-                        ※ユーザーは承認されるまでログインすることができません。<br>
+                        ※<?php echo UI_ITEM_USER; ?>は承認されるまでログインができません。<br>
                         承認がおりるまでお待ちください。
                     </div>
                 </div>

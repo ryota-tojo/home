@@ -8,6 +8,7 @@ import com.example.home.domain.value_object.member.MemberId
 import com.example.home.domain.value_object.member.MemberName
 import com.example.home.domain.value_object.member.MemberNo
 import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsMembers
+import com.example.home.infrastructure.persistence.exposed_tables.transaction.TbTsTmpShoppingEntry
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -35,7 +36,10 @@ class MemberRepositoryImpl : MemberRepository {
                     condition
                 }
                 .apply { limit?.let { limit(it, offset = offset ?: 0) } }
-                .orderBy(TbTsMembers.memberNo to SortOrder.ASC)
+                .orderBy(
+                    TbTsMembers.deletedFlg to SortOrder.ASC,
+                    TbTsMembers.memberNo to SortOrder.ASC
+                )
                 .map {
                     Member(
                         MemberId(it[TbTsMembers.memberId]),

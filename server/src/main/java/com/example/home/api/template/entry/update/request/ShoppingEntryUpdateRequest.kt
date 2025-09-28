@@ -10,6 +10,9 @@ data class ShoppingEntryUpdateRequest(
     @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
     val groupsId: String,
 
+    @JsonProperty("template_no")
+    val templateNo: Int? = null,
+
     @JsonProperty("template_id")
     @field:NotBlank(message = "キー「template_id」は必須です")
     @field:Size(max = 64, message = "キー「template_id」は64桁以内で入力してください")

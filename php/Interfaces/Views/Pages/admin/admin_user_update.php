@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -110,9 +110,9 @@ if (isset($_POST['user-entry'])) {
     if ($status != "success") {
 
         $entry_error = True;
-        $message = "ユーザー情報の更新に失敗しました";
+        $message = UI_ITEM_USER . "情報の更新に失敗しました";
     } else {
-        $message = "ユーザー情報を更新しました";
+        $message = UI_ITEM_USER . "情報を更新しました";
     }
 }
 if (isset($_POST['leader-change'])) {
@@ -131,11 +131,11 @@ if (isset($_POST['group-info-entry'])) {
     if ($status != "success") {
 
         $entry_error = True;
-        $message = "所属グループ情報の更新に失敗しました";
-        createLogs(LOG_TYPE_ERROR, "所属グループ情報の更新に失敗");
+        $message = UI_ITEM_GROUP_INFO . "の更新に失敗しました";
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP_INFO . "の更新に失敗");
     } else {
-        $message = "所属グループ情報を更新しました";
-        createLogs(LOG_TYPE_INFO, "所属グループ情報を更新");
+        $message = UI_ITEM_GROUP_INFO . "を更新しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP_INFO . "を更新");
     }
 }
 
@@ -167,10 +167,10 @@ if (isset($_POST['setting-entry'])) {
         $error_keys_str = implode(', ', $error_keys);
         $message = "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー設定の更新に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "設定の更新に失敗");
     } else {
         $message = "設定が正常に更新されました。";
-        createLogs(LOG_TYPE_INFO, "ユーザー設定を更新");
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "設定を更新");
     }
 }
 
@@ -224,10 +224,10 @@ foreach ($users_data as $user) {
             <?php
             //
             if ($group_file_flag OR $screen=="group") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_update.php?{$url_param}'>所属グループ更新</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_update.php?{$url_param}'>" . UI_ITEM_GROUP . "更新</a></div>";
             }
             if ($group_file_flag OR $screen=="group_assign") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_assign.php?{$url_param}&page={$page}'>所属グループメンバー配属</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_assign.php?{$url_param}&page={$page}'>" . UI_ITEM_GROUP . "メンバー配属</a></div>";
             }
             ?>
         </div>
@@ -252,7 +252,7 @@ foreach ($users_data as $user) {
                     <form action="" method="post">
 
                         <div class="settings-section">
-                            <h4 class="settings-title">ユーザー情報</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_USER; ?>情報</h4>
                             <hr>
 
                             <?php
@@ -265,7 +265,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        ユーザーID
+                                        <?php echo UI_ITEM_USER_ID; ?>
                                         <div class="disabled-comment">※入力不可</div>
                                     </div>
                                 </div>
@@ -286,7 +286,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        ユーザー名
+                                        <?php echo UI_ITEM_USER_NAME; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -302,7 +302,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        パスワード
+                                        <?php echo UI_ITEM_USER_PASSWORD; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -318,7 +318,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        権限
+                                        <?php echo UI_ITEM_USER_PERMISSION; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -355,7 +355,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        承認
+                                        <?php echo UI_ITEM_USER_APPROVAL; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -384,7 +384,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        削除
+                                        <?php echo UI_ITEM_USER_DELETED; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -413,7 +413,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        作成日
+                                        <?php echo UI_ITEM_USER_CREATE_DATE; ?>
                                         <div class="disabled-comment">※入力不可</div>
                                     </div>
                                 </div>
@@ -429,7 +429,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        最終更新日
+                                        <?php echo UI_ITEM_USER_UPDATE_DATE; ?>
                                         <div class="disabled-comment">※入力不可</div>
                                     </div>
                                 </div>
@@ -445,7 +445,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        承認日
+                                        <?php echo UI_ITEM_USER_APPROVAL_DATE; ?>
                                         <div class="disabled-comment">※入力不可</div>
                                     </div>
                                 </div>
@@ -461,7 +461,7 @@ foreach ($users_data as $user) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        削除日
+                                        <?php echo UI_ITEM_USER_DELETED_DATE; ?>
                                         <div class="disabled-comment">※入力不可</div>
                                     </div>
                                 </div>
@@ -481,7 +481,7 @@ foreach ($users_data as $user) {
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="user-entry">
-                                        ユーザー情報更新
+                                        <?php echo UI_ITEM_USER; ?>情報更新
                                     </button>
                                 </div>
                             </div>
@@ -490,13 +490,13 @@ foreach ($users_data as $user) {
 
                     <form action="" method="post">
                         <div class="settings-section">
-                            <h4 class="settings-title">ユーザー設定</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_USER; ?>設定</h4>
                             <hr>
 
                             <div hidden class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        ユーザーID
+                                        <?php echo UI_ITEM_USER_ID; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -544,7 +544,7 @@ foreach ($users_data as $user) {
                                 <div class="btn-center-area">
                                     <div class="btn-item">
                                         <button type="submit" class="btn btn-primary" name="setting-entry">
-                                            ユーザー設定更新
+                                            <?php echo UI_ITEM_USER; ?>設定更新
                                         </button>
                                     </div>
                                 </div>
@@ -554,13 +554,13 @@ foreach ($users_data as $user) {
 
                     <form action="" method="post">
                         <div class="settings-section">
-                            <h4 class="settings-title">所属グループ情報</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_GROUP_INFO; ?></h4>
                             <hr>
 
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループ名
+                                        <?php echo UI_ITEM_GROUP_NAME; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -583,7 +583,7 @@ foreach ($users_data as $user) {
                                 <div class="settings-form">
                                     <div class="settings-label-container">
                                         <div class="settings-label">
-                                            リーダーフラグ
+                                            <?php echo UI_ITEM_GROUP_INFO_LEADER; ?>
                                             <div class="disabled-comment">※入力不可</div>
                                         </div>
                                     </div>
@@ -612,7 +612,7 @@ foreach ($users_data as $user) {
                                 <div class="settings-form">
                                     <div class="settings-label-container">
                                         <div class="settings-label">
-                                            所属グループ承認フラグ
+                                            <?php echo UI_ITEM_GROUP_INFO_APPROVAL; ?>
                                             <div class="required-comment">※必須</div>
                                         </div>
                                     </div>
@@ -654,7 +654,7 @@ foreach ($users_data as $user) {
                                     <div class="btn-center-area">
                                         <div class="btn-item">
                                             <button type="submit" class="btn btn-primary" name="group-info-entry">
-                                                所属グループ情報更新
+                                                <?php echo UI_ITEM_GROUP_INFO; ?>更新
                                             </button>
                                         </div>
                                     </div>

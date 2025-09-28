@@ -168,17 +168,17 @@ if (isset($_POST['entry'])) {
                         </div>
 
                         <div class="pc-form">
-                            <!-- 分類 -->
+                            <!-- カテゴリー -->
                             <div class="form-item category-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">分類</label>
+                                    <label class="item-label">カテゴリー</label>
                                 </div>
                                 <div class="input-group form-item">
                                     <select required class="form-select" name="category">
                                         <option selected>選択してください</option>
-                                        <option value="1">分類１</option>
-                                        <option value="2">分類２</option>
-                                        <option value="3">分類３</option>
+                                        <option value="1">カテゴリー１</option>
+                                        <option value="2">カテゴリー２</option>
+                                        <option value="3">カテゴリー３</option>
                                     </select>
                                 </div>
                             </div>

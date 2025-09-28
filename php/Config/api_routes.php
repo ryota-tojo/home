@@ -75,31 +75,34 @@ const API_MEMBER_UN_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/membe
 
 // テンプレートAPI
 // - 登録テンプレート
-const API_TEMPLATE_ENTRY_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/template/entry/refer"];
-const API_TEMPLATE_ENTRY_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/create"];
-const API_TEMPLATE_ENTRY_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/update"];
-const API_TEMPLATE_ENTRY_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/delete"];
-const API_TEMPLATE_ENTRY_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/disable"];
-const API_TEMPLATE_ENTRY_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/usage"];
-const API_TEMPLATE_ENTRY_UN_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/un_usage"];
+const API_ENTRY_TEMPLATE_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/template/entry/refer"];
+const API_ENTRY_TEMPLATE_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/create"];
+const API_ENTRY_TEMPLATE_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/update"];
+const API_ENTRY_TEMPLATE_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/usage"];
+const API_ENTRY_TEMPLATE_UN_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/un_usage"];
+const API_ENTRY_TEMPLATE_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/disable"];
+const API_ENTRY_TEMPLATE_UN_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/un-disable"];
+const API_ENTRY_TEMPLATE_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/entry/delete"];
 
 // - 検索テンプレート
-const API_TEMPLATE_SEARCH_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/template/search/refer"];
-const API_TEMPLATE_SEARCH_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/create"];
-const API_TEMPLATE_SEARCH_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/update"];
-const API_TEMPLATE_SEARCH_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/delete"];
-const API_TEMPLATE_SEARCH_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/disable"];
-const API_TEMPLATE_SEARCH_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/usage"];
-const API_TEMPLATE_SEARCH_UN_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/un_usage"];
+const API_SEARCH_TEMPLATE_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/template/search/refer"];
+const API_SEARCH_TEMPLATE_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/create"];
+const API_SEARCH_TEMPLATE_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/update"];
+const API_SEARCH_TEMPLATE_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/usage"];
+const API_SEARCH_TEMPLATE_UN_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/un_usage"];
+const API_SEARCH_TEMPLATE_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/disable"];
+const API_SEARCH_TEMPLATE_UN_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/un-disable"];
+const API_SEARCH_TEMPLATE_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/search/delete"];
 
 // - 入力テンプレート
-const API_TEMPLATE_INPUT_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/template/input/refer"];
-const API_TEMPLATE_INPUT_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/create"];
-const API_TEMPLATE_INPUT_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/update"];
-const API_TEMPLATE_INPUT_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/delete"];
-const API_TEMPLATE_INPUT_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/disable"];
-const API_TEMPLATE_INPUT_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/usage"];
-const API_TEMPLATE_INPUT_UN_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/un_usage"];
+const API_INPUT_TEMPLATE_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/template/input/refer"];
+const API_INPUT_TEMPLATE_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/create"];
+const API_INPUT_TEMPLATE_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/update"];
+const API_INPUT_TEMPLATE_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/usage"];
+const API_INPUT_TEMPLATE_UN_USAGE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/un_usage"];
+const API_INPUT_TEMPLATE_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/disable"];
+const API_INPUT_TEMPLATE_UN_DISABLE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/un-disable"];
+const API_INPUT_TEMPLATE_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/template/input/delete"];
 
 // 予算API
 const API_BUDGETS_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/budgets/refer"];
@@ -108,14 +111,14 @@ const API_BUDGETS_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/budgets/
 const API_BUDGETS_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/budgets/delete"];
 
 // 購入データAPI
-const API_SHOPPING_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/budgets/refer"];
-const API_SHOPPING_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/budgets/count"];
-const API_SHOPPING_ALL_CATEGORY = ["HTTP_METHOD" => "GET", "API_PATH" => "api/budgets/all_category"];
-const API_SHOPPING_ALL_MEMBER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/budgets/all_member"];
-const API_SHOPPING_DUPLICATION_CHECK = ["HTTP_METHOD" => "GET", "API_PATH" => "api/budgets/duplication_check"];
-const API_SHOPPING_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/budgets/create"];
-const API_SHOPPING_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/budgets/update"];
-const API_SHOPPING_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/budgets/delete"];
+const API_SHOPPING_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/shopping/refer"];
+const API_SHOPPING_COUNT = ["HTTP_METHOD" => "GET", "API_PATH" => "api/shopping/count"];
+const API_SHOPPING_ALL_CATEGORY = ["HTTP_METHOD" => "GET", "API_PATH" => "api/shopping/all_category"];
+const API_SHOPPING_ALL_MEMBER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/shopping/all_member"];
+const API_SHOPPING_DUPLICATION_CHECK = ["HTTP_METHOD" => "GET", "API_PATH" => "api/shopping/duplication_check"];
+const API_SHOPPING_CREATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/shopping/create"];
+const API_SHOPPING_UPDATE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/shopping/update"];
+const API_SHOPPING_DELETE = ["HTTP_METHOD" => "POST", "API_PATH" => "api/shopping/delete"];
 
 // コメントAPI
 const API_COMMENT_REFER = ["HTTP_METHOD" => "GET", "API_PATH" => "api/comment/refer"];

@@ -17,14 +17,14 @@ import org.springframework.stereotype.Repository
 @Repository
 class BudgetsRepositoryImpl : BudgetsRepository {
 
-    override fun refer(groupsId: GroupsId, yyyy: YYYY?, mm: MM?, categoryNo: CategoryId?): List<Budgets> {
+    override fun refer(groupsId: GroupsId, yyyy: YYYY?, mm: MM?, categoryId: CategoryId?): List<Budgets> {
         return transaction {
             TbTsBudgets.select {
                 Op.build {
                     var condition: Op<Boolean> = TbTsBudgets.groupsId eq groupsId.value
                     yyyy?.let { condition = condition and (TbTsBudgets.bgYyyy eq it.value) }
                     mm?.let { condition = condition and (TbTsBudgets.bgMm eq it.value) }
-                    categoryNo?.let { condition = condition and (TbTsBudgets.bgCategoryId eq it.value) }
+                    categoryId?.let { condition = condition and (TbTsBudgets.bgCategoryId eq it.value) }
                     condition
                 }
             }.map {
@@ -41,13 +41,13 @@ class BudgetsRepositoryImpl : BudgetsRepository {
         }
     }
 
-    override fun save(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryNo: CategoryId, amount: Amount): Budgets {
+    override fun save(groupsId: GroupsId, yyyy: YYYY, mm: MM, categoryId: CategoryId, amount: Amount): Budgets {
         return transaction {
             TbTsBudgets.insert {
                 it[TbTsBudgets.groupsId] = groupsId.value
                 it[bgYyyy] = yyyy.value
                 it[bgMm] = mm.value
-                it[bgCategoryId] = categoryNo.value
+                it[bgCategoryId] = categoryId.value
                 it[bgAmount] = amount.value
                 it[fixedFlg] = 0
             }
@@ -55,7 +55,7 @@ class BudgetsRepositoryImpl : BudgetsRepository {
                 (TbTsBudgets.groupsId eq groupsId.value) and
                         (TbTsBudgets.bgYyyy eq yyyy.value) and
                         (TbTsBudgets.bgMm eq mm.value) and
-                        (TbTsBudgets.bgCategoryId eq categoryNo.value)
+                        (TbTsBudgets.bgCategoryId eq categoryId.value)
             }.singleOrNull()
 
             return@transaction budgets?.let {
@@ -139,14 +139,14 @@ class BudgetsRepositoryImpl : BudgetsRepository {
         }
     }
 
-    override fun delete(groupsId: GroupsId, yyyy: YYYY?, mm: MM?, categoryNo: CategoryId?): Int {
+    override fun delete(groupsId: GroupsId, yyyy: YYYY?, mm: MM?, categoryId: CategoryId?): Int {
         return transaction {
             val deleteRows = TbTsBudgets.deleteWhere {
                 Op.build {
                     var condition: Op<Boolean> = TbTsBudgets.groupsId eq groupsId.value
                     yyyy?.let { condition = condition and (bgYyyy eq it.value) }
                     mm?.let { condition = condition and (bgMm eq it.value) }
-                    categoryNo?.let { condition = condition and (bgCategoryId eq it.value) }
+                    categoryId?.let { condition = condition and (bgCategoryId eq it.value) }
                     condition
                 }
             }

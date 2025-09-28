@@ -20,7 +20,7 @@ return [
     ['random_font_family', '', 'ランダムフォント'],
     ['random_font_probability', '', 'ランダムフォント確率最大値'],
     ['loading_delay_seconds', '1', 'ロード画面を表示するまでの秒数'],
-    ['lording_layout', '1', 'ロード画面レイアウトパターン'],
+    ['lording_layout', '0', 'ロード画面レイアウトパターン'],
     ['output_logs', '1', 'ログ出力フラグ'],
 
     // 管理者画面
