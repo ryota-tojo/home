@@ -5,6 +5,7 @@ import com.example.home.domain.entity.category.result.CategoryReferResult
 import com.example.home.domain.entity.category.result.CategorySaveResult
 import com.example.home.domain.entity.category.result.CategoryUpdateResult
 import com.example.home.domain.model.ResponseCode
+import com.example.home.domain.repository.budgets.BudgetsRepository
 import com.example.home.domain.repository.category.CategoryRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.category.CategoryName
@@ -15,7 +16,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class CategoryService(
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val budgetsRepository: BudgetsRepository
 ) {
     fun refer(
         categoryId: CategoryId? = null,
@@ -24,16 +26,16 @@ class CategoryService(
         offset: Long? = null,
         limit: Int? = null,
     ): CategoryReferResult {
-        val CategoryList = categoryRepository.refer(categoryId, groupsId, categoryNo, offset, limit)
-        if (CategoryList.isNullOrEmpty()) {
+        val categoryList = categoryRepository.refer(categoryId, groupsId, categoryNo, offset, limit)
+        if (categoryList.isNullOrEmpty()) {
             return CategoryReferResult(
                 ResponseCode.データ不在エラー.code,
-                CategoryList
+                categoryList
             )
         }
         return CategoryReferResult(
             ResponseCode.成功.code,
-            CategoryList
+            categoryList
         )
     }
 
@@ -105,8 +107,25 @@ class CategoryService(
         )
     }
 
-    fun delete(groupsId: GroupsId? = null, categoryId: CategoryId? = null): CategoryDeleteResult {
+    fun delete(groupsId: GroupsId, categoryId: CategoryId? = null): CategoryDeleteResult {
+
+        val categoryList = categoryRepository.refer(categoryId, groupsId)
+        if (categoryList.isNullOrEmpty()) {
+            return CategoryDeleteResult(
+                ResponseCode.データ不在エラー.code,
+                0
+            )
+        }
+        categoryList.forEach{ category ->
+            budgetsRepository.refer(groupsId,categoryId = category.id).forEach{ budgets ->
+                if(budgets.fixedFlg.value == 0){
+                    budgetsRepository.delete(groupsId,budgets.YYYY,budgets.MM, budgets.categoryId)
+                }
+            }
+        }
+
         val deleteRows = categoryRepository.delete(groupsId, categoryId)
+
         if (deleteRows == 0) {
             return CategoryDeleteResult(
                 ResponseCode.データ不在エラー.code,

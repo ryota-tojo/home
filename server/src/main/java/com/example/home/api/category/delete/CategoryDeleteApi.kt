@@ -32,7 +32,7 @@ class CategoryDeleteApi(
     ): ResponseEntity<Any> {
 
         // リクエスト取得
-        val requestGroupsId = if (request.groupsId == "") null else request.groupsId?.let { GroupsId(it) }
+        val requestGroupsId = GroupsId(request.groupsId)
         val requestCategoryId = if (request.categoryId == 0) null else request.categoryId?.let { CategoryId(it) }
 
         val serviceExecResult = categoryService.delete(

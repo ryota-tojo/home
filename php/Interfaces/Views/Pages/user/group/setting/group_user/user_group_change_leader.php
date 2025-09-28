@@ -2,13 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/import_user.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -71,18 +72,13 @@ if (isset($_POST['read_id'])) {
 
     $user_id = $_POST['user_id'];
 
-    $result = apiCallUserRefer($user_id, null, null, null, null, $_SESSION['user_groups_id']);
+    $result_data = groupUserPostActionForGetUserIdEvent($_SESSION['user_groups_id'], $user_id);
+    $result = json_decode($result_data, True);
     if ($result['status'] == "error") {
-        $message = 'ユーザー情報の取得に失敗しました。';
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "ユーザー情報の取得に失敗しました。");
-    } else {
-        foreach ($result['data']['user'] as $data) {
-            $message = 'ユーザー情報を取得しました。';
-            $user_name = $data['user_info']['user_name'];
-            createLogs(LOG_TYPE_ERROR, "ユーザー情報取得");
-        }
     }
+    $message = $result['message'];
+    $user_name = $result['user_name'];
 }
 
 
@@ -91,29 +87,14 @@ if (isset($_POST['entry'])) {
 
     $user_id = $_POST['user_id'];
 
-    $result = apiCallUserRefer($user_id, null, null, null, null, $_SESSION['user_groups_id']);
+    $result_data = groupUserPostActionForLeaderChangeEvent($_SESSION['user_groups_id'], $_SESSION['user_id'], $user_id);
+    $result = json_decode($result_data, True);
     if ($result['status'] == "error") {
-        $message = 'ユーザー情報の取得に失敗しました。';
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "ユーザー情報の取得に失敗しました。");
-    } else {
-        foreach ($result['data']['user'] as $data) {
-            $user_name = $data['user_info']['user_name'];
-        }
-
-        $group_info_api_leader_change_result = apiCallGroupInfoLeaderChange($_SESSION['user_groups_id'], $_SESSION['user_id'], $user_id);
-        $status = $group_info_api_leader_change_result['status'];
-
-        if ($status == 'error') {
-            $message = $group_info_api_leader_change_result['data']['message'];
-            $entry_error = True;
-            createLogs(LOG_TYPE_ERROR, "所属グループのリーダー変更に失敗");
-        } else {
-            $message = "所属グループのリーダーを変更しました";
-            createLogs(LOG_TYPE_INFO, "所属グループのリーダーを変更");
-            createLogs(LOG_TYPE_INFO, "画面遷移 -> ログアウト");
-            echo "<script>window.location.href = '../../../../logout.php';</script>";
-        }
+        $message = $result['message'];
+    }else{
+        createLogs(LOG_TYPE_INFO, "画面遷移 -> ログアウト");
+        echo "<script>window.location.href = '../../../../logout.php';</script>";
     }
 }
 ?>
@@ -130,7 +111,7 @@ if (isset($_POST['entry'])) {
 
     <div class="btn-area">
         <div class="btn-center-area">
-            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php'>ユーザー一覧</a></div>
+            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php'><?php echo UI_ITEM_USER; ?>一覧</a></div>
         </div>
     </div>
 
@@ -156,7 +137,7 @@ if (isset($_POST['entry'])) {
                             <!-- ユーザー名 -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">ユーザーID</label>
+                                    <label class="item-label"><?php echo UI_ITEM_USER_ID; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <div class="date-form">
@@ -178,7 +159,7 @@ if (isset($_POST['entry'])) {
                                 <!-- ユーザー情報 -->
                                 <div class="form-item remarks-item">
                                     <div class="form-item-label">
-                                        <label class="item-label">ユーザー名</label>
+                                        <label class="item-label"><?php echo UI_ITEM_USER_NAME; ?></label>
                                     </div>
                                     <div class="input-group form-item">
                                         <input disabled type="text" class="form-control" name="user_name"

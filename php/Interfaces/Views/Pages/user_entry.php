@@ -1,10 +1,10 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
@@ -53,7 +53,7 @@ if (isset($_POST['application-btn'])) {
     $re_password = $_POST['re-password'] ?? '';
 
     if($password == $re_password){
-        $result = userEntry($user_name, $password, 0, 0, 0);
+        $result = entryUser($user_name, $password, 0, 0, 0);
         $data = json_decode($result, true);
         $status = $data['status'];
 
@@ -64,7 +64,7 @@ if (isset($_POST['application-btn'])) {
             $entry_error = True;
         }
     }else{
-        $error_msg = "入力したパスワードが一致しません";
+        $error_msg = "入力した" . UI_ITEM_USER_PASSWORD . "が一致しません";
         $entry_error = True;
     }
 }
@@ -101,11 +101,11 @@ if (isset($_POST['application-btn'])) {
                             <div class="entry-form">
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        ユーザー名
+                                        <?php echo UI_ITEM_USER_NAME; ?>
                                     </div>
                                     <div class="login-form-input">
                                         <input type="text" required minlength="8" maxlength="32" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="user-name"
-                                               placeholder="ユーザー名を入力してください"
+                                               placeholder="<?php echo UI_ITEM_USER_NAME; ?>を入力してください"
                                             <?php $user_name = $_POST['user-name'] ?? '';
                                             echo "value='{$user_name}'"; ?>
                                         >
@@ -114,11 +114,11 @@ if (isset($_POST['application-btn'])) {
 
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        パスワード
+                                        <?php echo UI_ITEM_USER_PASSWORD; ?>
                                     </div>
                                     <div class="login-form-input">
                                         <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="password" id="password"
-                                               placeholder="パスワードを入力してください" title="<?php echo $password_details; ?>"
+                                               placeholder="<?php echo UI_ITEM_USER_PASSWORD; ?>を入力してください" title="<?php echo $password_details; ?>"
                                             <?php $password = $_POST['password'] ?? '';
                                             echo "value='{$password}'"; ?>
                                         >
@@ -127,11 +127,11 @@ if (isset($_POST['application-btn'])) {
 
                                 <div class="form-area">
                                     <div class="login-form-label">
-                                        確認用パスワード
+                                        確認用<?php echo UI_ITEM_USER_PASSWORD; ?>
                                     </div>
                                     <div class="login-form-input">
                                         <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="re-password" id="re-password"
-                                               placeholder="確認用パスワードを入力してください"
+                                               placeholder="確認用<?php echo UI_ITEM_USER_PASSWORD; ?>を入力してください"
                                             <?php $re_password = $_POST['re-password'] ?? '';
                                             echo "value='{$re_password}'"; ?>
                                         >
@@ -144,7 +144,7 @@ if (isset($_POST['application-btn'])) {
                                         echo "<div class='msg err_msg'>{$error_msg}</div>";
                                     }
                                     if ($entry == True) {
-                                        echo "<div class='msg suc_msg'>ユーザーを登録しました。<br>承認されるまでお待ちください。</div>";
+                                        echo "<div class='msg suc_msg'>" . UI_ITEM_USER . "を登録しました。<br>承認されるまでお待ちください。</div>";
                                     }
                                     ?>
                                 </div>

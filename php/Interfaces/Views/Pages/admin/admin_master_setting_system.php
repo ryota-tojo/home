@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -173,7 +173,7 @@ $master_setting_user_communication_input_history_view = $master_settings['user_c
 $master_setting_user_communication_list_view = $master_settings['user_communication_list_view'] ?? null;
 $master_setting_user_communication_list_view_conditions = $master_settings['user_communication_list_view_conditions'] ?? null;
 
-$font_items = require $_SERVER['DOCUMENT_ROOT'] . '/config/font_items.php';
+$font_items = require $_SERVER['DOCUMENT_ROOT'] . '/Config/font_items.php';
 
 ?>
 

@@ -1,8 +1,8 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_create.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/group_member_assign.php';
 
@@ -10,7 +10,7 @@ function createInitUser($user_items)
 {
     foreach ($user_items as [$user_name, $password, $permission, $approval, $deleted,$groups_id,$group_name,$group_password,$group_approval]) {
         // ユーザーを作成してIDを取得
-        $user_entry_result = userEntry($user_name, $password, $permission, $approval, $deleted);
+        $user_entry_result = entryUser($user_name, $password, $permission, $approval, $deleted);
         $user_data = json_decode($user_entry_result, true);
         $user_id = $user_data['user_id'] ?? null;
 

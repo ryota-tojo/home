@@ -11,12 +11,14 @@ import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.TemplateId
 import com.example.home.domain.value_object.template.TemplateName
+import com.example.home.domain.value_object.template.TemplateNo
 import com.example.home.domain.value_object.template.TemplateUseFlg
 
 interface ShoppingEntryTemplateRepository {
     fun refer(groupsId: GroupsId? = null, templateId: TemplateId? = null): List<ShoppingEntryTemplate>
     fun save(
         groupsId: GroupsId,
+        templateNo: TemplateNo,
         templateId: TemplateId,
         templateName: TemplateName,
         memberId: MemberId,
@@ -31,6 +33,7 @@ interface ShoppingEntryTemplateRepository {
 
     fun update(
         groupsId: GroupsId,
+        templateNo: TemplateNo? = null,
         templateId: TemplateId,
         templateName: TemplateName? = null,
         memberId: MemberId? = null,

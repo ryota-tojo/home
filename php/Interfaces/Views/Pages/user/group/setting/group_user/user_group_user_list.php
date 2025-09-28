@@ -2,12 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/import_user.php';
+
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -143,8 +145,8 @@ if (isset($_POST['entry'])) {
         }
     }
 
-    $message = "ユーザー検索条件を変更しました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
+    $message = UI_ITEM_USER . "検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件変更");
 
 }
 if (isset($_POST['reset'])) {
@@ -157,131 +159,64 @@ if (isset($_POST['reset'])) {
 
     $_SESSION['user_search_type_flg'] = "user_id";
 
-    $message = "ユーザー検索条件をリセットしました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件リセット");
+    $message = UI_ITEM_USER . "検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件リセット");
 }
 
 if (isset($_POST['group_approval_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_users'])) {
+
+    if (isset($_POST['selected_users'])) {
         $selected_users = $_POST['selected_users'];
 
-        foreach ($selected_users as $user) {
-            $array = explode("\t", $user);
-            $post_user_id = $array[0];
-            $post_permission = $array[1];
-            $post_approval = $array[2];
-            $post_deleted = $array[3];
-            $post_leader_flg = $array[4];
-            $post_group_approval = $array[5];
-
-            if ($post_permission != "0") {
-                $err_cnt += 1;
-                continue;
-            }
-            if ($post_leader_flg == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            if ($post_group_approval == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallGroupInfoUpdate($_SESSION['user_groups_id'], $post_user_id, null, 1);
-            $suc_cnt += 1;
+        $result_data = groupUserPostActionForGroupApprovalEvent($_SESSION['user_groups_id'],$selected_users);
+        $result = json_decode($result_data, True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のユーザーを承認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "グループ承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $result['message'];
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "グループ承認 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, "グループ承認 -" . UI_ITEM_USER . "未選択");
     }
 }
 if (isset($_POST['group_un_approval_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_users'])) {
+
+    if (isset($_POST['selected_users'])) {
         $selected_users = $_POST['selected_users'];
 
-        foreach ($selected_users as $user) {
-            $array = explode("\t", $user);
-            $post_user_id = $array[0];
-            $post_permission = $array[1];
-            $post_approval = $array[2];
-            $post_deleted = $array[3];
-            $post_leader_flg = $array[4];
-            $post_group_approval = $array[5];
-
-            if ($post_permission != "0") {
-                $err_cnt += 1;
-                continue;
-            }
-            if ($post_leader_flg == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            if ($post_group_approval == "0") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallGroupInfoUpdate($_SESSION['user_groups_id'], $post_user_id, null, 0);
-            $suc_cnt += 1;
+        $result_data = groupUserPostActionForGroupDisapprovalEvent($_SESSION['user_groups_id'],$selected_users);
+        $result = json_decode($result_data, True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のユーザーを否認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "グループ否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "グループ否認 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, "グループ否認 -" . UI_ITEM_USER . "未選択");
     }
 }
+
 if (isset($_POST['group_remove_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_users'])) {
+
+    if (isset($_POST['selected_users'])) {
         $selected_users = $_POST['selected_users'];
 
-        foreach ($selected_users as $user) {
-            $array = explode("\t", $user);
-            $post_user_id = $array[0];
-            $post_permission = $array[1];
-            $post_approval = $array[2];
-            $post_deleted = $array[3];
-            $post_leader_flg = $array[4];
-            $post_group_approval = $array[5];
-
-            if ($post_permission != "0") {
-                $err_cnt += 1;
-                continue;
-            }
-            if ($post_leader_flg == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            if ($post_group_approval == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallGroupInfoDelete($_SESSION['user_groups_id'], $post_user_id);
-            $suc_cnt += 1;
+        $result_data = groupUserPostActionForGroupDeleteEvent($_SESSION['user_groups_id'],$selected_users);
+        $result = json_decode($result_data, True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のユーザーを除籍しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー除籍 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー除籍 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "除籍 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -293,12 +228,7 @@ $group_member_type_param = ($_SESSION['search_group_member_type'] == -1) ? null 
 
 $userinfo_api_count_result = apiCallUserCount($_SESSION['search_user_id'], $_SESSION['search_user_name'], null, $approval_param, $deleted_param, $_SESSION['user_groups_id'], $group_approval_param, $group_member_type_param);
 
-if ($userinfo_api_count_result['status'] != "error") {
-    $userinfo_api_refer_result = apiCallUserRefer($_SESSION['search_user_id'], $_SESSION['search_user_name'], null, $approval_param, $deleted_param, $_SESSION['user_groups_id'], $group_approval_param, $group_member_type_param, null, $offset, $limit);
-    if ($userinfo_api_refer_result['status'] != "error") {
-        $users_data = $userinfo_api_refer_result['data']['user'];
-    }
-}
+$users_data = getUserList($_SESSION['search_user_id'], $_SESSION['search_user_name'], null, $approval_param, $deleted_param, $_SESSION['user_groups_id'], $group_approval_param, $group_member_type_param, null, $offset, $limit);
 
 // ユーザーの総数を取得
 $total_users = $userinfo_api_count_result['data']['recode_count'] ?? 0;
@@ -320,7 +250,7 @@ $total_pages = ceil($total_users / $limit);
 
     <div class="btn-area">
         <div class="btn-center-area">
-            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_entry.php'>ユーザー登録</a></div>
+            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_entry.php'><?php echo UI_ITEM_USER; ?>登録</a></div>
             <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_change_leader.php'>リーダー変更</a></div>
         </div>
     </div>
@@ -378,7 +308,7 @@ $total_pages = ceil($total_users / $limit);
                                                            value="user_id"
                                                         <?= ($_SESSION['user_search_type_flg'] === "user_id" || !isset($_SESSION['user_search_type_flg'])) ? 'checked' : '' ?>>
                                                     <label class="form-check-label"
-                                                           for="searchUserId">ユーザーIDで検索</label>
+                                                           for="searchUserId"><?php echo UI_ITEM_USER_ID; ?>で検索</label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="search_type"
@@ -386,7 +316,7 @@ $total_pages = ceil($total_users / $limit);
                                                            value="wildcard"
                                                         <?= ($_SESSION['user_search_type_flg'] === "wildcard") ? 'checked' : '' ?>>
                                                     <label class="form-check-label"
-                                                           for="searchUserName">ユーザー情報で検索</label>
+                                                           for="searchUserName"><?php echo UI_ITEM_USER; ?>情報で検索</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -394,7 +324,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- ユーザーID -->
                                         <div class="form-item remarks-item" id="userIdField">
                                             <div class="form-item-label">
-                                                <label class="item-label">ユーザーID</label>
+                                                <label class="item-label"><?php echo UI_ITEM_USER_ID; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <input type="number" class="form-control" name="user_id"
@@ -410,7 +340,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- ユーザー名 -->
                                         <div class="form-item remarks-item" id="userNameField">
                                             <div class="form-item-label">
-                                                <label class="item-label">ユーザー名</label>
+                                                <label class="item-label"><?php echo UI_ITEM_USER_NAME; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <input type="text" class="form-control" name="user_name"
@@ -421,7 +351,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- 承認 -->
                                         <div class="form-item payment-item" id="approvalField">
                                             <div class="form-item-label">
-                                                <label class="item-label">承認</label>
+                                                <label class="item-label"><?php echo UI_ITEM_USER_PERMISSION; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <select class="form-select" name="approval">
@@ -441,7 +371,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- 削除 -->
                                         <div hidden class="form-item payment-item" id="deletedField">
                                             <div class="form-item-label">
-                                                <label class="item-label">削除</label>
+                                                <label class="item-label"><?php echo UI_ITEM_USER_DELETED; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <select class="form-select" name="deleted">
@@ -461,7 +391,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- 所属グループ承認 -->
                                         <div class="form-item payment-item" id="groupApproval">
                                             <div class="form-item-label">
-                                                <label class="item-label">所属グループ承認</label>
+                                                <label class="item-label"><?php echo UI_ITEM_GROUP_INFO_APPROVAL; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <select class="form-select" name="group_approval">
@@ -481,7 +411,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- リーダー -->
                                         <div class="form-item payment-item" id="groupMemberType">
                                             <div class="form-item-label">
-                                                <label class="item-label">ユーザー種別</label>
+                                                <label class="item-label"><?php echo UI_ITEM_GROUP_INFO_LEADER; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <select class="form-select" name="group_member_type">
@@ -553,19 +483,19 @@ $total_pages = ceil($total_users / $limit);
         <div class="btn-right-area">
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="group_approval_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ グループ承認済みのユーザー')">
-                    グループ承認
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ リーダー<?php echo UI_ITEM_USER; ?>\n・ グループ承認済みの<?php echo UI_ITEM_USER; ?>')">
+                    <?php echo UI_ITEM_GROUP; ?>承認
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-warning" name="group_un_approval_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ グループ未承認のユーザー')">
-                    グループ否認
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ リーダー<?php echo UI_ITEM_USER; ?>\n・ グループ未承認の<?php echo UI_ITEM_USER; ?>')">
+                    <?php echo UI_ITEM_GROUP; ?>否認
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-danger" name="group_remove_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ リーダーユーザー\n・ グループ承認済みのユーザー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ リーダー<?php echo UI_ITEM_USER; ?>\n・ グループ承認済みの<?php echo UI_ITEM_USER; ?>')">
                     除籍
                 </button>
             </div>
@@ -579,11 +509,11 @@ $total_pages = ceil($total_users / $limit);
                 <tr>
                     <th><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
                     <th>#</th>
-                    <th>氏名</th>
-                    <th>承認</th>
+                    <th><?php echo UI_ITEM_USER_NAME; ?></th>
+                    <th><?php echo UI_ITEM_USER_APPROVAL; ?></th>
                     <!--                    <th>削除</th>-->
-                    <th>メンバー種別</th>
-                    <th>所属グループ承認</th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_LEADER; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_APPROVAL; ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -631,7 +561,7 @@ $total_pages = ceil($total_users / $limit);
                     }
 
                     if ($group_leader_value == 0) {
-                        $group_leader = "-";
+                        $group_leader = "一般";
                     } else if ($group_leader_value == 1) {
                         $group_leader = "リーダー";
                     }

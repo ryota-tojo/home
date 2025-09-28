@@ -2,13 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/import_user.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -76,28 +77,13 @@ if (isset($_POST['entry'])) {
     $password = $_POST['password'] ?? '';
     $re_password = $_POST['re-password'] ?? '';
 
-    if($password == $re_password){
-        $user_entry_result = userEntry($user_name, $password, 0, 0, 0);
-        $user_entry_data = json_decode($user_entry_result, true);
-        $user_entry_status = $user_entry_data['status'];
+    $result_data = groupUserPostActionForGroupUserEntryEvent($_SESSION['user_groups_id'],$user_name,$password,$re_password);
+    $result = json_decode($result_data, True);
 
-        if($user_entry_status=='success'){
-            apiCallGroupInfoCreate($_SESSION['user_groups_id'], $user_entry_data['user_id'], 0);
-            $message = "ユーザーを登録しました。\n承認されるまでお待ちください。";
-            createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
-        }else{
-            $message = $user_entry_data['message'];
-            $entry_error = True;
-            createLogs(LOG_TYPE_ERROR, "ユーザーの登録に失敗しました。");
-        }
-    }else{
-        $message = "入力したパスワードが一致しません";
+    if($result['status'] == 'error'){
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "入力したパスワードが一致しません。");
     }
-
-
-
+    $message = $result['message'];
 }
 ?>
 
@@ -113,7 +99,7 @@ if (isset($_POST['entry'])) {
 
     <div class="btn-area">
         <div class="btn-center-area">
-            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php'>ユーザー一覧</a></div>
+            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php'><?php echo UI_ITEM_USER; ?>一覧</a></div>
         </div>
     </div>
 
@@ -142,11 +128,11 @@ if (isset($_POST['entry'])) {
                             <!-- ユーザー名 -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">ユーザー名</label>
+                                    <label class="item-label"><?php echo UI_ITEM_USER_NAME; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input type="text" required minlength="8" maxlength="32" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="user-name"
-                                           placeholder="ユーザー名を入力してください"
+                                           placeholder="<?php echo UI_ITEM_USER_NAME; ?>を入力してください"
                                         <?php $user_name = $_POST['user-name'] ?? '';
                                         if($entry_error == True){ echo "value='{$user_name}'";} ?>
                                     >
@@ -156,11 +142,11 @@ if (isset($_POST['entry'])) {
                             <!-- パスワード -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">パスワード</label>
+                                    <label class="item-label"><?php echo UI_ITEM_USER_PASSWORD; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="password" id="password"
-                                           placeholder="パスワードを入力してください" title="<?php echo $password_details; ?>"
+                                           placeholder="<?php echo UI_ITEM_USER_PASSWORD; ?>を入力してください" title="<?php echo $password_details; ?>"
                                         <?php $password = $_POST['password'] ?? '';
                                         echo "value=''"; ?>
                                     >
@@ -170,11 +156,11 @@ if (isset($_POST['entry'])) {
                             <!-- 確認用パスワード -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">確認用パスワード</label>
+                                    <label class="item-label">確認用<?php echo UI_ITEM_USER_PASSWORD; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input type="password" required minlength="8" maxlength="64" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[^\s]{8,}$" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="re-password" id="re-password"
-                                           placeholder="確認用パスワードを入力してください"
+                                           placeholder="確認用<?php echo UI_ITEM_USER_PASSWORD; ?>を入力してください"
                                         <?php $re_password = $_POST['re-password'] ?? '';
                                         echo "value=''"; ?>
                                     >

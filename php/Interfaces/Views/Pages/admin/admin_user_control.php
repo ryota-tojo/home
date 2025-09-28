@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -165,8 +165,8 @@ if (isset($_POST['entry'])) {
         }
     }
 
-    $message = "ユーザー検索条件を変更しました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
+    $message = UI_ITEM_USER . "検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件変更");
 
 }
 if (isset($_POST['reset'])) {
@@ -178,8 +178,8 @@ if (isset($_POST['reset'])) {
     $_SESSION['search_group_affiliation'] = -1;
     $_SESSION['user_search_type_flg'] = "user_id";
 
-    $message = "ユーザー検索条件をリセットしました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件リセット");
+    $message = UI_ITEM_USER . "検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件リセット");
 }
 if (isset($_POST['user_approval'])) {
     $entry_button_click_flg = True;
@@ -216,13 +216,13 @@ if (isset($_POST['user_approval'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを承認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を承認しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "承認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー承認 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "承認 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -261,13 +261,13 @@ if (isset($_POST['user_un_approval'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを否認しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を否認しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "否認 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー否認 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "否認 - " . UI_ITEM_USER . "未選択");
     }
 }
 if (isset($_POST['user_deleted'])) {
@@ -305,13 +305,13 @@ if (isset($_POST['user_deleted'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを削除しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を削除しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー削除 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "削除 - " . UI_ITEM_USER . "未選択");
     }
 }
 if (isset($_POST['user_un_deleted'])) {
@@ -345,13 +345,13 @@ if (isset($_POST['user_un_deleted'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを削除解除しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー削除解除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を削除解除しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "削除解除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー削除解除 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "削除解除 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -393,7 +393,7 @@ $total_pages = ceil($total_users / $limit);
             <?php
             //
             if ($user_file_flag or $screen == "user") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_entry.php?$url_param'>ユーザー登録</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_entry.php?$url_param'>" . UI_ITEM_USER . "登録</a></div>";
             }
             ?>
         </div>
@@ -451,7 +451,7 @@ $total_pages = ceil($total_users / $limit);
                                                        value="user_id"
                                                     <?= ($_SESSION['user_search_type_flg'] === "user_id" || !isset($_SESSION['user_search_type_flg'])) ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                       for="searchUserId">ユーザーIDで検索</label>
+                                                       for="searchUserId"><?php echo UI_ITEM_USER_ID; ?>で検索</label>
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="search_type"
@@ -459,7 +459,7 @@ $total_pages = ceil($total_users / $limit);
                                                        value="wildcard"
                                                     <?= ($_SESSION['user_search_type_flg'] === "wildcard") ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                       for="searchUserName">ユーザー情報で検索</label>
+                                                       for="searchUserName"><?php echo UI_ITEM_USER; ?>情報で検索</label>
                                             </div>
                                         </div>
                                     </div>
@@ -467,7 +467,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- ユーザーID -->
                                     <div class="form-item remarks-item" id="userIdField">
                                         <div class="form-item-label">
-                                            <label class="item-label">ユーザーID</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_ID; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="number" class="form-control" name="user_id"
@@ -483,7 +483,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- ユーザー名 -->
                                     <div class="form-item remarks-item" id="userNameField">
                                         <div class="form-item-label">
-                                            <label class="item-label">ユーザー名</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_NAME; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="text" class="form-control" name="user_name"
@@ -494,7 +494,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 権限 -->
                                     <div class="form-item payment-item" id="permissionField">
                                         <div class="form-item-label">
-                                            <label class="item-label">権限</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_PERMISSION; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="permission">
@@ -517,7 +517,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 承認 -->
                                     <div class="form-item payment-item" id="approvalField">
                                         <div class="form-item-label">
-                                            <label class="item-label">承認</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_APPROVAL; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="approval">
@@ -537,7 +537,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 削除 -->
                                     <div class="form-item payment-item" id="deletedField">
                                         <div class="form-item-label">
-                                            <label class="item-label">削除</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_DELETED; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="deleted">
@@ -555,7 +555,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- 所属グループ -->
                                         <div class="form-item payment-item" id="groupAffiliationField">
                                             <div class="form-item-label">
-                                                <label class="item-label">所属グループ</label>
+                                                <label class="item-label"><?php echo UI_ITEM_GROUPS_ID; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <select class="form-select" name="group_affiliation">
@@ -624,26 +624,26 @@ $total_pages = ceil($total_users / $limit);
         <div class="btn-right-area">
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="user_approval"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ 所属グループのリーダーユーザー\n・ 権限「0」以外のユーザー\n・ 既に承認済みのユーザー\n・ 削除済みのユーザー')">
-                    選択ユーザーを承認
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ 所属グループのリーダー<?php echo UI_ITEM_USER; ?>\n・ 権限「一般」以外の<?php echo UI_ITEM_USER; ?>\n・ 既に承認済みの<?php echo UI_ITEM_USER; ?>\n・ 削除済みの<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を承認
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-warning" name="user_un_approval"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ 所属グループのリーダーユーザー\n・ 権限「0」以外のユーザー\n・ 既に未承認のユーザー\n・ 削除済みのユーザー')">
-                    選択ユーザーを否認
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ 所属グループのリーダー<?php echo UI_ITEM_USER; ?>\n・ 権限「一般」以外の<?php echo UI_ITEM_USER; ?>\n・ 既に未承認の<?php echo UI_ITEM_USER; ?>\n・ 削除済みの<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を否認
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-danger" name="user_deleted"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ 所属グループのリーダーユーザー\n・ 権限「0」以外のユーザー\n・ 承認済みのユーザー\n・ 削除済みのユーザー')">
-                    選択ユーザーを削除
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ 所属グループのリーダー<?php echo UI_ITEM_USER; ?>\n・ 権限「一般」以外の<?php echo UI_ITEM_USER; ?>\n・ 承認済みの<?php echo UI_ITEM_USER; ?>\n・ 削除済みの<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を削除
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-secondary" name="user_un_deleted"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ 所属グループのリーダーユーザー\n・ 権限「0」以外のユーザー\n・ 未削除のユーザー')">
-                    選択ユーザーを削除解除
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER; ?>はスキップされます。\n・ 所属グループのリーダー<?php echo UI_ITEM_USER; ?>\n・ 権限「一般」以外の<?php echo UI_ITEM_USER; ?>\n・ 未削除の<?php echo UI_ITEM_USER; ?>')">
+                    選択<?php echo UI_ITEM_USER; ?>を削除解除
                 </button>
             </div>
         </div>
@@ -659,12 +659,12 @@ $total_pages = ceil($total_users / $limit);
                                onclick="event.stopPropagation(); toggleAll(this);"/>
                     </th>
                     <th>#</th>
-                    <th>氏名</th>
-                    <th>権限</th>
-                    <th>承認</th>
-                    <th>削除</th>
-                    <th>所属グループ</th>
-                    <th>リーダーフラグ</th>
+                    <th><?php echo UI_ITEM_USER_NAME; ?></th>
+                    <th><?php echo UI_ITEM_USER_PERMISSION; ?></th>
+                    <th><?php echo UI_ITEM_USER_APPROVAL; ?></th>
+                    <th><?php echo UI_ITEM_USER_DELETED; ?></th>
+                    <th><?php echo UI_ITEM_GROUPS_ID; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_LEADER; ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -704,17 +704,19 @@ $total_pages = ceil($total_users / $limit);
 
                     $groups_name = "-";
                     $group_leader = "-";
+                    $group_leader_value = "";
 
                     foreach ($user['group_info'] as $group) {
                         $groups_name = $group['groups_id'];
-                        $group_leader = $group['leader'];
+                        $group_leader_value = $group['leader'];
+                        $group_leader = $group_leader_value == "0" ? "一般" : "リーダー";
                     }
 
                     echo "<tr style='cursor: pointer;' onclick=\"window.location='/Interfaces/Views/Pages/admin/admin_user_update.php?screen=user&user_id={$user_id}'\">";
                     echo "<td onclick='event.stopPropagation(); toggleCheckbox(this)'>
         <input type='checkbox'
                name='selected_users[]'
-               value='{$user_id}\t{$permission_value}\t{$approval_value}\t{$deleted_value}\t{$group_leader}'
+               value='{$user_id}\t{$permission_value}\t{$approval_value}\t{$deleted_value}\t{$group_leader_value}'
                style='pointer-events: none;'></td>";
 
                     echo "

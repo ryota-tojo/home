@@ -12,8 +12,12 @@ require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/GroupInfoA
 require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/CategoryApiClient.php';
 require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/MemberApiClient.php';
 
-require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/TemplateEntryApiClient.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/TemplateSearchApiClient.php';
-require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/TemplateInputApiClient.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/EntryTemplateApiClient.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/SearchTemplateApiClient.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/InputTemplateApiClient.php';
 
-//require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/CommentApiClient.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/BudgetsApiClient.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/ShoppingDataApiClient.php';
+
+require $_SERVER['DOCUMENT_ROOT'] . '/Infrastructure/External/Clients/FixedApiClient.php';
+

@@ -1,0 +1,9 @@
+@media (min-width: 1024px) {
+    .year-form{
+        width: calc((100% - 30px) / 4);
+    }
+    .month-form{
+        width: calc((100% - 30px) / 4);
+        margin-left: 10px;
+    }
+}

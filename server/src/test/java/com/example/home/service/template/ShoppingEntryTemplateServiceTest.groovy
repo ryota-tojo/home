@@ -50,6 +50,7 @@ class ShoppingEntryTemplateServiceTest extends Specification {
 
         setup:
         def groupsId = FixtureGroupList.所属グループID_正常()
+        def templateNo = FixtureShoppingEntryTemplate.テンプレートNO_正常()
         def templateName = FixtureShoppingEntryTemplate.テンプレート名_正常()
         def memberId = FixtureMember.メンバーID_正常()
         def categoryId = FixtureCategory.カテゴリーID_正常()
@@ -61,7 +62,7 @@ class ShoppingEntryTemplateServiceTest extends Specification {
         def UseFlag = FixtureShoppingEntryTemplate.使用フラグ_使用()
 
         when:
-        def result = sut.save(groupsId, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag)
+        def result = sut.save(groupsId, templateNo, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag)
 
         then:
         referCnt * shoppingEntryTemplateRepository.refer(groupsId, templateId) >> tmpList
@@ -70,7 +71,7 @@ class ShoppingEntryTemplateServiceTest extends Specification {
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3
-        saveCnt * shoppingEntryTemplateRepository.save(groupsId, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag) >> template
+        saveCnt * shoppingEntryTemplateRepository.save(groupsId, templateNo, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag) >> template
         result == expected
 
         where:
@@ -89,6 +90,7 @@ class ShoppingEntryTemplateServiceTest extends Specification {
 
         setup:
         def groupsId = FixtureGroupList.所属グループID_正常()
+        def templateNo = FixtureShoppingEntryTemplate.テンプレートNO_正常()
         def templateName = FixtureShoppingEntryTemplate.テンプレート名_正常()
         def memberId = FixtureMember.メンバーID_正常()
         def categoryId = FixtureCategory.カテゴリーID_正常()
@@ -100,7 +102,7 @@ class ShoppingEntryTemplateServiceTest extends Specification {
         def UseFlag = FixtureShoppingEntryTemplate.使用フラグ_使用()
 
         when:
-        def result = sut.update(groupsId, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag)
+        def result = sut.update(groupsId, templateNo, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag)
 
         then:
         memberCnt * memberRepository.refer(null, groupsId, null, null, null) >> memberList
@@ -108,7 +110,7 @@ class ShoppingEntryTemplateServiceTest extends Specification {
         choiceCnt1 * choicesRepository.getItemName(FixtureChoices.選択肢_種別(), _) >> masterCoices1
         choiceCnt2 * choicesRepository.getItemName(FixtureChoices.選択肢_支払い方法(), _) >> masterCoices2
         choiceCnt3 * choicesRepository.getItemName(FixtureChoices.選択肢_精算状況(), _) >> masterCoices3
-        updateCnt * shoppingEntryTemplateRepository.update(groupsId, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag) >> updateRows
+        updateCnt * shoppingEntryTemplateRepository.update(groupsId, templateNo, templateId, templateName, memberId, categoryId, type, payment, settlement, amount, remarks, UseFlag) >> updateRows
         result == expected
 
         where:

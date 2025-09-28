@@ -11,6 +11,9 @@ data class ShoppingSearchCreateRequest(
     @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
     val groupsId: String,
 
+    @JsonProperty("template_no")
+    val templateNo: Int,
+
     @JsonProperty("template_id")
     @field:NotBlank(message = "キー「template_id」は必須です")
     @field:Size(max = 64, message = "キー「template_id」は64桁以内で入力してください")
@@ -22,37 +25,29 @@ data class ShoppingSearchCreateRequest(
     val templateName: String,
 
     @JsonProperty("member_id")
-    @field:NotNull(message = "キー「member_id」は必須です")
-    val memberId: Int,
+    val memberId: Int? = null,
 
     @JsonProperty("category_id")
-    @field:NotNull(message = "キー「category_id」は必須です")
-    val categoryId: Int,
+    val categoryId: Int? = null,
 
     @JsonProperty("type")
-    @field:NotNull(message = "キー「type」は必須です")
-    val type: Int,
+    val type: Int? = null,
 
     @JsonProperty("payment")
-    @field:NotNull(message = "キー「payment」は必須です")
-    val payment: Int,
+    val payment: Int? = null,
 
     @JsonProperty("settlement")
-    @field:NotNull(message = "キー「settlement」は必須です")
-    val settlement: Int,
+    val settlement: Int? = null,
 
     @JsonProperty("min_amount")
-    @field:NotNull(message = "キー「amount」は必須です")
-    val minAmount: Int,
+    val minAmount: Int? = null,
 
     @JsonProperty("max_amount")
-    @field:NotNull(message = "キー「amount」は必須です")
-    val maxAmount: Int,
+    val maxAmount: Int? = null,
 
     @JsonProperty("remarks")
-    @field:NotBlank(message = "キー「remarks」は必須です")
     @field:Size(max = 1024, message = "キー「remarks」は1024桁以内で入力してください")
-    val remarks: String,
+    val remarks: String? = null,
 
     @JsonProperty("use")
     @field:NotNull(message = "キー「use」は必須です")

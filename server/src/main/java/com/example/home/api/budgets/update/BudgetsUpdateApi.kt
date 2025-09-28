@@ -39,7 +39,7 @@ class BudgetsUpdateApi(
         val requestYYYY = YYYY(request.yyyy)
         val requestMM = MM(request.mm)
         val requestCategoryId = CategoryId(request.categoryId)
-        val requestAmount = if (request.amount == 0) null else request.amount?.let { Amount(it) }
+        val requestAmount = if (request.amount == null) null else Amount(request.amount)
 
         val serviceExecResult = budgetsService.update(
             requestGroupsId, requestYYYY, requestMM, requestCategoryId, requestAmount

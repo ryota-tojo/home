@@ -18,14 +18,14 @@ object TsDefaultData {
         "Setting2" to "1"
     )
     val CATEGORIES = mapOf(
-        "1" to "分類１",
-        "2" to "分類２",
-        "3" to "分類３"
+        "1" to "カテゴリー１",
+        "2" to "カテゴリー２",
+        "3" to "カテゴリー３"
     )
     val MEMBERS = mapOf(
-        "1" to "メンバー１",
-        "2" to "メンバー２",
-        "3" to "メンバー３"
+        "1" to "購入者１",
+        "2" to "購入者２",
+        "3" to "購入者３"
     )
     val COMMENTS = mapOf(
         "199001" to "コメントを入力してください"

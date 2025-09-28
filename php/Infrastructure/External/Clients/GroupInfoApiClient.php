@@ -2,7 +2,7 @@
 
 use Application\Services\ApiService;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/api_routes.php';
 
 function apiCallGroupInfoAndUserInfoRefer($groups_id = null, $user_id = null, $leader = null, $offset = 0, $limit = 100)
 {

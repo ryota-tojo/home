@@ -86,7 +86,7 @@ if (isset($_POST['entry'])) {
 
         // ユーザー情報最新化
         require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/get_user.php';
-        getUser($_SESSION['user_name']);
+        getCurrentUser($_SESSION['user_name']);
 
     }
 }

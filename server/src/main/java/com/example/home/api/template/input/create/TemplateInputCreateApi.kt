@@ -15,6 +15,7 @@ import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.TemplateId
 import com.example.home.domain.value_object.template.TemplateName
+import com.example.home.domain.value_object.template.TemplateNo
 import com.example.home.domain.value_object.template.TemplateUseFlg
 import com.example.home.service.template.ShoppingInputTemplateService
 import jakarta.servlet.http.HttpServletResponse
@@ -42,6 +43,7 @@ class TemplateInputCreateApi(
 
         // リクエスト取得
         val requestGroupsId = GroupsId(request.groupsId)
+        val requestTemplateNo = TemplateNo(request.templateNo)
         val requestTemplateId = TemplateId(request.templateId)
         val requestTemplateName = TemplateName(request.templateName)
         val requestMemberId = MemberId(request.memberId)
@@ -55,6 +57,7 @@ class TemplateInputCreateApi(
 
         val serviceExecResult = shoppingInputTemplateService.save(
             requestGroupsId,
+            requestTemplateNo,
             requestTemplateId,
             requestTemplateName,
             requestMemberId,
@@ -126,6 +129,7 @@ class TemplateInputCreateApi(
         val dataObject = ShoppingInputCreateResponse.TemplateObject(
             serviceExecResult.shoppingInputTemplate?.id?.value,
             serviceExecResult.shoppingInputTemplate?.groupsId?.value,
+            serviceExecResult.shoppingInputTemplate?.templateNo?.value.toString(),
             serviceExecResult.shoppingInputTemplate?.templateId?.value,
             serviceExecResult.shoppingInputTemplate?.templateName?.value,
             serviceExecResult.shoppingInputTemplate?.memberId?.value,

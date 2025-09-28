@@ -11,6 +11,7 @@ import com.example.home.domain.repository.member.MemberRepository
 import com.example.home.domain.repository.template.ShoppingSearchTemplateRepository
 import com.example.home.domain.value_object.category.CategoryId
 import com.example.home.domain.value_object.etc.Amount
+import com.example.home.domain.value_object.etc.Amount.Companion.isMinAmountGreaterThanMaxAmount
 import com.example.home.domain.value_object.group.GroupsId
 import com.example.home.domain.value_object.master.ChoicesItemNo
 import com.example.home.domain.value_object.master.ChoicesItemType
@@ -21,6 +22,7 @@ import com.example.home.domain.value_object.shopping.ShoppingSettlement
 import com.example.home.domain.value_object.shopping.ShoppingType
 import com.example.home.domain.value_object.template.TemplateId
 import com.example.home.domain.value_object.template.TemplateName
+import com.example.home.domain.value_object.template.TemplateNo
 import com.example.home.domain.value_object.template.TemplateUseFlg
 import com.example.home.util.ValidationCheck
 import org.springframework.stereotype.Service
@@ -50,16 +52,17 @@ class ShoppingSearchTemplateService(
 
     fun save(
         groupsId: GroupsId,
+        templateNo: TemplateNo,
         templateId: TemplateId,
         templateName: TemplateName,
-        memberId: MemberId,
-        categoryId: CategoryId,
-        shoppingType: ShoppingType,
-        shoppingPayment: ShoppingPayment,
-        shoppingSettlement: ShoppingSettlement,
-        shoppingMinAmount: Amount,
-        shoppingMaxAmount: Amount,
-        shoppingRemarks: ShoppingRemarks,
+        memberId: MemberId? = null,
+        categoryId: CategoryId? = null,
+        shoppingType: ShoppingType? = null,
+        shoppingPayment: ShoppingPayment? = null,
+        shoppingSettlement: ShoppingSettlement? = null,
+        shoppingMinAmount: Amount? = null,
+        shoppingMaxAmount: Amount? = null,
+        shoppingRemarks: ShoppingRemarks? = null,
         templateUseFlg: TemplateUseFlg
     ): ShoppingSearchTemplateSaveResult {
         if (!ValidationCheck.symbol(templateId.toString()).result ||
@@ -75,6 +78,13 @@ class ShoppingSearchTemplateService(
         if (templateList.any { it.templateId == templateId }) {
             return ShoppingSearchTemplateSaveResult(
                 ResponseCode.重複するテンプレートID.code,
+                null
+            )
+        }
+
+        if(isMinAmountGreaterThanMaxAmount(shoppingMinAmount,shoppingMaxAmount)) {
+            return ShoppingSearchTemplateSaveResult(
+                ResponseCode.最小金額が最大金額より高い.code,
                 null
             )
         }
@@ -94,6 +104,7 @@ class ShoppingSearchTemplateService(
         }
         val template = shoppingSearchTemplateRepository.save(
             groupsId,
+            templateNo,
             templateId,
             templateName,
             memberId,
@@ -114,8 +125,9 @@ class ShoppingSearchTemplateService(
 
     fun update(
         groupsId: GroupsId,
+        templateNo: TemplateNo,
         templateId: TemplateId,
-        templateName: TemplateName? = null,
+        templateName: TemplateName,
         memberId: MemberId? = null,
         categoryId: CategoryId? = null,
         shoppingType: ShoppingType? = null,
@@ -124,7 +136,7 @@ class ShoppingSearchTemplateService(
         shoppingMinAmount: Amount? = null,
         shoppingMaxAmount: Amount? = null,
         shoppingRemarks: ShoppingRemarks? = null,
-        templateUseFlg: TemplateUseFlg? = null,
+        templateUseFlg: TemplateUseFlg,
     ): ShoppingSearchTemplateUpdateResult {
         if (!ValidationCheck.symbol(templateId.toString()).result ||
             !ValidationCheck.symbol(templateName.toString()).result
@@ -132,6 +144,12 @@ class ShoppingSearchTemplateService(
             return ShoppingSearchTemplateUpdateResult(
                 ResponseCode.バリデーションエラー.code,
                 0
+            )
+        }
+        if(isMinAmountGreaterThanMaxAmount(shoppingMinAmount,shoppingMaxAmount)) {
+            return ShoppingSearchTemplateUpdateResult(
+                ResponseCode.最小金額が最大金額より高い.code,
+                null
             )
         }
         val inputDataCheckResult = inputDataCheck(
@@ -150,6 +168,7 @@ class ShoppingSearchTemplateService(
         }
         val updateRows = shoppingSearchTemplateRepository.update(
             groupsId,
+            templateNo,
             templateId,
             templateName,
             memberId,

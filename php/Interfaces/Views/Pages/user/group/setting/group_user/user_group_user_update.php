@@ -2,13 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/import_user.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -73,18 +74,14 @@ if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $user_name = $_POST['user-name'] ?? '';
-    $new_user_name = $_POST['new-user-name'] ?? '';
 
-    $result = apiCallUserUpdateInfo($user_id, $new_user_name);
+    $result_data = groupUserPostActionForGroupUserUpdateEvent($user_id, $user_name);
+    $result = json_decode($result_data,True);
 
-    if ($result['status'] == 'success') {
-        $message = "ユーザー情報を変更しました。";
-        createLogs(LOG_TYPE_INFO, "ユーザー情報変更");
-    } else {
-        $message = $result['message'];
+    if ($result['status'] == 'error') {
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "ユーザー情報の変更に失敗しました。");
     }
+    $message = $result['message'];
 }
 
 // ユーザーデータ取得
@@ -109,7 +106,9 @@ foreach ($result['data']['user'] as $data) {
 
     <div class="btn-area">
         <div class="btn-center-area">
-            <div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php'>ユーザー一覧</a></div>
+            <div class='btn-item'><a class='link-btn'
+                                     href='/Interfaces/Views/Pages/user/group/setting/group_user/user_group_user_list.php'><?php echo UI_ITEM_USER; ?>
+                    一覧</a></div>
         </div>
     </div>
 
@@ -138,29 +137,22 @@ foreach ($result['data']['user'] as $data) {
                             <!-- ユーザー名 -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">ユーザー名</label>
+                                    <label class="item-label">変更後<?php echo UI_ITEM_USER_NAME; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input type="text" required minlength="8" maxlength="32"
                                            oninput="this.value = this.value.replace(/,/g, '');" class="form-control"
                                            name="user-name"
-                                           placeholder="ユーザー名を入力してください"
-                                        <?php echo "value='{$user_name}'"; ?>
-                                    >
-                                </div>
-                            </div>
+                                           placeholder="<?php echo UI_ITEM_USER_NAME; ?>を入力してください"
+                                        <?php
 
-                            <!-- 変更後ユーザー名 -->
-                            <div class="form-item">
-                                <div class="form-item-label">
-                                    <label class="item-label">変更後ユーザー名</label>
-                                </div>
-                                <div class="input-group form-item">
-                                    <input type="text" required minlength="8" maxlength="32"
-                                           oninput="this.value = this.value.replace(/,/g, '');" class="form-control"
-                                           name="new-user-name"
-                                           placeholder="ユーザー名を入力してください"
-                                        <?php echo "value=''"; ?>
+                                        if ($entry_error == True) {
+                                            if (isset($_POST['user-name'])) {
+                                                echo "value={$_POST['user-name']}";
+                                            }
+                                        }else{
+                                            echo "value='{$user_name}'";
+                                        } ?>
                                     >
                                 </div>
                             </div>

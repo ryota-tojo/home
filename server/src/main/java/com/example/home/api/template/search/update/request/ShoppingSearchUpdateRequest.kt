@@ -10,6 +10,9 @@ data class ShoppingSearchUpdateRequest(
     @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
     val groupsId: String,
 
+    @JsonProperty("template_no")
+    val templateNo: Int,
+    
     @JsonProperty("template_id")
     @field:NotBlank(message = "キー「template_id」は必須です")
     @field:Size(max = 64, message = "キー「template_id」は64桁以内で入力してください")
@@ -17,7 +20,7 @@ data class ShoppingSearchUpdateRequest(
 
     @JsonProperty("template_name")
     @field:Size(max = 64, message = "キー「template_name」は64桁以内で入力してください")
-    val templateName: String? = null,
+    val templateName: String,
 
     @JsonProperty("member_id")
     val memberId: Int? = null,
@@ -45,7 +48,7 @@ data class ShoppingSearchUpdateRequest(
     val remarks: String? = null,
 
     @JsonProperty("use")
-    val use: Int? = null,
+    val use: Int,
 )
 
 

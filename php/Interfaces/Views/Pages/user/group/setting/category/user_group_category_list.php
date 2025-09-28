@@ -2,13 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/category/get_max_category_no.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/category/import_category.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -76,160 +76,74 @@ $entry_error = False;
 // ボタン押下時の処理
 if (isset($_POST['change_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
 
-        $count_result = apiCallCategoryCount(null, $_SESSION['user_groups_id']);
-        $category_max_count = $count_result['data']['recode_count'];
-        $category_cheched_count = count($selected_datas);
+    if (isset($_POST['selected_datas'])) {
 
-        if ($category_max_count == $category_cheched_count) {
-            $cnt = 0;
-            foreach ($selected_datas as $data) {
-
-                $array = explode("\t", $data);
-                $post_category_id = $array[0];
-                $post_groups_id = $array[1];
-                $post_category_no = $array[2];
-                $post_category_name = $array[3];
-                $post_delete_flag = $array[4];
-
-                if ($post_category_no != 999) {
-                    $cnt++;
-                    apiCallCategoryUpdate($post_category_id, $cnt);
-                    $suc_cnt += 1;
-                }
-            }
-
-            $message = $suc_cnt . "件のカテゴリーを入替ました<br>" . $err_cnt . "件のカテゴリーをスキップしました";
-            createLogs(LOG_TYPE_INFO, "カテゴリー入替 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
-        } else {
-            $message = "カテゴリーがすべて選択されていません";
+        $result_data = categoriesPostActionForSortEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
             $entry_error = true;
-            createLogs(LOG_TYPE_ERROR, "カテゴリー入替 - カテゴリー選択数不一致");
         }
+        $message = $result['message'];
     } else {
-        $message = "カテゴリーが選択されていません";
+        $message = UI_ITEM_CATEGORY . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "カテゴリー入替 - カテゴリー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_CATEGORY . "入替 - " . UI_ITEM_CATEGORY . "未選択");
     }
 }
 
 if (isset($_POST['on_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
+    if (isset($_POST['selected_datas'])) {
 
-        foreach ($selected_datas as $data) {
-            $array = explode("\t", $data);
-
-            $post_category_id = $array[0];
-            $post_groups_id = $array[1];
-            $post_category_no = $array[2];
-            $post_category_name = $array[3];
-            $post_delete_flag = $array[4];
-
-            if ($post_delete_flag == "0") {
-                $err_cnt += 1;
-                continue;
-            }
-
-            $category_max_no = getMaxCategoryNo($_SESSION['user_groups_id']);
-            $category_new_no = $category_max_no + 1;
-
-            apiCallCategoryUnDisable($post_category_id);
-            apiCallCategoryUpdate($post_category_id, $category_new_no);
-            $suc_cnt += 1;
+        $result_data = categoriesPostActionForActivateEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のカテゴリーを有効化しました<br>" . $err_cnt . "件のカテゴリーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "カテゴリー有効化 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "カテゴリーが選択されていません";
+        $message = UI_ITEM_CATEGORY . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "カテゴリー有効化 - カテゴリー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_CATEGORY . "有効化 - " . UI_ITEM_CATEGORY . "未選択");
     }
 }
 
 if (isset($_POST['off_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
+    if (isset($_POST['selected_datas'])) {
 
-        foreach ($selected_datas as $data) {
-            $array = explode("\t", $data);
-
-            $post_category_id = $array[0];
-            $post_groups_id = $array[1];
-            $post_category_no = $array[2];
-            $post_category_name = $array[3];
-            $post_delete_flag = $array[4];
-
-            if ($post_delete_flag == "1") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallCategoryDisable($post_category_id);
-            apiCallCategoryUpdate($post_category_id, 999);
-            $suc_cnt += 1;
+        $result_data = categoriesPostActionFordeactivateEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のカテゴリーを無効化しました<br>" . $err_cnt . "件のカテゴリーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "カテゴリー無効化 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "カテゴリーが選択されていません";
+        $message = UI_ITEM_CATEGORY . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "カテゴリー無効化 - カテゴリー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_CATEGORY . "無効化 - " . UI_ITEM_CATEGORY . "未選択");
     }
 }
 
 if (isset($_POST['delete_btn'])) {
     $entry_button_click_flg = True;
-    $suc_cnt = 0;
-    $err_cnt = 0;
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_datas'])) {
-        $selected_datas = $_POST['selected_datas'];
+    if (isset($_POST['selected_datas'])) {
 
-        foreach ($selected_datas as $data) {
-            $array = explode("\t", $data);
-
-            $post_category_id = $array[0];
-            $post_groups_id = $array[1];
-            $post_category_no = $array[2];
-            $post_category_name = $array[3];
-            $post_delete_flag = $array[4];
-
-            if ($post_delete_flag == "0") {
-                $err_cnt += 1;
-                continue;
-            }
-            apiCallCategoryDelete(null, $post_category_id);
-            $suc_cnt += 1;
+        $result_data = categoriesPostActionForDeleteEvent($_SESSION['user_groups_id'],$_POST['selected_datas']);
+        $result = json_decode($result_data,True);
+        if($result['status'] == 'error'){
+            $entry_error = true;
         }
-
-        $message = $suc_cnt . "件のカテゴリーを削除しました<br>" . $err_cnt . "件のカテゴリーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "カテゴリー削除 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
-
+        $message = $result['message'];
     } else {
-        $message = "カテゴリーが選択されていません";
+        $message = UI_ITEM_CATEGORY . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "カテゴリー削除 - カテゴリー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_CATEGORY . "削除 - " . UI_ITEM_CATEGORY . "未選択");
     }
 }
 
-$category_api_refer_result = apiCallCategoryRefer(null, $_SESSION['user_groups_id']);
-if ($category_api_refer_result['status'] != "error") {
-    $categories_data = $category_api_refer_result['data']['category_list'];
-}
+$categories_data = getCategoryList($_SESSION['user_groups_id']);
 
 ?>
 
@@ -246,7 +160,7 @@ if ($category_api_refer_result['status'] != "error") {
     <div class="btn-area">
         <div class="btn-center-area">
             <div class='btn-item'><a class='link-btn'
-                                     href='/Interfaces/Views/Pages/user/group/setting/category/user_group_category_entry.php'>カテゴリー登録</a>
+                                     href='/Interfaces/Views/Pages/user/group/setting/category/user_group_category_entry.php'><?php echo UI_ITEM_CATEGORY; ?>登録</a>
             </div>
         </div>
     </div>
@@ -293,19 +207,19 @@ if ($category_api_refer_result['status'] != "error") {
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="on_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のカテゴリーはスキップされます。\n・ 既に有効化のカテゴリー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_CATEGORY; ?>はスキップされます。\n・ 既に有効化の<?php echo UI_ITEM_CATEGORY; ?>')">
                     有効化
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-warning" name="off_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のカテゴリーはスキップされます。\n・ 既に無効化のカテゴリー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_CATEGORY; ?>はスキップされます。\n・ 既に無効化の<?php echo UI_ITEM_CATEGORY; ?>')">
                     無効化
                 </button>
             </div>
             <div class="btn-item">
                 <button type="submit" class="btn btn-danger" name="delete_btn"
-                        onclick="return confirm('本当に実行しますか？\n以下のカテゴリーはスキップされます。\n・ 有効化のカテゴリー')">
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_CATEGORY; ?>はスキップされます。\n・ 有効化の<?php echo UI_ITEM_CATEGORY; ?>')">
                     削除
                 </button>
             </div>
@@ -321,9 +235,9 @@ if ($category_api_refer_result['status'] != "error") {
                 <thead class="table-dark">
                 <tr>
                     <th><input type="checkbox" id="select-all" onclick="toggleAll(this)"></th>
-                    <th>#</th>
-                    <th>カテゴリー名</th>
-                    <th>ステータス</th>
+                    <th><?php echo UI_ITEM_CATEGORY_NO; ?></th>
+                    <th><?php echo UI_ITEM_CATEGORY_NAME; ?></th>
+                    <th><?php echo UI_ITEM_CATEGORY_STATUS; ?></th>
                 </tr>
                 </thead>
                 <tbody id="sortable-table">

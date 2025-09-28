@@ -2,14 +2,15 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
-$screen_items = getScreen( basename(__FILE__));
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/budgets/get_budgets.php';
+
+
+$screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
 $screen_remarks = $screen_items['remarks'];
 
@@ -63,11 +64,303 @@ flush();
             </div>
             <div class="center">
                 <?php
-                // 画面マスタ
-                $screen_item = require $_SERVER['DOCUMENT_ROOT'] . '/config/InitializationConfig/screen_items.php';
-                foreach ($screen_item as [$id, $name, $remarks]) {
-//                    apiCallMasterScreenCreate($id, $name, $remarks);
+
+                require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/shopping/import_shopping_data.php';
+
+                // 正常系
+                $groups_id = $_SESSION['user_groups_id'];
+                $user_id = $_SESSION['user_id'];
+                $shopping_date = "2025-01-01";
+                $member_id = "1";
+                $category_id = "1";
+                $type = "1";
+                $payment = "1";
+                $settlement = "1";
+                $amount = 1000;
+                $remarks = "aaaa";
+                if(isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
                 }
+
+                // 異常系
+                // 所属グループID
+                //   - 必須チェック
+                $groups_id = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $groups_id = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $groups_id = "hoge";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $groups_id = $_SESSION['user_groups_id'];
+
+                // ユーザーID
+                //   - 必須チェック
+                $user_id = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $user_id = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $user_id = "abcd";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $user_id = "999999";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $user_id = $_SESSION['user_id'];
+
+                // 購入日
+                //   - 必須チェック
+                $shopping_date = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $shopping_date = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（yyyy-MM-dd）
+                $shopping_date = "2025/01/01";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $shopping_date = "2025-01-01";
+
+                // メンバーID
+                //   - 必須チェック
+                $member_id = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $member_id = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $member_id = "abc";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $member_id = "999";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $member_id = "1";
+
+                // カテゴリーID
+                //   - 必須チェック
+                $category_id = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $category_id = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $category_id = "abc";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $category_id = "999";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $category_id = "1";
+
+                // 種別
+                //   - 必須チェック
+                $type = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $type = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $type = "abc";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $type = "999";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $type = "1";
+
+                // 支払い
+                //   - 必須チェック
+                $payment = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $payment = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $payment = "abc";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $payment = "999";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $payment = "1";
+
+                // 精算
+                //   - 必須チェック
+                $settlement = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $settlement = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $settlement = "abc";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 存在チェック
+                $settlement = "999";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $settlement = "1";
+
+                // 金額
+                //   - 必須チェック
+                $amount = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 空欄チェック
+                $amount = "";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 形式チェック（数値）
+                $amount = "abc";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                //   - 数値範囲チェック
+                $amount = "0";
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+                $amount = "1000";
+
+                // 備考
+                //   - 必須チェック
+                $remarks = null;
+                if(!isShoppingDataCreatable($groups_id, $user_id, $shopping_date, $member_id, $category_id, $type, $payment, $settlement, $amount, $remarks)){
+                    echo "OK<br>";
+                }else{
+                    echo "NG<br>";
+                }
+
+
+
 
 
                 ?>

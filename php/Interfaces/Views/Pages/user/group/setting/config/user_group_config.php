@@ -2,11 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/group/import_group.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
@@ -90,11 +91,11 @@ if (isset($_POST['group_entry'])) {
     if ($status != "success") {
 
         $entry_error = True;
-        $message = "所属グループの更新に失敗しました";
-        createLogs(LOG_TYPE_ERROR, "所属グループの更新に失敗");
+        $message = UI_ITEM_GROUP . "の更新に失敗しました";
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "の更新に失敗");
     } else {
-        $message = "所属グループを更新しました";
-        createLogs(LOG_TYPE_INFO, "所属グループを更新");
+        $message = UI_ITEM_GROUP . "を更新しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "を更新");
     }
 }
 
@@ -131,66 +132,29 @@ if (isset($_POST['setting_entry'])) {
 
     if (!$all_success) {
         $error_keys_str = implode(', ', $error_keys);
-        $message = "所属グループ設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
+        $message = UI_ITEM_GROUP . "設定の更新に失敗しました。<br>エラーが発生した設定: " . $error_keys_str;
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "所属グループ設定の更新に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "設定の更新に失敗");
     } else {
-        $message = "所属グループ設定が正常に更新されました。";
-        createLogs(LOG_TYPE_INFO, "所属グループ設定を更新");
+        $message = UI_ITEM_GROUP . "設定が正常に更新されました。";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "設定を更新");
     }
 }
 
-$group_refer_api_result = apiCallGroupRefer($_SESSION['user_groups_id']);
-if ($group_refer_api_result['status'] == "error") {
+$group_data = getGroup($_SESSION['user_groups_id']);
+$group=json_decode($group_data,true);
+if($group['status'] == 'error'){
     $_SESSION['access_error'] = 1;
     echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
 }
-$group_info_count_api_result = apiCallGroupInfoCount($_SESSION['user_groups_id']);
-if ($group_info_count_api_result['status'] != "error") {
-    $group_info_refer_api_result = apiCallGroupInfoRefer($_SESSION['user_groups_id'], null, null, $offset, $limit);
-    if ($group_info_refer_api_result['status'] == "error") {
-        $_SESSION['access_error'] = 1;
-        echo "<script>window.location.href = '/Interfaces/Views/Pages/access_error.php';</script>";
-    }
-}
+$group_name = $group['data']['group_info']['group_name'];
+$group_password = $group['data']['group_info']['group_password'];
+$group_setting_display_year = $group['data']['group_setting']['display_year'];
+$group_setting_graph_type = $group['data']['group_setting']['graph_type'];
+$group_setting_notification_send_flg = $group['data']['group_setting']['notification_send_flg'];
+$group_setting_notification_url = $group['data']['group_setting']['notification_url'];
+$group_setting_notification_token = $group['data']['group_setting']['notification_token'];
 
-if(isset($group_info_refer_api_result)){
-    // 所属グループ情報の総数を取得
-    $total_groupinfos = $group_info_count_api_result['data']['recode_count'];
-    $group_info_data = $group_info_refer_api_result['data']['group_info'];
-    // 総ページ数を計算
-    $total_pages = ceil($total_groupinfos / $limit);
-}else{
-    $total_pages=1;
-    $group_info_data=[];
-}
-
-
-$group_name = "";
-$group_password = "";
-$group_setting_display_year = "";
-$group_setting_graph_type = "";
-$group_setting_notification_send_flg = "";
-$group_setting_notification_url = "";
-$group_setting_notification_token = "";
-
-foreach ($group_refer_api_result['data']['group'] as $group) {
-
-    $group_name = $group['group_list']['group_name'];
-    $group_password = $group['group_list']['group_password'];
-
-    $group_settings = [];
-    foreach ($group['group_setting'] as $setting) {
-        $group_settings[$setting['setting_key']] = $setting['setting_value'];
-    }
-
-    $group_setting_display_year = $group_settings['display_year'] ?? null;
-    $group_setting_graph_type = $group_settings['graph_type'] ?? null;
-    $group_setting_notification_send_flg = $group_settings['notification_send_flg'] ?? null;
-    $group_setting_notification_url = $group_settings['notification_url'] ?? null;
-    $group_setting_notification_token = $group_settings['notification_token'] ?? null;
-
-}
 ?>
 
 <main>
@@ -222,13 +186,13 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                     <form action="" method="post">
 
                         <div class="settings-section">
-                            <h4 class="settings-title">所属グループ情報</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_GROUP; ?>情報</h4>
                             <hr>
 
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループID
+                                        <?php echo UI_ITEM_GROUPS_ID; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -247,7 +211,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループ名
+                                        <?php echo UI_ITEM_GROUP_NAME; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -262,7 +226,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループパスワード
+                                        <?php echo UI_ITEM_GROUP_PASSWORD; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -281,7 +245,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="group_entry">
-                                        所属グループ情報更新
+                                        <?php echo UI_ITEM_GROUP; ?>情報更新
                                     </button>
                                 </div>
                             </div>
@@ -291,13 +255,13 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
 
                     <form action="" method="post">
                         <div class="settings-section">
-                            <h4 class="settings-title">所属グループ設定</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_GROUP; ?>設定</h4>
                             <hr>
 
                             <div style='display: none' class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        所属グループID
+                                        <?php echo UI_ITEM_GROUPS_ID; ?>
                                     </div>
                                 </div>
                                 <div class="settings-input-container">
@@ -392,7 +356,7 @@ foreach ($group_refer_api_result['data']['group'] as $group) {
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="setting_entry">
-                                        所属グループ設定更新
+                                        <?php echo UI_ITEM_GROUP; ?>設定更新
                                     </button>
                                 </div>
                             </div>

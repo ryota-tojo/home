@@ -2,7 +2,7 @@
 
 use Application\Services\ApiService;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/api_routes.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/api_routes.php';
 
 function apiCallMemberRefer($member_id = null, $groups_id = null, $member_no = null, $offset = null, $limit = null)
 {

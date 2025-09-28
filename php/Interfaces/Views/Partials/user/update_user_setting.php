@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/ui_items_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
@@ -17,14 +18,14 @@ function userSettingUpdate()
         $user_api_refer_result = apiCallUserRefer(null, null, null, null, null, null, null,null,$offset, $perPage);
 
         if ($user_api_refer_result['status'] !== 'success') {
-            echo "ユーザー取得に失敗しました<br>";
+            echo UI_ITEM_USER . "取得に失敗しました<br>";
             continue;
         }
 
         $user_data = $user_api_refer_result['data']['user'] ?? [];
 
         if (!is_array($user_data)) {
-            echo "無効なユーザーデータ<br>";
+            echo "無効な" . UI_ITEM_USER . "データ<br>";
             continue;
         }
 
@@ -60,7 +61,7 @@ function userSettingUpdate()
 
         $data = [
             "status" => "success",
-            "message" => "すべてのユーザーに設定を反映しました",
+            "message" => "すべての" . UI_ITEM_USER . "に設定を反映しました",
         ];
         return json_encode($data);
     }

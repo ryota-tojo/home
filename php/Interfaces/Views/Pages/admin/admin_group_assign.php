@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -168,8 +168,8 @@ if (isset($_POST['entry'])) {
         }
     }
 
-    $message = "ユーザー検索条件を変更しました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件変更");
+    $message = UI_ITEM_USER . "検索条件を変更しました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件変更");
 
 }
 if (isset($_POST['reset'])) {
@@ -181,8 +181,8 @@ if (isset($_POST['reset'])) {
     $_SESSION['search_group_affiliation'] = -1;
     $_SESSION['user_search_type_flg'] = "user_id";
 
-    $message = "ユーザー検索条件をリセットしました";
-    createLogs(LOG_TYPE_INFO, "ユーザー検索条件リセット");
+    $message = UI_ITEM_USER . "検索条件をリセットしました";
+    createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "検索条件リセット");
 
 }
 if (isset($_POST['user_assign'])) {
@@ -221,13 +221,13 @@ if (isset($_POST['user_assign'])) {
             $suc_cnt += 1;
         }
 
-        $message = $suc_cnt . "件のユーザーを配属しました<br>" . $err_cnt . "件のユーザーをスキップしました";
-        createLogs(LOG_TYPE_INFO, "ユーザー配属 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
+        $message = $suc_cnt . "件の" . UI_ITEM_USER . "を配属しました<br>" . $err_cnt . "件の" . UI_ITEM_USER . "をスキップしました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "配属 - 成功：{$suc_cnt}件, スキップ：{$err_cnt}件");
 
     } else {
-        $message = "ユーザーが選択されていません";
+        $message = UI_ITEM_USER . "が選択されていません";
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "ユーザー配属 - ユーザー未選択");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER. "配属 - " . UI_ITEM_USER . "未選択");
     }
 }
 
@@ -277,7 +277,7 @@ $total_pages = ceil($total_users / $limit);
             <?php
             //
             if ($groups_id != "") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_update.php?$url_param'>所属グループ更新</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_group_update.php?$url_param'>" . UI_ITEM_GROUP . "更新</a></div>";
             }
             ?>
         </div>
@@ -302,13 +302,13 @@ $total_pages = ceil($total_users / $limit);
                 <div class="settings">
 
                     <div class="settings-section">
-                        <h4 class="settings-title">所属グループ情報</h4>
+                        <h4 class="settings-title"><?php echo UI_ITEM_GROUP_INFO; ?></h4>
                         <hr>
 
                         <div class="settings-form">
                             <div class="settings-label-container">
                                 <div class="settings-label">
-                                    所属グループID
+                                    <?php echo UI_ITEM_GROUPS_ID; ?>
                                 </div>
                             </div>
                             <div class="settings-input-container">
@@ -323,7 +323,7 @@ $total_pages = ceil($total_users / $limit);
                         <div class="settings-form">
                             <div class="settings-label-container">
                                 <div class="settings-label">
-                                    所属グループ名
+                                    <?php echo UI_ITEM_GROUP_NAME; ?>
                                 </div>
                             </div>
                             <div class="settings-input-container">
@@ -376,7 +376,7 @@ $total_pages = ceil($total_users / $limit);
                                                        value="user_id"
                                                     <?= ($_SESSION['user_search_type_flg'] === "user_id" || !isset($_SESSION['user_search_type_flg'])) ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                       for="searchUserId">ユーザーIDで検索</label>
+                                                       for="searchUserId"><?php echo UI_ITEM_USER_ID; ?>で検索</label>
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="search_type"
@@ -384,7 +384,7 @@ $total_pages = ceil($total_users / $limit);
                                                        value="wildcard"
                                                     <?= ($_SESSION['user_search_type_flg'] === "wildcard") ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                       for="searchUserName">ユーザー情報で検索</label>
+                                                       for="searchUserName"><?php echo UI_ITEM_USER . "情報"; ?>で検索</label>
                                             </div>
                                         </div>
                                     </div>
@@ -392,7 +392,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- ユーザーID -->
                                     <div class="form-item remarks-item" id="userIdField">
                                         <div class="form-item-label">
-                                            <label class="item-label">ユーザーID</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_ID; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="number" class="form-control" name="user_id"
@@ -408,7 +408,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- ユーザー名 -->
                                     <div class="form-item remarks-item" id="userNameField">
                                         <div class="form-item-label">
-                                            <label class="item-label">ユーザー名</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_NAME; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <input type="text" class="form-control" name="user_name"
@@ -419,7 +419,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 権限 -->
                                     <div class="form-item payment-item" id="permissionField">
                                         <div class="form-item-label">
-                                            <label class="item-label">権限</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_PERMISSION; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="permission">
@@ -442,7 +442,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 承認 -->
                                     <div class="form-item payment-item" id="approvalField">
                                         <div class="form-item-label">
-                                            <label class="item-label">承認</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_APPROVAL; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="approval">
@@ -462,7 +462,7 @@ $total_pages = ceil($total_users / $limit);
                                     <!-- 削除 -->
                                     <div class="form-item payment-item" id="deletedField">
                                         <div class="form-item-label">
-                                            <label class="item-label">削除</label>
+                                            <label class="item-label"><?php echo UI_ITEM_USER_DELETED; ?></label>
                                         </div>
                                         <div class="input-group form-item">
                                             <select class="form-select" name="deleted">
@@ -480,7 +480,7 @@ $total_pages = ceil($total_users / $limit);
                                         <!-- 所属グループ -->
                                         <div class="form-item payment-item" id="groupAffiliationField">
                                             <div class="form-item-label">
-                                                <label class="item-label">所属グループ</label>
+                                                <label class="item-label"><?php echo UI_ITEM_GROUP; ?></label>
                                             </div>
                                             <div class="input-group form-item">
                                                 <select class="form-select" name="group_affiliation">
@@ -549,8 +549,8 @@ $total_pages = ceil($total_users / $limit);
         <div class="btn-right-area">
             <div class="btn-item">
                 <button type="submit" class="btn btn-primary" name="user_assign"
-                        onclick="return confirm('本当に実行しますか？\n以下のユーザーはスキップされます。\n・ 所属グループのリーダーユーザー\n・ 権限「0」以外のユーザー\n・ 既に承認済みのユーザー\n・ 削除済みのユーザー')">
-                    選択ユーザーを配属
+                        onclick="return confirm('本当に実行しますか？\n以下の<?php echo UI_ITEM_USER ; ?>はスキップされます。\n・ 所属グループのリーダー<?php echo UI_ITEM_USER ; ?>\n・ 権限「0」以外の<?php echo UI_ITEM_USER ; ?>\n・ 既に承認済みの<?php echo UI_ITEM_USER ; ?>\n・ 削除済みの<?php echo UI_ITEM_USER ; ?>')">
+                    <?php echo "選択" . UI_ITEM_USER . "を配属"; ?>
                 </button>
             </div>
         </div>
@@ -566,12 +566,12 @@ $total_pages = ceil($total_users / $limit);
                                onclick="event.stopPropagation(); toggleAll(this);"/>
                     </th>
                     <th>#</th>
-                    <th>氏名</th>
-                    <th>権限</th>
-                    <th>承認</th>
-                    <th>削除</th>
-                    <th>所属グループ</th>
-                    <th>リーダーフラグ</th>
+                    <th><?php echo UI_ITEM_USER_NAME ; ?></th>
+                    <th><?php echo UI_ITEM_USER_PERMISSION ; ?></th>
+                    <th><?php echo UI_ITEM_USER_APPROVAL ; ?></th>
+                    <th><?php echo UI_ITEM_USER_DELETED ; ?></th>
+                    <th><?php echo UI_ITEM_GROUP ; ?></th>
+                    <th><?php echo UI_ITEM_GROUP_INFO_LEADER ; ?></th>
                 </tr>
                 </thead>
                 <tbody>

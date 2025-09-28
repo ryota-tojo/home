@@ -11,6 +11,9 @@ data class ShoppingEntryCreateRequest(
     @field:Size(max = 64, message = "キー「groups_id」は64桁以内で入力してください")
     val groupsId: String,
 
+    @JsonProperty("template_no")
+    val templateNo: Int,
+
     @JsonProperty("template_id")
     @field:NotBlank(message = "キー「template_id」は必須です")
     @field:Size(max = 64, message = "キー「template_id」は64桁以内で入力してください")
@@ -46,7 +49,6 @@ data class ShoppingEntryCreateRequest(
     val amount: Int,
 
     @JsonProperty("remarks")
-    @field:NotBlank(message = "キー「remarks」は必須です")
     @field:Size(max = 1024, message = "キー「remarks」は1024桁以内で入力してください")
     val remarks: String,
 

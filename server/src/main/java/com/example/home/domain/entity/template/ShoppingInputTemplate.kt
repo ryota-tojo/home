@@ -13,6 +13,7 @@ import com.example.home.domain.value_object.template.*
 data class ShoppingInputTemplate(
     val id: TmpId,
     val groupsId: GroupsId,
+    val templateNo: TemplateNo,
     val templateId: TemplateId,
     val templateName: TemplateName,
     val memberId: MemberId,

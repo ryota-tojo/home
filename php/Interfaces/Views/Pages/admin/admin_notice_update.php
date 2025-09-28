@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -99,11 +99,11 @@ if (isset($_POST['entry'])) {
         $entry_error = True;
         $notice_title_default = $notice_title;
         $notice_content_default = $notice_content;
-        $message = "お知らせの更新に失敗しました";
-        createLogs(LOG_TYPE_ERROR, "お知らせの更新に失敗");
+        $message = UI_ITEM_NOTICE . "の更新に失敗しました";
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_NOTICE . "の更新に失敗");
     } else {
-        $message = "お知らせを更新しました";
-        createLogs(LOG_TYPE_INFO, "お知らせ更新");
+        $message = UI_ITEM_NOTICE . "を更新しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_NOTICE . "更新");
     }
 }
 
@@ -155,7 +155,7 @@ if (isset($_POST['entry'])) {
                             <!-- タイトル -->
                             <div class="form-item title-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">タイトル</label>
+                                    <label class="item-label"><?php echo UI_ITEM_NOTICE_TITLE; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input required type="text" class="form-control" name="title"
@@ -170,7 +170,7 @@ if (isset($_POST['entry'])) {
                             <!-- 内容 -->
                             <div class="form-item content-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">内容</label>
+                                    <label class="item-label"><?php echo UI_ITEM_NOTICE_CONTENT; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <textarea required class="form-control" name="content"

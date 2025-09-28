@@ -2,8 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
@@ -69,10 +69,10 @@ if (isset($_POST['entry'])) {
 
     if ($data['status'] != "success") {
         $entry_error = True;
-        createLogs(LOG_TYPE_ERROR, "所属グループ設定の一括反映に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_GROUP . "設定の一括反映に失敗");
     }
     $message = $data['message'];
-    createLogs(LOG_TYPE_INFO, "所属グループ設定一括反映");
+    createLogs(LOG_TYPE_INFO, UI_ITEM_GROUP . "設定一括反映");
 }
 
 ?>

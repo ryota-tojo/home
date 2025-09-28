@@ -13,6 +13,10 @@ class FixtureShoppingEntryTemplate {
         new TmpId(1)
     }
 
+    static テンプレートNO_正常() {
+        new TemplateNo(1)
+    }
+
     static テンプレートID_正常() {
         new TemplateId("template_id")
     }
@@ -42,6 +46,7 @@ class FixtureShoppingEntryTemplate {
         return new ShoppingEntryTemplate(
                 ID_正常(),
                 FixtureGroupList.所属グループID_正常(),
+                テンプレートNO_正常(),
                 テンプレートID_正常(),
                 テンプレート名_正常(),
                 FixtureMember.メンバーID_正常(),

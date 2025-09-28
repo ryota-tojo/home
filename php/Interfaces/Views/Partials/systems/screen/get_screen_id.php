@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
 
@@ -130,33 +130,33 @@ function getScreenId($file_name)
         case 'user_group_member_update.php':
             return 'USR-GRP142';
 
-        case 'user_group_template_register_list.php':
+        case 'user_group_entry_template_list.php':
             return 'USR-GRP150';
 
-        case 'user_group_template_register_entry.php':
+        case 'user_group_entry_template_entry.php':
             return 'USR-GRP151';
 
-        case 'user_group_template_register_update.php':
+        case 'user_group_entry_template_update.php':
             return 'USR-GRP152';
 
 
-        case 'user_group_template_input_list.php':
+        case 'user_group_input_template_list.php':
             return 'USR-GRP160';
 
-        case 'user_group_template_input_entry.php':
+        case 'user_group_input_template_entry.php':
             return 'USR-GRP161';
 
-        case 'user_group_template_input_update.php':
+        case 'user_group_input_template_update.php':
             return 'USR-GRP162';
 
 
-        case 'user_group_template_search_list.php':
+        case 'user_group_search_template_list.php':
             return 'USR-GRP170';
 
-        case 'user_group_template_search_entry.php':
+        case 'user_group_search_template_entry.php':
             return 'USR-GRP171';
 
-        case 'user_group_template_search_update.php':
+        case 'user_group_search_template_update.php':
             return 'USR-GRP172';
 
         // ユーザー画面 - 予算
@@ -170,14 +170,14 @@ function getScreenId($file_name)
         case 'template_input.php':
             return 'USR-IPT001';
 
-        case 'purchase_input.php':
+        case 'shopping_input.php':
             return 'USR-IPT002';
 
-        case 'purchase_update.php':
+        case 'shopping_update.php':
             return 'USR-IPT003';
 
         // ユーザー画面 - データ管理
-        case 'purchase_list.php':
+        case 'shopping_list.php':
             return 'USR-MNG001';
 
         case 'data_confirm.php':

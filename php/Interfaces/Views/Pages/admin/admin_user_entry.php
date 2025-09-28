@@ -2,11 +2,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/user_create.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/user/create_user.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
 
@@ -96,7 +96,7 @@ if (isset($_POST['entry'])) {
     $approval = $_POST['approval'] ?? '';
     $deleted = $_POST['deleted'] ?? '';
 
-    $result = userEntry($user_name, $password, $permission, $approval, $deleted);
+    $result = entryUser($user_name, $password, $permission, $approval, $deleted);
     $data = json_decode($result, true);
     $status = $data['status'];
 
@@ -104,11 +104,11 @@ if (isset($_POST['entry'])) {
         $entry_error = True;
         $error_message = $data['message'];
         $message = "$error_message";
-        createLogs(LOG_TYPE_ERROR, "ユーザー情報の登録に失敗");
+        createLogs(LOG_TYPE_ERROR, UI_ITEM_USER . "情報の登録に失敗");
 
     } else {
-        $message = "ユーザー情報を登録しました";
-        createLogs(LOG_TYPE_INFO, "ユーザー情報を登録");
+        $message = UI_ITEM_USER . "情報を登録しました";
+        createLogs(LOG_TYPE_INFO, UI_ITEM_USER . "情報を登録");
 
     }
 }
@@ -130,7 +130,7 @@ if (isset($_POST['entry'])) {
             <?php
             //
             if ($user_file_flag or $screen == "user") {
-                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_control.php?$url_param'>ユーザー管理</a></div>";
+                echo "<div class='btn-item'><a class='link-btn' href='/Interfaces/Views/Pages/admin/admin_user_control.php?$url_param'>" . UI_ITEM_USER . "管理</a></div>";
             }
             ?>
         </div>
@@ -155,13 +155,13 @@ if (isset($_POST['entry'])) {
                     <form action="" method="post">
 
                         <div class="settings-section">
-                            <h4 class="settings-title">ユーザー情報</h4>
+                            <h4 class="settings-title"><?php echo UI_ITEM_USER; ?>情報</h4>
                             <hr>
 
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        ユーザー名
+                                        <?php echo UI_ITEM_USER_NAME; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@ if (isset($_POST['entry'])) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        パスワード
+                                        <?php echo UI_ITEM_USER_PASSWORD; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@ if (isset($_POST['entry'])) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        権限
+                                        <?php echo UI_ITEM_USER_PERMISSION; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -230,7 +230,7 @@ if (isset($_POST['entry'])) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        承認
+                                        <?php echo UI_ITEM_USER_APPROVAL; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -259,7 +259,7 @@ if (isset($_POST['entry'])) {
                             <div class="settings-form">
                                 <div class="settings-label-container">
                                     <div class="settings-label">
-                                        削除
+                                        <?php echo UI_ITEM_USER_DELETED; ?>
                                         <div class="required-comment">※必須</div>
                                     </div>
                                 </div>
@@ -291,7 +291,7 @@ if (isset($_POST['entry'])) {
                             <div class="btn-center-area">
                                 <div class="btn-item">
                                     <button type="submit" class="btn btn-primary" name="entry">
-                                        ユーザー登録
+                                        <?php echo UI_ITEM_USER; ?>登録
                                     </button>
                                 </div>
                             </div>

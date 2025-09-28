@@ -2,13 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/log_config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Config/log_config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Application/Services/ApiService.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/requireApi.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/category/get_max_category_no.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/logs/create_logs.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/systems/screen/get_screen.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Interfaces/Views/Partials/category/import_category.php';
 
 $screen_items = getScreen(basename(__FILE__));
 $screen_title = $screen_items['name'];
@@ -62,31 +62,20 @@ $entry_error = False;
 // マスター設定
 // なし
 
+// ボタン押下時の処理
 if (isset($_POST['entry'])) {
     $entry_button_click_flg = True;
 
     $category_name = $_POST['category-name'];
 
-    $category_max_no = getMaxCategoryNo($_SESSION['user_groups_id']);
-    $category_new_no = $category_max_no + 1;
+    $result = categoryPostActionForEntryEvent($_SESSION['user_groups_id'],$category_name);
+    $data = json_decode($result, true);
 
-    $result = apiCallCategoryCreate($_SESSION['user_groups_id'],$category_new_no,$category_name);
-
-    if($result['status']!='error'){
-        $message = "カテゴリーを登録しました";
-        createLogs(LOG_TYPE_INFO, "カテゴリー登録 - カテゴリー登録");
-    } else {
-        $message = "カテゴリーの登録に失敗しました";
+    if($data['status']=='error'){
         $entry_error = true;
-        createLogs(LOG_TYPE_ERROR, "カテゴリー登録 - カテゴリー登録失敗");
     }
+    $message = $data['message'];
 }
-
-$category_api_refer_result = apiCallCategoryRefer(null, $_SESSION['user_groups_id']);
-if ($category_api_refer_result['status'] != "error") {
-    $categories_data = $category_api_refer_result['data']['category_list'];
-}
-
 ?>
 
 <main>
@@ -102,7 +91,7 @@ if ($category_api_refer_result['status'] != "error") {
     <div class="btn-area">
         <div class="btn-center-area">
             <div class='btn-item'><a class='link-btn'
-                                     href='/Interfaces/Views/Pages/user/group/setting/category/user_group_category_list.php'>カテゴリー一覧</a>
+                                     href='/Interfaces/Views/Pages/user/group/setting/category/user_group_category_list.php'><?php echo UI_ITEM_CATEGORY; ?>一覧</a>
             </div>
         </div>
     </div>
@@ -133,11 +122,11 @@ if ($category_api_refer_result['status'] != "error") {
                             <!-- カテゴリー名 -->
                             <div class="form-item">
                                 <div class="form-item-label">
-                                    <label class="item-label">カテゴリー名</label>
+                                    <label class="item-label"><?php echo UI_ITEM_CATEGORY_NAME; ?></label>
                                 </div>
                                 <div class="input-group form-item">
                                     <input type="text" required minlength="1" maxlength="64" oninput="this.value = this.value.replace(/,/g, '');" class="form-control" name="category-name"
-                                           placeholder="カテゴリー名を入力してください"
+                                           placeholder="<?php echo UI_ITEM_CATEGORY_NAME; ?>を入力してください"
                                         <?php $category_name = $_POST['category-name'] ?? '';
                                         if($entry_error == True){echo "value='{$category_name}'";}
                                          ?>
